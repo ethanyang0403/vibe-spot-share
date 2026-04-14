@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { formatDistanceToNow } from 'date-fns';
 
-const MAPBOX_TOKEN = 'pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNtOTlkNnlqMjAyOW4ya3M2MXlqdGN3NjEifQ.aVlKONMBMr0TUbFfjMxPyw';
+const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
 interface FriendLocation {
   user_id: string;
