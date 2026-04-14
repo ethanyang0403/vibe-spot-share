@@ -1,0 +1,282 @@
+import { useEffect, useState, useCallback, useRef } from 'react';
+import ReactMapGL, { Marker, type MapRef } from 'react-map-gl';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useUserLocation } from '@/hooks/useLocation';
+import StatusSheet from '@/components/StatusSheet';
+import CreateMoment from '@/components/CreateMoment';
+import { Ghost, Bell, Plus } from 'lucide-react';
+import { toast } from 'sonner';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { formatDistanceToNow } from 'date-fns';
+
+const MAPBOX_TOKEN = 'pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNtOTlkNnlqMjAyOW4ya3M2MXlqdGN3NjEifQ.aVlKONMBMr0TUbFfjMxPyw';
+
+interface FriendLocation {
+  user_id: string;
+  latitude: number;
+  longitude: number;
+  status_text: string | null;
+  is_visible: boolean;
+  profile?: { display_name: string | null; username: string };
+}
+
+interface Moment {
+  id: string;
+  title: string;
+  latitude: number;
+  longitude: number;
+  expires_at: string;
+  creator_id: string;
+  creator?: { display_name: string | null; username: string };
+}
+
+export default function MapScreen() {
+  const { user } = useAuth();
+  const { position } = useUserLocation();
+  const mapRef = useRef<MapRef>(null);
+  const [friends, setFriends] = useState<FriendLocation[]>([]);
+  const [moments, setMoments] = useState<Moment[]>([]);
+  const [isGhost, setIsGhost] = useState(false);
+  const [statusOpen, setStatusOpen] = useState(false);
+  const [momentOpen, setMomentOpen] = useState(false);
+  const [selectedFriend, setSelectedFriend] = useState<FriendLocation | null>(null);
+  const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
+  const [myStatus, setMyStatus] = useState<string | null>(null);
+  const [unreadPings, setUnreadPings] = useState(0);
+
+  // Upsert own location
+  useEffect(() => {
+    if (!user || !position) return;
+    const upsert = async () => {
+      await supabase.from('user_locations').upsert({
+        user_id: user.id,
+        latitude: position.latitude,
+        longitude: position.longitude,
+        is_visible: !isGhost,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id' });
+    };
+    upsert();
+  }, [user, position, isGhost]);
+
+  // Fetch friends locations
+  const fetchFriends = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('user_locations')
+      .select('*, profile:profiles(display_name, username)')
+      .neq('user_id', user.id);
+    if (data) setFriends(data.map((d: any) => ({ ...d, profile: d.profile })));
+  }, [user]);
+
+  // Fetch moments
+  const fetchMoments = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('moments')
+      .select('*, creator:profiles(display_name, username)')
+      .gt('expires_at', new Date().toISOString());
+    if (data) setMoments(data.map((d: any) => ({ ...d, creator: d.creator })));
+  }, [user]);
+
+  // Fetch my status
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('user_locations').select('status_text, is_visible').eq('user_id', user.id).single()
+      .then(({ data }) => {
+        if (data) {
+          setMyStatus(data.status_text);
+          setIsGhost(!data.is_visible);
+        }
+      });
+  }, [user]);
+
+  // Fetch unread pings
+  useEffect(() => {
+    if (!user) return;
+    supabase.from('pings').select('*', { count: 'exact', head: true })
+      .eq('recipient_id', user.id).eq('read', false)
+      .then(({ count }) => setUnreadPings(count ?? 0));
+  }, [user]);
+
+  useEffect(() => {
+    fetchFriends();
+    fetchMoments();
+  }, [fetchFriends, fetchMoments]);
+
+  // Realtime subscriptions
+  useEffect(() => {
+    if (!user) return;
+    const ch = supabase.channel('map-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_locations' }, () => fetchFriends())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'moments' }, () => fetchMoments())
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pings', filter: `recipient_id=eq.${user.id}` }, () => {
+        setUnreadPings(p => p + 1);
+        toast('New ping! 📍');
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [user, fetchFriends, fetchMoments]);
+
+  const toggleGhost = async () => {
+    if (!user) return;
+    const newVal = !isGhost;
+    setIsGhost(newVal);
+    await supabase.from('user_locations').update({ is_visible: !newVal, updated_at: new Date().toISOString() }).eq('user_id', user.id);
+    toast(newVal ? 'Ghost mode on 👻' : 'You\'re visible now');
+  };
+
+  const sendPing = async (recipientId: string) => {
+    if (!user) return;
+    const { error } = await supabase.from('pings').insert({
+      sender_id: user.id,
+      recipient_id: recipientId,
+      latitude: position?.latitude,
+      longitude: position?.longitude,
+    });
+    if (error) toast.error('Failed to send ping');
+    else { toast.success('Ping sent! 📍'); setSelectedFriend(null); }
+  };
+
+  const vp = {
+    latitude: position?.latitude ?? 40.7128,
+    longitude: position?.longitude ?? -74.006,
+    zoom: 15,
+  };
+
+  return (
+    <div className="relative h-[calc(100dvh-56px-env(safe-area-inset-bottom,8px))] w-full">
+      <ReactMapGL
+        ref={mapRef}
+        initialViewState={vp}
+        mapboxAccessToken={MAPBOX_TOKEN}
+        mapStyle="mapbox://styles/mapbox/dark-v11"
+        style={{ width: '100%', height: '100%' }}
+        attributionControl={false}
+      >
+        {/* Own location */}
+        {position && (
+          <Marker latitude={position.latitude} longitude={position.longitude}>
+            <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
+          </Marker>
+        )}
+
+        {/* Friend dots */}
+        {friends.map((f) => (
+          <Marker key={f.user_id} latitude={f.latitude} longitude={f.longitude}>
+            <button onClick={() => { setSelectedFriend(f); setSelectedMoment(null); }} className="flex flex-col items-center">
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-bold text-foreground border-2 border-primary/50">
+                {(f.profile?.display_name || f.profile?.username || '?')[0].toUpperCase()}
+              </div>
+              {f.status_text && (
+                <span className="mt-0.5 max-w-[80px] truncate rounded-full bg-card/90 px-2 py-0.5 text-[10px] text-foreground">
+                  {f.status_text}
+                </span>
+              )}
+            </button>
+          </Marker>
+        ))}
+
+        {/* Moment beacons */}
+        {moments.map((m) => (
+          <Marker key={m.id} latitude={m.latitude} longitude={m.longitude}>
+            <button onClick={() => { setSelectedMoment(m); setSelectedFriend(null); }} className="flex flex-col items-center">
+              <div className="pulse-beacon">
+                <div className="h-6 w-6 rounded-full sera-gradient opacity-80" />
+              </div>
+              <span className="mt-0.5 max-w-[100px] truncate rounded-full bg-card/90 px-2 py-0.5 text-[10px] text-foreground font-medium">
+                {m.title}
+              </span>
+            </button>
+          </Marker>
+        ))}
+      </ReactMapGL>
+
+      {/* Top bar */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)]">
+        <button onClick={toggleGhost} className="rounded-full bg-card/80 p-2.5 backdrop-blur-sm">
+          <Ghost size={20} className={isGhost ? 'text-foreground' : 'text-muted-foreground'} />
+        </button>
+        <span className="text-lg font-black text-primary">sera</span>
+        <button className="relative rounded-full bg-card/80 p-2.5 backdrop-blur-sm">
+          <Bell size={20} className="text-foreground" />
+          {unreadPings > 0 && (
+            <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full sera-gradient px-1 text-[10px] font-bold text-primary-foreground">
+              {unreadPings}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* FAB for moment */}
+      <button
+        onClick={() => setMomentOpen(true)}
+        className="absolute bottom-6 right-4 z-10 flex h-14 w-14 items-center justify-center rounded-full sera-gradient shadow-lg"
+      >
+        <Plus size={28} className="text-primary-foreground" />
+      </button>
+
+      {/* Status setter button */}
+      <button
+        onClick={() => setStatusOpen(true)}
+        className="absolute bottom-6 left-4 z-10 rounded-full bg-card/90 px-4 py-2.5 text-sm font-medium text-foreground backdrop-blur-sm border border-border"
+      >
+        {myStatus || '+ set status'}
+      </button>
+
+      {/* Friend card */}
+      <AnimatePresence>
+        {selectedFriend && (
+          <motion.div
+            initial={{ y: 200, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 200, opacity: 0 }}
+            className="absolute bottom-20 left-4 right-4 z-20 rounded-2xl bg-card p-4 border border-border"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-lg font-bold text-foreground">
+                {(selectedFriend.profile?.display_name || selectedFriend.profile?.username || '?')[0].toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-foreground">{selectedFriend.profile?.display_name || selectedFriend.profile?.username}</p>
+                <p className="text-sm text-muted-foreground">@{selectedFriend.profile?.username}</p>
+                {selectedFriend.status_text && (
+                  <p className="text-xs text-primary mt-0.5">{selectedFriend.status_text}</p>
+                )}
+              </div>
+              <Button onClick={() => sendPing(selectedFriend.user_id)} className="rounded-xl sera-gradient text-primary-foreground">
+                Ping
+              </Button>
+            </div>
+            <button onClick={() => setSelectedFriend(null)} className="absolute top-2 right-3 text-muted-foreground text-sm">✕</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Moment card */}
+      <AnimatePresence>
+        {selectedMoment && (
+          <motion.div
+            initial={{ y: 200, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 200, opacity: 0 }}
+            className="absolute bottom-20 left-4 right-4 z-20 rounded-2xl bg-card p-4 border border-border"
+          >
+            <h4 className="font-semibold text-foreground">{selectedMoment.title}</h4>
+            <p className="text-sm text-muted-foreground">
+              by {selectedMoment.creator?.display_name || selectedMoment.creator?.username} · expires {formatDistanceToNow(new Date(selectedMoment.expires_at), { addSuffix: true })}
+            </p>
+            <Button
+              onClick={() => window.open(`https://maps.google.com/?q=${selectedMoment.latitude},${selectedMoment.longitude}`, '_blank')}
+              className="mt-3 w-full rounded-xl sera-gradient text-primary-foreground"
+            >
+              Go →
+            </Button>
+            <button onClick={() => setSelectedMoment(null)} className="absolute top-2 right-3 text-muted-foreground text-sm">✕</button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <StatusSheet open={statusOpen} onClose={() => setStatusOpen(false)} currentStatus={myStatus} />
+      <CreateMoment open={momentOpen} onClose={() => setMomentOpen(false)} latitude={position?.latitude ?? 40.7128} longitude={position?.longitude ?? -74.006} />
+    </div>
+  );
+}
