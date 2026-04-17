@@ -254,6 +254,18 @@ export default function PingsScreen() {
                         <p className="mt-1" style={{ fontSize: 12, color: '#555566' }}>
                           {n.timestamp}
                         </p>
+                        {n.avatar.isAI && (
+                          <p
+                            style={{
+                              fontSize: 10,
+                              color: '#555566',
+                              fontStyle: 'italic',
+                              marginTop: 2,
+                            }}
+                          >
+                            from Sera
+                          </p>
+                        )}
                       </div>
 
                       {/* Unread dot */}
