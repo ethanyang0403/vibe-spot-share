@@ -96,6 +96,45 @@ export default function MapScreen() {
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+  const [heatmapVisible, setHeatmapVisible] = useState(true);
+
+  const heatmapLayer: LayerProps = {
+    id: 'heatmap-layer',
+    type: 'heatmap',
+    paint: {
+      'heatmap-weight': ['interpolate', ['linear'], ['get', 'weight'], 0, 0, 1, 1],
+      'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 15, 1.2, 18, 2],
+      'heatmap-color': [
+        'interpolate', ['linear'], ['heatmap-density'],
+        0, 'rgba(0, 0, 0, 0)',
+        0.1, 'rgba(30, 80, 120, 0.3)',
+        0.25, 'rgba(50, 140, 200, 0.4)',
+        0.4, 'rgba(80, 200, 180, 0.45)',
+        0.55, 'rgba(140, 220, 100, 0.5)',
+        0.7, 'rgba(220, 200, 50, 0.55)',
+        0.85, 'rgba(240, 140, 40, 0.6)',
+        1.0, 'rgba(240, 70, 50, 0.65)',
+      ],
+      'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 11, 20, 15, 35, 18, 50],
+      'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 16, 0.5, 18, 0.35],
+    },
+  };
+
+  const toggleHeatmap = () => {
+    const newVal = !heatmapVisible;
+    setHeatmapVisible(newVal);
+    toast(newVal ? 'Heatmap visible' : 'Heatmap hidden', {
+      style: {
+        backgroundColor: '#141419',
+        color: '#fff',
+        border: '1px solid #2A2A35',
+        borderRadius: 12,
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+      },
+      position: 'top-center',
+      duration: 2000,
+    });
+  };
 
   // Listen for "focus friend" requests from the Friends tab
   useEffect(() => {
