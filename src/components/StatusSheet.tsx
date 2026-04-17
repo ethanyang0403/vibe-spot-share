@@ -12,9 +12,11 @@ const PRESETS = [
 ];
 
 const TOAST_STYLE = {
-  backgroundColor: '#1a1a2e',
+  backgroundColor: '#141419',
   color: '#fff',
-  border: '1px solid #2a2a3e',
+  border: '1px solid #2A2A35',
+  borderRadius: 12,
+  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
 };
 
 interface Props {
@@ -66,10 +68,15 @@ export default function StatusSheet({ open, onClose, currentStatus, onSetStatus 
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.2}
             onDragEnd={(_, info) => { if (info.offset.y > 80) onClose(); }}
-            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
-            style={{ backgroundColor: '#1a1a2e' }}
+            className="fixed bottom-0 left-0 right-0 z-50 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
+            style={{
+              backgroundColor: '#141419',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.5)',
+            }}
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#444' }} />
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#2A2A35' }} />
 
             <h3 className="mb-5 text-[20px] font-bold text-white">What are you up to?</h3>
 
@@ -83,10 +90,11 @@ export default function StatusSheet({ open, onClose, currentStatus, onSetStatus 
                       setSelectedPreset(preset);
                       setCustom('');
                     }}
-                    className="rounded-full px-4 py-3 text-[14px] text-center transition-colors active:scale-[0.97]"
+                    className="rounded-full px-4 py-3 text-[14px] text-center transition-all active:scale-[0.97]"
                     style={{
-                      backgroundColor: selected ? '#e94560' : '#2a2a3e',
-                      color: '#fff',
+                      backgroundColor: selected ? '#C2E9FF' : '#1C1C24',
+                      color: selected ? '#0A0A0F' : '#FFFFFF',
+                      border: selected ? 'none' : '1px solid #2A2A35',
                     }}
                   >
                     {preset}
@@ -103,20 +111,23 @@ export default function StatusSheet({ open, onClose, currentStatus, onSetStatus 
               }}
               placeholder="or type something..."
               maxLength={50}
-              className="mt-4 w-full rounded-xl px-4 py-3 text-[14px] text-white outline-none"
+              className="mt-4 w-full px-4 py-3 text-[14px] text-white outline-none placeholder:text-[#555566]"
               style={{
-                backgroundColor: '#0f0f1a',
-                border: '1px solid #2a2a3e',
+                backgroundColor: '#0A0A0F',
+                border: '1px solid #2A2A35',
+                borderRadius: 12,
               }}
             />
 
             <button
               onClick={handleSubmit}
               disabled={!canSubmit}
-              className="mt-5 w-full rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.98]"
+              className="mt-5 w-full text-[15px] font-bold transition-all active:scale-[0.97]"
               style={{
                 height: 46,
-                backgroundColor: canSubmit ? '#e94560' : '#333',
+                borderRadius: 14,
+                backgroundColor: canSubmit ? '#C2E9FF' : '#1C1C24',
+                color: canSubmit ? '#0A0A0F' : '#555566',
               }}
             >
               Set Status

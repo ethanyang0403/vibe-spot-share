@@ -38,7 +38,8 @@ export default function MomentBeacon({ title, expiresAt, onClick }: Props) {
         className="mb-1 truncate rounded-lg px-2.5 py-1 text-[12px] font-bold text-white"
         style={{
           maxWidth: 160,
-          backgroundColor: 'rgba(15, 15, 26, 0.9)',
+          backgroundColor: 'rgba(10, 10, 15, 0.9)',
+          border: '1px solid rgba(194, 233, 255, 0.2)',
         }}
       >
         {title}
@@ -52,7 +53,7 @@ export default function MomentBeacon({ title, expiresAt, onClick }: Props) {
             position: 'absolute',
             inset: 0,
             borderRadius: '9999px',
-            backgroundColor: '#e94560',
+            backgroundColor: '#C2E9FF',
           }}
         />
         <span
@@ -61,8 +62,8 @@ export default function MomentBeacon({ title, expiresAt, onClick }: Props) {
             width: 20,
             height: 20,
             borderRadius: '9999px',
-            backgroundColor: '#e94560',
-            boxShadow: '0 2px 6px rgba(233, 69, 96, 0.5)',
+            backgroundColor: '#C2E9FF',
+            boxShadow: '0 2px 8px rgba(194, 233, 255, 0.5)',
           }}
         />
       </div>
@@ -71,9 +72,9 @@ export default function MomentBeacon({ title, expiresAt, onClick }: Props) {
       <span
         className="mt-1.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
         style={{
-          backgroundColor: urgent ? 'rgba(233, 69, 96, 0.35)' : 'rgba(233, 69, 96, 0.2)',
-          border: '1px solid rgba(233, 69, 96, 0.4)',
-          color: urgent ? '#ff6b85' : '#e94560',
+          backgroundColor: urgent ? 'rgba(251, 191, 36, 0.18)' : 'rgba(194, 233, 255, 0.12)',
+          border: urgent ? '1px solid rgba(251, 191, 36, 0.4)' : '1px solid rgba(194, 233, 255, 0.25)',
+          color: urgent ? '#FBBF24' : '#C2E9FF',
         }}
       >
         {formatRemaining(remaining)}

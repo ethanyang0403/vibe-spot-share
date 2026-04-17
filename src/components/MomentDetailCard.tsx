@@ -38,6 +38,8 @@ export default function MomentDetailCard({ moment, onClose }: Props) {
     return () => clearInterval(id);
   }, [moment]);
 
+  const urgent = remaining < 10 * 60 * 1000 && remaining > 0;
+
   return (
     <AnimatePresence>
       {moment && (
@@ -54,14 +56,19 @@ export default function MomentDetailCard({ moment, onClose }: Props) {
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.2}
             onDragEnd={(_, info) => { if (info.offset.y > 80) onClose(); }}
-            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,8px))]"
-            style={{ backgroundColor: '#1a1a2e' }}
+            className="fixed bottom-0 left-0 right-0 z-50 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
+            style={{
+              backgroundColor: '#141419',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.5)',
+            }}
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#444' }} />
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#2A2A35' }} />
 
             <h3 className="text-[20px] font-bold text-white">{moment.title}</h3>
-            <p className="mt-1 text-[14px]" style={{ color: '#888' }}>Dropped by {moment.creator}</p>
-            <p className="mt-3 text-[16px] font-bold" style={{ color: '#e94560' }}>
+            <p className="mt-1 text-[14px]" style={{ color: '#8A8A9A' }}>Dropped by {moment.creator}</p>
+            <p className="mt-3 text-[16px] font-bold" style={{ color: urgent ? '#FBBF24' : '#C2E9FF' }}>
               {formatRemaining(remaining)}
             </p>
 
@@ -69,18 +76,23 @@ export default function MomentDetailCard({ moment, onClose }: Props) {
               <button
                 onClick={() => setGoing(true)}
                 disabled={going}
-                className="flex-1 rounded-full py-3 text-[15px] font-bold text-white transition-colors"
-                style={{ backgroundColor: going ? '#059669' : '#e94560' }}
+                className="flex-1 py-3 text-[15px] font-bold transition-all active:scale-[0.97]"
+                style={{
+                  backgroundColor: going ? '#34D399' : '#C2E9FF',
+                  color: '#0A0A0F',
+                  borderRadius: 14,
+                }}
               >
                 {going ? "You're in! ✓" : "I'm Going 🙋"}
               </button>
               <button
                 onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${moment.lat},${moment.lng}`, '_blank')}
-                className="flex-1 rounded-full py-3 text-[15px] font-bold transition-colors"
+                className="flex-1 py-3 text-[15px] font-bold transition-all active:scale-[0.97]"
                 style={{
                   backgroundColor: 'transparent',
-                  border: '1px solid #e94560',
-                  color: '#e94560',
+                  border: '1.5px solid #C2E9FF',
+                  color: '#C2E9FF',
+                  borderRadius: 14,
                 }}
               >
                 Get Directions 📍
