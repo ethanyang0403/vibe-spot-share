@@ -314,7 +314,38 @@ export default function MapScreen() {
           </Marker>
         )}
 
-        {/* Friend dots */}
+        {/* Inactive business pins (lowest layer) */}
+        {MOCK_BUSINESSES.filter((b) => !b.promotedMoment.active).map((b) => (
+          <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
+            <BusinessPin
+              icon={b.icon}
+              onClick={() => {
+                setSelectedFriend(null);
+                setSelectedMockFriend(null);
+                setSelectedMoment(null);
+                setSelectedBusiness(b);
+              }}
+            />
+          </Marker>
+        ))}
+
+        {/* Active business beacons (above inactive pins, below user Moments + friends) */}
+        {MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).map((b) => (
+          <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
+            <BusinessBeacon
+              icon={b.icon}
+              title={b.promotedMoment.title!}
+              expiresInMinutes={b.promotedMoment.expiresInMinutes!}
+              onClick={() => {
+                setSelectedFriend(null);
+                setSelectedMockFriend(null);
+                setSelectedMoment(null);
+                setSelectedBusiness(b);
+              }}
+            />
+          </Marker>
+        ))}
+
         {friends.map((f) => (
           <Marker key={f.user_id} latitude={f.latitude} longitude={f.longitude}>
             <button onClick={() => { setSelectedFriend(f); setSelectedMoment(null); }} className="flex flex-col items-center">
