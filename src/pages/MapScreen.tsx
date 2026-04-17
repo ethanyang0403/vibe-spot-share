@@ -508,26 +508,45 @@ export default function MapScreen() {
           👻
         </button>
         <span className="text-lg font-black" style={{ color: '#C2E9FF' }}>sera</span>
-        <button
-          className="relative flex items-center justify-center transition-all active:scale-[0.95]"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            backgroundColor: '#141419',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-          }}
-        >
-          <Bell size={20} style={{ color: '#8A8A9A' }} />
-          {unreadPings > 0 && (
-            <span
-              className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold"
-              style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F' }}
-            >
-              {unreadPings}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleHeatmap}
+            className="flex items-center justify-center transition-all active:scale-[0.95]"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              backgroundColor: '#141419',
+              border: heatmapVisible ? '1px solid rgba(194, 233, 255, 0.4)' : '1px solid #2A2A35',
+              boxShadow: heatmapVisible
+                ? '0 0 8px rgba(194, 233, 255, 0.2), 0 2px 8px rgba(0,0,0,0.4)'
+                : '0 2px 8px rgba(0,0,0,0.4)',
+            }}
+            aria-label="Toggle heatmap"
+          >
+            <Flame size={18} style={{ color: heatmapVisible ? '#C2E9FF' : '#555566' }} />
+          </button>
+          <button
+            className="relative flex items-center justify-center transition-all active:scale-[0.95]"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              backgroundColor: '#141419',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            }}
+          >
+            <Bell size={20} style={{ color: '#8A8A9A' }} />
+            {unreadPings > 0 && (
+              <span
+                className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold"
+                style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F' }}
+              >
+                {unreadPings}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* FAB for moment */}
