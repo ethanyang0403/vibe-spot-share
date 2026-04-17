@@ -354,8 +354,25 @@ export default function MapScreen() {
 
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)]">
-        <button onClick={toggleGhost} className="rounded-full bg-card/80 p-2.5 backdrop-blur-sm">
-          <Ghost size={20} className={isGhost ? 'text-foreground' : 'text-muted-foreground'} />
+        <button
+          onClick={toggleGhost}
+          className="flex items-center justify-center transition-all active:scale-[0.95]"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            backgroundColor: '#1a1a2e',
+            border: isGhost ? '1.5px solid #e94560' : '1.5px solid transparent',
+            boxShadow: isGhost
+              ? '0 0 12px rgba(233, 69, 96, 0.4), 0 2px 8px rgba(0,0,0,0.3)'
+              : '0 2px 8px rgba(0,0,0,0.3)',
+            fontSize: 22,
+            lineHeight: 1,
+            filter: isGhost ? 'drop-shadow(0 0 4px rgba(233, 69, 96, 0.6))' : 'none',
+          }}
+          aria-label="Toggle ghost mode"
+        >
+          👻
         </button>
         <span className="text-lg font-black text-primary">sera</span>
         <button className="relative rounded-full bg-card/80 p-2.5 backdrop-blur-sm">
