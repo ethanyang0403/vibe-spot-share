@@ -32,6 +32,29 @@ interface Moment {
   creator?: { display_name: string | null; username: string };
 }
 
+interface MockFriend {
+  id: string;
+  name: string;
+  initial: string;
+  status: string;
+  lat: number;
+  lng: number;
+  color: string;
+}
+
+const MOCK_FRIENDS: MockFriend[] = [
+  { id: "f1", name: "Jordan Lee", initial: "J", status: "down to hang 🙌", lat: 34.0705, lng: -118.4442, color: "#7C3AED" },
+  { id: "f2", name: "Maya Patel", initial: "M", status: "grabbing food 🍕", lat: 34.0678, lng: -118.4468, color: "#2563EB" },
+  { id: "f3", name: "Cam Torres", initial: "C", status: "at the gym 💪", lat: 34.0692, lng: -118.4410, color: "#059669" },
+  { id: "f4", name: "Riley Kim", initial: "R", status: "studying 📚", lat: 34.0661, lng: -118.4490, color: "#D97706" },
+  { id: "f5", name: "Alex Chen", initial: "A", status: "exploring 🗺️", lat: 34.0720, lng: -118.4425, color: "#DC2626" },
+  { id: "f6", name: "Sam Rivera", initial: "S", status: "bored lol 😐", lat: 34.0648, lng: -118.4455, color: "#0891B2" },
+  { id: "f7", name: "Taylor Brooks", initial: "T", status: "pregaming 🎉", lat: 34.0715, lng: -118.4460, color: "#9333EA" },
+  { id: "f8", name: "Avery Nguyen", initial: "A", status: "looking for plans", lat: 34.0668, lng: -118.4430, color: "#E11D48" },
+];
+
+const UCLA_CENTER = { latitude: 34.0689, longitude: -118.4452 };
+
 export default function MapScreen() {
   const { user } = useAuth();
   const { position } = useUserLocation();
