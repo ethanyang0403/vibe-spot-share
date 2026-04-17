@@ -12,6 +12,7 @@ import { Ghost, Bell, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { FOCUS_FRIEND_EVENT } from '@/lib/friendsMock';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
@@ -89,6 +90,30 @@ export default function MapScreen() {
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
+
+  // Listen for "focus friend" requests from the Friends tab
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ friendId: string }>).detail;
+      const f = mockFriends.find((m) => m.id === detail.friendId);
+      if (!f) return;
+      mapRef.current?.flyTo({ center: [f.lng, f.lat], zoom: 16, duration: 900 });
+      setSelectedFriend(null);
+      setSelectedMoment(null);
+      setSelectedMockFriend({
+        id: f.id,
+        name: f.name,
+        username: '@' + f.name.toLowerCase().replace(/\s+/g, ''),
+        initial: f.initial,
+        color: f.color,
+        status: f.status,
+        lat: f.lat,
+        lng: f.lng,
+      });
+    };
+    window.addEventListener(FOCUS_FRIEND_EVENT, handler);
+    return () => window.removeEventListener(FOCUS_FRIEND_EVENT, handler);
+  }, [mockFriends]);
 
   // Subtle drift animation for mock friends every 12s
   useEffect(() => {
