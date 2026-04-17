@@ -6,7 +6,8 @@ export type NotificationType =
   | 'deal'
   | 'friend_accepted'
   | 'friend_request'
-  | 'moment_expired';
+  | 'moment_expired'
+  | 'ai_nudge';
 
 export interface NotificationAction {
   type: 'show_on_map' | 'show_recap' | 'friend_request' | 'none';
@@ -29,7 +30,7 @@ export interface AppNotification {
   subtitle: string;
   timestamp: string;
   read: boolean;
-  avatar: { initial: string; color: string };
+  avatar: { initial: string; color: string; isAI?: boolean };
   action: NotificationAction;
   recap?: MomentRecap;
 }
