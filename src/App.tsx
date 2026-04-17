@@ -11,6 +11,7 @@ import FriendsScreen from "@/pages/FriendsScreen";
 import PingsScreen from "@/pages/PingsScreen";
 import ProfileScreen from "@/pages/ProfileScreen";
 import TabBar from "@/components/TabBar";
+import PersonProfileHost from "@/components/PersonProfileHost";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-background">
       {children}
       <TabBar />
+      <PersonProfileHost />
     </div>
   );
 }

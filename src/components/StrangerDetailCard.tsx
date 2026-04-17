@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import type { NearbyPerson } from '@/lib/nearbyMock';
+import { openPersonProfile } from '@/lib/profileBus';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
@@ -209,6 +210,23 @@ export default function StrangerDetailCard({ person, onClose, onViewOnMap }: Pro
                   {pinged ? 'Pinged! ✓' : 'Ping 👋'}
                 </button>
               )}
+
+              <button
+                onClick={() => {
+                  openPersonProfile({
+                    name: person.name,
+                    initial: person.initial,
+                    color: person.color,
+                    degree: person.connection.degree === 2 ? '2nd' : person.connection.degree === 3 ? '3rd' : '1st',
+                    mutualCount: person.connection.mutualCount,
+                    isFriend: false,
+                  });
+                }}
+                className="mt-1 text-left transition-colors active:scale-[0.97]"
+                style={{ fontSize: 13, color: '#C2E9FF', fontWeight: 600 }}
+              >
+                View Profile →
+              </button>
 
               <button
                 onClick={() => { onViewOnMap?.(person); onClose(); }}

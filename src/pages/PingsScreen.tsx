@@ -8,6 +8,7 @@ import {
   NOTIFICATION_FOCUS_FRIEND_EVENT,
   NOTIFICATION_FOCUS_BUSINESS_EVENT,
 } from '@/lib/notificationsMock';
+import { openPersonProfile } from '@/lib/profileBus';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
@@ -165,18 +166,47 @@ export default function PingsScreen() {
                     }}
                   >
                     <div className="flex items-start gap-3">
-                      {/* Avatar */}
-                      <div
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-                        style={{
-                          backgroundColor: n.avatar.color,
-                          color: n.avatar.color === '#1C1C24' ? '#fff' : '#fff',
-                          fontSize: n.avatar.color === '#1C1C24' ? 20 : 16,
-                          fontWeight: 700,
-                        }}
-                      >
-                        {n.avatar.initial}
-                      </div>
+                      {/* Avatar (tappable for person notifications) */}
+                      {n.avatar.color !== '#1C1C24' ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const personName = n.title
+                              .replace(/ pinged you.*$/, '')
+                              .replace(/ accepted your request.*$/, '')
+                              .replace(/ wants to be friends.*$/, '');
+                            openPersonProfile({
+                              name: personName,
+                              initial: n.avatar.initial,
+                              color: n.avatar.color,
+                              degree: '1st',
+                              mutualCount: 5,
+                              isFriend: n.type !== 'friend_request',
+                            });
+                          }}
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full active:scale-95 transition-all"
+                          style={{
+                            backgroundColor: n.avatar.color,
+                            color: '#fff',
+                            fontSize: 16,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {n.avatar.initial}
+                        </button>
+                      ) : (
+                        <div
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+                          style={{
+                            backgroundColor: n.avatar.color,
+                            color: '#fff',
+                            fontSize: 20,
+                            fontWeight: 700,
+                          }}
+                        >
+                          {n.avatar.initial}
+                        </div>
+                      )}
 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
