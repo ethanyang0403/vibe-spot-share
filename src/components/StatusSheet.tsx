@@ -1,36 +1,52 @@
-import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
 
-const presets = ['down to hang', 'studying', 'grabbing food', 'at the gym', 'exploring', 'bored'];
+const PRESETS = [
+  'down to hang 🙌',
+  'grabbing food 🍕',
+  'studying 📚',
+  'at the gym 💪',
+  'exploring 🗺️',
+  'bored 😐',
+];
+
+const TOAST_STYLE = {
+  backgroundColor: '#1a1a2e',
+  color: '#fff',
+  border: '1px solid #2a2a3e',
+};
 
 interface Props {
   open: boolean;
   onClose: () => void;
   currentStatus?: string | null;
+  onSetStatus: (text: string) => void;
 }
 
-export default function StatusSheet({ open, onClose, currentStatus }: Props) {
-  const { user } = useAuth();
+export default function StatusSheet({ open, onClose, currentStatus, onSetStatus }: Props) {
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [custom, setCustom] = useState('');
 
-  const setStatus = async (text: string) => {
-    if (!user) return;
-    const { error } = await supabase
-      .from('user_locations')
-      .update({ status_text: text, updated_at: new Date().toISOString() })
-      .eq('user_id', user.id);
-    if (error) {
-      toast.error('Failed to update status');
-    } else {
-      toast.success(`Status: ${text}`);
-      onClose();
+  useEffect(() => {
+    if (open) {
+      setSelectedPreset(currentStatus && PRESETS.includes(currentStatus) ? currentStatus : null);
+      setCustom(currentStatus && !PRESETS.includes(currentStatus) ? currentStatus : '');
     }
+  }, [open, currentStatus]);
+
+  const finalStatus = custom.trim() || selectedPreset || '';
+  const canSubmit = finalStatus.length > 0;
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    onSetStatus(finalStatus);
+    toast('Status updated ✓', {
+      style: TOAST_STYLE,
+      position: 'top-center',
+      duration: 2500,
+    });
+    onClose();
   };
 
   return (
@@ -39,48 +55,72 @@ export default function StatusSheet({ open, onClose, currentStatus }: Props) {
         <>
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/50" onClick={onClose}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-black/40"
+            onClick={onClose}
           />
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl bg-card p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, info) => { if (info.offset.y > 80) onClose(); }}
+            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
+            style={{ backgroundColor: '#1a1a2e' }}
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-foreground">Set your status</h3>
-              <button onClick={onClose}><X size={20} className="text-muted-foreground" /></button>
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#444' }} />
+
+            <h3 className="mb-5 text-[20px] font-bold text-white">What are you up to?</h3>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {PRESETS.map((preset) => {
+                const selected = selectedPreset === preset && !custom.trim();
+                return (
+                  <button
+                    key={preset}
+                    onClick={() => {
+                      setSelectedPreset(preset);
+                      setCustom('');
+                    }}
+                    className="rounded-full px-4 py-3 text-[14px] text-center transition-colors active:scale-[0.97]"
+                    style={{
+                      backgroundColor: selected ? '#e94560' : '#2a2a3e',
+                      color: '#fff',
+                    }}
+                  >
+                    {preset}
+                  </button>
+                );
+              })}
             </div>
-            <div className="flex flex-wrap gap-2 mb-4">
-              {presets.map((s) => (
-                <button
-                  key={s}
-                  onClick={() => setStatus(s)}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                    currentStatus === s
-                      ? 'sera-gradient text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Custom status..."
-                value={custom}
-                onChange={(e) => setCustom(e.target.value)}
-                className="h-10 rounded-xl border-border bg-background text-foreground"
-                maxLength={50}
-              />
-              <Button
-                onClick={() => custom.trim() && setStatus(custom.trim())}
-                className="rounded-xl sera-gradient text-primary-foreground"
-                disabled={!custom.trim()}
-              >
-                Set
-              </Button>
-            </div>
+
+            <input
+              value={custom}
+              onChange={(e) => {
+                setCustom(e.target.value);
+                if (e.target.value) setSelectedPreset(null);
+              }}
+              placeholder="or type something..."
+              maxLength={50}
+              className="mt-4 w-full rounded-xl px-4 py-3 text-[14px] text-white outline-none"
+              style={{
+                backgroundColor: '#0f0f1a',
+                border: '1px solid #2a2a3e',
+              }}
+            />
+
+            <button
+              onClick={handleSubmit}
+              disabled={!canSubmit}
+              className="mt-5 w-full rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.98]"
+              style={{
+                height: 46,
+                backgroundColor: canSubmit ? '#e94560' : '#333',
+              }}
+            >
+              Set Status
+            </button>
           </motion.div>
         </>
       )}

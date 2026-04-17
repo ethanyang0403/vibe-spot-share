@@ -174,12 +174,43 @@ export default function MapScreen() {
     return () => { supabase.removeChannel(ch); };
   }, [user, fetchFriends]);
 
+  const TOAST_STYLE = {
+    backgroundColor: '#1a1a2e',
+    color: '#fff',
+    border: '1px solid #2a2a3e',
+  };
+
   const toggleGhost = async () => {
-    if (!user) return;
     const newVal = !isGhost;
     setIsGhost(newVal);
-    await supabase.from('user_locations').update({ is_visible: !newVal, updated_at: new Date().toISOString() }).eq('user_id', user.id);
-    toast(newVal ? 'Ghost mode on 👻' : 'You\'re visible now');
+    if (user) {
+      await supabase.from('user_locations').update({
+        is_visible: !newVal,
+        updated_at: new Date().toISOString(),
+      }).eq('user_id', user.id);
+    }
+    toast(newVal ? "You're invisible 👻" : "You're back on the map 📍", {
+      style: TOAST_STYLE,
+      position: 'top-center',
+      duration: 2500,
+    });
+  };
+
+  const handleSetStatus = async (text: string) => {
+    setMyStatus(text);
+    if (user) {
+      await supabase.from('user_locations').update({
+        status_text: text,
+        updated_at: new Date().toISOString(),
+      }).eq('user_id', user.id);
+    }
+  };
+
+  const openStatusSheet = () => {
+    setSelectedFriend(null);
+    setSelectedMockFriend(null);
+    setSelectedMoment(null);
+    setStatusOpen(true);
   };
 
   const sendPing = async (recipientId: string) => {
@@ -212,8 +243,24 @@ export default function MapScreen() {
       >
         {/* Own location */}
         {position && (
-          <Marker latitude={position.latitude} longitude={position.longitude}>
-            <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
+          <Marker latitude={position.latitude} longitude={position.longitude} anchor="center">
+            <div
+              className="flex flex-col items-center transition-opacity duration-300"
+              style={{ opacity: isGhost ? 0 : 1 }}
+            >
+              <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
+              {myStatus && (
+                <span
+                  className="mt-1 truncate rounded-md px-2 py-0.5 text-[11px] font-medium text-white"
+                  style={{
+                    maxWidth: 140,
+                    backgroundColor: 'rgba(15, 15, 26, 0.85)',
+                  }}
+                >
+                  {myStatus}
+                </span>
+              )}
+            </div>
           </Marker>
         )}
 
@@ -307,8 +354,25 @@ export default function MapScreen() {
 
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)]">
-        <button onClick={toggleGhost} className="rounded-full bg-card/80 p-2.5 backdrop-blur-sm">
-          <Ghost size={20} className={isGhost ? 'text-foreground' : 'text-muted-foreground'} />
+        <button
+          onClick={toggleGhost}
+          className="flex items-center justify-center transition-all active:scale-[0.95]"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            backgroundColor: '#1a1a2e',
+            border: isGhost ? '1.5px solid #e94560' : '1.5px solid transparent',
+            boxShadow: isGhost
+              ? '0 0 12px rgba(233, 69, 96, 0.4), 0 2px 8px rgba(0,0,0,0.3)'
+              : '0 2px 8px rgba(0,0,0,0.3)',
+            fontSize: 22,
+            lineHeight: 1,
+            filter: isGhost ? 'drop-shadow(0 0 4px rgba(233, 69, 96, 0.6))' : 'none',
+          }}
+          aria-label="Toggle ghost mode"
+        >
+          👻
         </button>
         <span className="text-lg font-black text-primary">sera</span>
         <button className="relative rounded-full bg-card/80 p-2.5 backdrop-blur-sm">
@@ -331,8 +395,15 @@ export default function MapScreen() {
 
       {/* Status setter button */}
       <button
-        onClick={() => setStatusOpen(true)}
-        className="absolute bottom-6 left-4 z-10 rounded-full bg-card/90 px-4 py-2.5 text-sm font-medium text-foreground backdrop-blur-sm border border-border"
+        onClick={openStatusSheet}
+        className="absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] text-white transition-all active:scale-[0.97]"
+        style={{
+          backgroundColor: '#1a1a2e',
+          border: '1px solid #2a2a3e',
+          borderRadius: 9999,
+          padding: '8px 16px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        }}
       >
         {myStatus || '+ set status'}
       </button>
@@ -373,7 +444,12 @@ export default function MapScreen() {
         onClose={() => setSelectedMockFriend(null)}
       />
 
-      <StatusSheet open={statusOpen} onClose={() => setStatusOpen(false)} currentStatus={myStatus} />
+      <StatusSheet
+        open={statusOpen}
+        onClose={() => setStatusOpen(false)}
+        currentStatus={myStatus}
+        onSetStatus={handleSetStatus}
+      />
       <CreateMomentSheet
         open={momentOpen}
         onClose={() => setMomentOpen(false)}
