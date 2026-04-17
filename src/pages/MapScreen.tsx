@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import ReactMapGL, { Marker, type MapRef } from 'react-map-gl';
+import ReactMapGL, { Marker, Source, Layer, type MapRef, type LayerProps } from 'react-map-gl';
+import { HEATMAP_GEOJSON } from '@/lib/heatmapData';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserLocation } from '@/hooks/useLocation';
@@ -8,7 +9,7 @@ import CreateMomentSheet from '@/components/CreateMomentSheet';
 import MomentBeacon from '@/components/MomentBeacon';
 import MomentDetailCard, { type MomentDetail } from '@/components/MomentDetailCard';
 import FriendDetailCard, { type FriendCardData } from '@/components/FriendDetailCard';
-import { Ghost, Bell, Plus } from 'lucide-react';
+import { Ghost, Bell, Plus, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -95,6 +96,45 @@ export default function MapScreen() {
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
   const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
+  const [heatmapVisible, setHeatmapVisible] = useState(true);
+
+  const heatmapLayer: LayerProps = {
+    id: 'heatmap-layer',
+    type: 'heatmap',
+    paint: {
+      'heatmap-weight': ['interpolate', ['linear'], ['get', 'weight'], 0, 0, 1, 1],
+      'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 11, 0.3, 15, 1.2, 18, 2],
+      'heatmap-color': [
+        'interpolate', ['linear'], ['heatmap-density'],
+        0, 'rgba(0, 0, 0, 0)',
+        0.1, 'rgba(30, 80, 120, 0.3)',
+        0.25, 'rgba(50, 140, 200, 0.4)',
+        0.4, 'rgba(80, 200, 180, 0.45)',
+        0.55, 'rgba(140, 220, 100, 0.5)',
+        0.7, 'rgba(220, 200, 50, 0.55)',
+        0.85, 'rgba(240, 140, 40, 0.6)',
+        1.0, 'rgba(240, 70, 50, 0.65)',
+      ],
+      'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 11, 20, 15, 35, 18, 50],
+      'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 13, 0.7, 16, 0.5, 18, 0.35],
+    },
+  };
+
+  const toggleHeatmap = () => {
+    const newVal = !heatmapVisible;
+    setHeatmapVisible(newVal);
+    toast(newVal ? 'Heatmap visible' : 'Heatmap hidden', {
+      style: {
+        backgroundColor: '#141419',
+        color: '#fff',
+        border: '1px solid #2A2A35',
+        borderRadius: 12,
+        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+      },
+      position: 'top-center',
+      duration: 2000,
+    });
+  };
 
   // Listen for "focus friend" requests from the Friends tab
   useEffect(() => {
@@ -290,6 +330,13 @@ export default function MapScreen() {
         style={{ width: '100%', height: '100%' }}
         attributionControl={false}
       >
+        {/* Heatmap density layer (lowest z-index, beneath all markers) */}
+        {heatmapVisible && (
+          <Source id="heatmap-source" type="geojson" data={HEATMAP_GEOJSON}>
+            <Layer {...heatmapLayer} />
+          </Source>
+        )}
+
         {/* Own location */}
         {position && (
           <Marker latitude={position.latitude} longitude={position.longitude} anchor="center">
@@ -461,26 +508,45 @@ export default function MapScreen() {
           👻
         </button>
         <span className="text-lg font-black" style={{ color: '#C2E9FF' }}>sera</span>
-        <button
-          className="relative flex items-center justify-center transition-all active:scale-[0.95]"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            backgroundColor: '#141419',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-          }}
-        >
-          <Bell size={20} style={{ color: '#8A8A9A' }} />
-          {unreadPings > 0 && (
-            <span
-              className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold"
-              style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F' }}
-            >
-              {unreadPings}
-            </span>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleHeatmap}
+            className="flex items-center justify-center transition-all active:scale-[0.95]"
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              backgroundColor: '#141419',
+              border: heatmapVisible ? '1px solid rgba(194, 233, 255, 0.4)' : '1px solid #2A2A35',
+              boxShadow: heatmapVisible
+                ? '0 0 8px rgba(194, 233, 255, 0.2), 0 2px 8px rgba(0,0,0,0.4)'
+                : '0 2px 8px rgba(0,0,0,0.4)',
+            }}
+            aria-label="Toggle heatmap"
+          >
+            <Flame size={18} style={{ color: heatmapVisible ? '#C2E9FF' : '#555566' }} />
+          </button>
+          <button
+            className="relative flex items-center justify-center transition-all active:scale-[0.95]"
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 12,
+              backgroundColor: '#141419',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            }}
+          >
+            <Bell size={20} style={{ color: '#8A8A9A' }} />
+            {unreadPings > 0 && (
+              <span
+                className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold"
+                style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F' }}
+              >
+                {unreadPings}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* FAB for moment */}
