@@ -1,0 +1,145 @@
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
+
+export interface FriendCardData {
+  id: string;
+  name: string;
+  username: string;
+  initial: string;
+  color: string;
+  status: string;
+  lat: number;
+  lng: number;
+}
+
+interface Props {
+  friend: FriendCardData | null;
+  onClose: () => void;
+}
+
+const TOAST_STYLE = {
+  backgroundColor: '#1a1a2e',
+  color: '#fff',
+  border: '1px solid #2a2a3e',
+};
+
+function distanceMiles(lat: number, lng: number): string {
+  const raw = (Math.abs(lat - 34.0689) + Math.abs(lng + 118.4452)) * 200;
+  const clamped = Math.min(0.8, Math.max(0.1, raw));
+  return clamped.toFixed(1);
+}
+
+export default function FriendDetailCard({ friend, onClose }: Props) {
+  const [pinged, setPinged] = useState(false);
+
+  // Reset ping state whenever card opens for a (new) friend
+  useEffect(() => {
+    if (friend) setPinged(false);
+  }, [friend?.id]);
+
+  const handlePing = () => {
+    if (!friend || pinged) return;
+    setPinged(true);
+    toast(`Ping sent to ${friend.name} 👋`, {
+      style: TOAST_STYLE,
+      position: 'top-center',
+      duration: 2500,
+    });
+    setTimeout(() => {
+      toast(`${friend.name} is on their way! 🏃`, {
+        style: TOAST_STYLE,
+        position: 'top-center',
+        duration: 2500,
+      });
+    }, 3000);
+  };
+
+  const handleDirections = () => {
+    if (!friend) return;
+    window.open(
+      `https://www.google.com/maps/dir/?api=1&destination=${friend.lat},${friend.lng}`,
+      '_blank',
+    );
+  };
+
+  return (
+    <AnimatePresence>
+      {friend && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-40 bg-black/30"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, info) => { if (info.offset.y > 80) onClose(); }}
+            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
+            style={{
+              backgroundColor: '#1a1a2e',
+              boxShadow: '0 -8px 24px rgba(0,0,0,0.4)',
+            }}
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#444' }} />
+
+            {/* Top section: avatar + identity */}
+            <div className="flex items-center gap-4">
+              <div
+                className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-[24px] font-bold text-white"
+                style={{
+                  backgroundColor: friend.color,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                }}
+              >
+                {friend.initial}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-[18px] font-bold text-white">{friend.name}</p>
+                <p className="text-[14px]" style={{ color: '#888' }}>{friend.username}</p>
+                <p className="mt-0.5 truncate text-[14px]" style={{ color: '#aaa' }}>{friend.status}</p>
+              </div>
+            </div>
+
+            {/* Distance */}
+            <p className="mt-4 text-[14px]" style={{ color: '#888' }}>
+              📍 {distanceMiles(friend.lat, friend.lng)} miles away
+            </p>
+
+            {/* Buttons */}
+            <div className="mt-5 flex gap-3">
+              <button
+                onClick={handlePing}
+                disabled={pinged}
+                className="flex-1 rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.97]"
+                style={{
+                  height: 46,
+                  backgroundColor: pinged ? '#059669' : '#e94560',
+                }}
+              >
+                {pinged ? 'Pinged! ✓' : 'Ping 👋'}
+              </button>
+              <button
+                onClick={handleDirections}
+                className="flex-1 rounded-xl text-[15px] font-bold transition-all active:scale-[0.97]"
+                style={{
+                  height: 46,
+                  backgroundColor: 'transparent',
+                  border: '1.5px solid #e94560',
+                  color: '#e94560',
+                }}
+              >
+                Directions 📍
+              </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
