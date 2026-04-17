@@ -78,12 +78,12 @@ export default function MapScreen() {
   const { position } = useUserLocation();
   const mapRef = useRef<MapRef>(null);
   const [friends, setFriends] = useState<FriendLocation[]>([]);
-  const [moments, setMoments] = useState<Moment[]>([]);
+  const [moments, setMoments] = useState<MockMoment[]>(() => buildMockMoments());
   const [isGhost, setIsGhost] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [momentOpen, setMomentOpen] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<FriendLocation | null>(null);
-  const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
+  const [selectedMoment, setSelectedMoment] = useState<MomentDetail | null>(null);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
@@ -127,15 +127,13 @@ export default function MapScreen() {
     if (data) setFriends(data.map((d: any) => ({ ...d, profile: d.profile })));
   }, [user]);
 
-  // Fetch moments
-  const fetchMoments = useCallback(async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from('moments')
-      .select('*, creator:profiles(display_name, username)')
-      .gt('expires_at', new Date().toISOString());
-    if (data) setMoments(data.map((d: any) => ({ ...d, creator: d.creator })));
-  }, [user]);
+  // Auto-purge expired moments every 30s
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMoments((prev) => prev.filter((m) => m.expiresAt.getTime() > Date.now()));
+    }, 30000);
+    return () => clearInterval(id);
+  }, []);
 
   // Fetch my status
   useEffect(() => {
