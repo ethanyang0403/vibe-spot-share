@@ -369,6 +369,7 @@ export default function MapScreen() {
               onClick={() => {
                 setSelectedFriend(null);
                 setSelectedMoment(null);
+                setSelectedBusiness(null);
                 setSelectedMockFriend({
                   id: f.id,
                   name: f.name,
@@ -422,6 +423,7 @@ export default function MapScreen() {
               onClick={() => {
                 setSelectedFriend(null);
                 setSelectedMockFriend(null);
+                setSelectedBusiness(null);
                 setSelectedMoment({
                   id: m.id,
                   title: m.title,
