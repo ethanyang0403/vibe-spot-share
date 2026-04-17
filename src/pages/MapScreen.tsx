@@ -258,6 +258,7 @@ export default function MapScreen() {
     setSelectedFriend(null);
     setSelectedMockFriend(null);
     setSelectedMoment(null);
+    setSelectedBusiness(null);
     setStatusOpen(true);
   };
 
@@ -542,6 +543,10 @@ export default function MapScreen() {
       <FriendDetailCard
         friend={selectedMockFriend}
         onClose={() => setSelectedMockFriend(null)}
+      />
+      <BusinessDetailCard
+        business={selectedBusiness}
+        onClose={() => setSelectedBusiness(null)}
       />
 
       <StatusSheet
