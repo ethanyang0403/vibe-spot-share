@@ -127,6 +127,26 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
               📍 {distanceMiles(friend.lat, friend.lng)} miles away
             </p>
 
+            {/* View Profile link */}
+            <button
+              onClick={() =>
+                openPersonProfile({
+                  name: friend.name,
+                  initial: friend.initial,
+                  color: friend.color,
+                  degree: '1st',
+                  mutualCount: mutualCountForFriend(friend.id),
+                  isFriend: true,
+                  lat: friend.lat,
+                  lng: friend.lng,
+                })
+              }
+              className="mt-1 text-left transition-colors active:scale-[0.97]"
+              style={{ fontSize: 12, color: '#8A8A9A' }}
+            >
+              View Profile →
+            </button>
+
             {/* Buttons */}
             <div className="mt-5 flex gap-3">
               <button

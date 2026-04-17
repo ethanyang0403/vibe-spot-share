@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import type { NearbyPerson } from '@/lib/nearbyMock';
+import { openPersonProfile } from '@/lib/profileBus';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
