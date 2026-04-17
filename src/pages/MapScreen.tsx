@@ -7,6 +7,7 @@ import StatusSheet from '@/components/StatusSheet';
 import CreateMomentSheet from '@/components/CreateMomentSheet';
 import MomentBeacon from '@/components/MomentBeacon';
 import MomentDetailCard, { type MomentDetail } from '@/components/MomentDetailCard';
+import FriendDetailCard, { type FriendCardData } from '@/components/FriendDetailCard';
 import { Ghost, Bell, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -83,6 +84,7 @@ export default function MapScreen() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [momentOpen, setMomentOpen] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<FriendLocation | null>(null);
+  const [selectedMockFriend, setSelectedMockFriend] = useState<FriendCardData | null>(null);
   const [selectedMoment, setSelectedMoment] = useState<MomentDetail | null>(null);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
@@ -234,9 +236,29 @@ export default function MapScreen() {
         {/* Mock friends (demo data) */}
         {mockFriends.map((f) => (
           <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
-            <div
+            <button
+              onClick={() => {
+                setSelectedFriend(null);
+                setSelectedMoment(null);
+                setSelectedMockFriend({
+                  id: f.id,
+                  name: f.name,
+                  username: '@' + f.name.toLowerCase().replace(/\s+/g, ''),
+                  initial: f.initial,
+                  color: f.color,
+                  status: f.status,
+                  lat: f.lat,
+                  lng: f.lng,
+                });
+              }}
               className="flex flex-col items-center"
-              style={{ transition: 'transform 2s ease-in-out' }}
+              style={{
+                transition: 'transform 2s ease-in-out',
+                // Expand tap target without changing visual size
+                padding: 6,
+                minWidth: 44,
+                minHeight: 44,
+              }}
             >
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] font-bold text-white"
@@ -256,7 +278,7 @@ export default function MapScreen() {
               >
                 {f.status}
               </span>
-            </div>
+            </button>
           </Marker>
         ))}
 
@@ -268,6 +290,7 @@ export default function MapScreen() {
               expiresAt={m.expiresAt}
               onClick={() => {
                 setSelectedFriend(null);
+                setSelectedMockFriend(null);
                 setSelectedMoment({
                   id: m.id,
                   title: m.title,
@@ -341,7 +364,14 @@ export default function MapScreen() {
         )}
       </AnimatePresence>
 
-      <MomentDetailCard moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
+      <MomentDetailCard
+        moment={selectedMoment}
+        onClose={() => setSelectedMoment(null)}
+      />
+      <FriendDetailCard
+        friend={selectedMockFriend}
+        onClose={() => setSelectedMockFriend(null)}
+      />
 
       <StatusSheet open={statusOpen} onClose={() => setStatusOpen(false)} currentStatus={myStatus} />
       <CreateMomentSheet
