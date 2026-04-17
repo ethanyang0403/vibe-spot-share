@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Search, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -10,6 +10,8 @@ import {
   focusFriendOnMap,
   type MockFriendListItem,
 } from '@/lib/friendsMock';
+import { mutualCountForFriend } from '@/lib/nearbyMock';
+import { openPersonProfile } from '@/lib/profileBus';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
@@ -158,32 +160,54 @@ function FriendList({
   return (
     <div className="flex flex-col">
       {friends.map((f) => (
-        <button
+        <div
           key={f.id}
-          onClick={() => onTap(f)}
-          className="flex items-center gap-3 py-3 transition-colors text-left"
+          className="flex items-center gap-3 py-3"
           style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
         >
-          <Avatar initial={f.initial} color={f.color} size={44} online={f.isOnline} />
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="truncate text-white text-[16px] font-bold leading-tight">{f.name}</p>
-              <span
-                className="inline-flex items-center text-[10px] font-bold shrink-0"
-                style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F', padding: '2px 6px', borderRadius: 999 }}
-              >
-                1st
-              </span>
-            </div>
-            <p className="text-[13px]" style={{ color: '#8A8A9A' }}>@{f.username}</p>
-          </div>
-          <p
-            className="text-[13px] text-right truncate"
-            style={{ maxWidth: 140, color: '#aaa' }}
+          <button
+            onClick={() => onTap(f)}
+            className="flex flex-1 items-center gap-3 text-left min-w-0"
           >
-            {f.status}
-          </p>
-        </button>
+            <Avatar initial={f.initial} color={f.color} size={44} online={f.isOnline} />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <p className="truncate text-white text-[16px] font-bold leading-tight">{f.name}</p>
+                <span
+                  className="inline-flex items-center text-[10px] font-bold shrink-0"
+                  style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F', padding: '2px 6px', borderRadius: 999 }}
+                >
+                  1st
+                </span>
+              </div>
+              <p className="text-[13px]" style={{ color: '#8A8A9A' }}>@{f.username}</p>
+            </div>
+            <p
+              className="text-[13px] text-right truncate"
+              style={{ maxWidth: 110, color: '#aaa' }}
+            >
+              {f.status}
+            </p>
+          </button>
+          <button
+            onClick={() =>
+              openPersonProfile({
+                name: f.name,
+                initial: f.initial,
+                color: f.color,
+                degree: '1st',
+                mutualCount: mutualCountForFriend(f.id),
+                isFriend: true,
+                lat: f.lat,
+                lng: f.lng,
+              })
+            }
+            aria-label={`View ${f.name}'s profile`}
+            className="shrink-0 p-1 active:scale-90 transition-all"
+          >
+            <ChevronRight size={20} color="#555566" />
+          </button>
+        </div>
       ))}
     </div>
   );
