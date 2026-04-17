@@ -217,6 +217,35 @@ export default function MapScreen() {
           </Marker>
         ))}
 
+        {/* Mock friends (demo data) */}
+        {mockFriends.map((f) => (
+          <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
+            <div
+              className="flex flex-col items-center"
+              style={{ transition: 'transform 2s ease-in-out' }}
+            >
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] font-bold text-white"
+                style={{
+                  backgroundColor: f.color,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                }}
+              >
+                {f.initial}
+              </div>
+              <span
+                className="mt-1 truncate rounded-md px-2 py-0.5 text-[11px] text-white"
+                style={{
+                  maxWidth: 140,
+                  backgroundColor: 'rgba(15, 15, 26, 0.85)',
+                }}
+              >
+                {f.status}
+              </span>
+            </div>
+          </Marker>
+        ))}
+
         {/* Moment beacons */}
         {moments.map((m) => (
           <Marker key={m.id} latitude={m.latitude} longitude={m.longitude}>
