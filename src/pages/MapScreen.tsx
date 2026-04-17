@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import ReactMapGL, { Marker, type MapRef } from 'react-map-gl';
+import ReactMapGL, { Marker, Source, Layer, type MapRef, type LayerProps } from 'react-map-gl';
+import { HEATMAP_GEOJSON } from '@/lib/heatmapData';
+import { Flame } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserLocation } from '@/hooks/useLocation';
