@@ -166,7 +166,15 @@ function FriendList({
         >
           <Avatar initial={f.initial} color={f.color} size={44} online={f.isOnline} />
           <div className="flex-1 min-w-0">
-            <p className="text-white text-[16px] font-bold leading-tight">{f.name}</p>
+            <div className="flex items-center gap-2">
+              <p className="truncate text-white text-[16px] font-bold leading-tight">{f.name}</p>
+              <span
+                className="inline-flex items-center text-[10px] font-bold shrink-0"
+                style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F', padding: '2px 6px', borderRadius: 999 }}
+              >
+                1st
+              </span>
+            </div>
             <p className="text-[13px]" style={{ color: '#8A8A9A' }}>@{f.username}</p>
           </div>
           <p
