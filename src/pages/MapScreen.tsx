@@ -120,6 +120,22 @@ export default function MapScreen() {
     return () => window.removeEventListener(FOCUS_FRIEND_EVENT, handler);
   }, [mockFriends]);
 
+  // Listen for "focus business" requests from the Explore tab
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ businessId: string }>).detail;
+      const b = MOCK_BUSINESSES.find((x) => x.id === detail.businessId);
+      if (!b) return;
+      mapRef.current?.flyTo({ center: [b.lng, b.lat], zoom: 16, duration: 900 });
+      setSelectedFriend(null);
+      setSelectedMoment(null);
+      setSelectedMockFriend(null);
+      setSelectedBusiness(b);
+    };
+    window.addEventListener(FOCUS_BUSINESS_EVENT, handler);
+    return () => window.removeEventListener(FOCUS_BUSINESS_EVENT, handler);
+  }, []);
+
   // Subtle drift animation for mock friends every 12s
   useEffect(() => {
     const id = setInterval(() => {
