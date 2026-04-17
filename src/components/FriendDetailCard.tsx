@@ -19,9 +19,11 @@ interface Props {
 }
 
 const TOAST_STYLE = {
-  backgroundColor: '#1a1a2e',
+  backgroundColor: '#141419',
   color: '#fff',
-  border: '1px solid #2a2a3e',
+  border: '1px solid #2A2A35',
+  borderRadius: 12,
+  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
 };
 
 function distanceMiles(lat: number, lng: number): string {
@@ -33,7 +35,6 @@ function distanceMiles(lat: number, lng: number): string {
 export default function FriendDetailCard({ friend, onClose }: Props) {
   const [pinged, setPinged] = useState(false);
 
-  // Reset ping state whenever card opens for a (new) friend
   useEffect(() => {
     if (friend) setPinged(false);
   }, [friend?.id]);
@@ -80,34 +81,36 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
             dragConstraints={{ top: 0, bottom: 0 }}
             dragElastic={0.2}
             onDragEnd={(_, info) => { if (info.offset.y > 80) onClose(); }}
-            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
+            className="fixed bottom-0 left-0 right-0 z-50 p-6 pb-[calc(1.5rem+env(safe-area-inset-bottom,8px))]"
             style={{
-              backgroundColor: '#1a1a2e',
-              boxShadow: '0 -8px 24px rgba(0,0,0,0.4)',
+              backgroundColor: '#141419',
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.5)',
             }}
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#444' }} />
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full" style={{ backgroundColor: '#2A2A35' }} />
 
-            {/* Top section: avatar + identity */}
+            {/* Top section */}
             <div className="flex items-center gap-4">
               <div
                 className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full text-[24px] font-bold text-white"
                 style={{
                   backgroundColor: friend.color,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
                 }}
               >
                 {friend.initial}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[18px] font-bold text-white">{friend.name}</p>
-                <p className="text-[14px]" style={{ color: '#888' }}>{friend.username}</p>
+                <p className="text-[14px]" style={{ color: '#8A8A9A' }}>@{friend.username}</p>
                 <p className="mt-0.5 truncate text-[14px]" style={{ color: '#aaa' }}>{friend.status}</p>
               </div>
             </div>
 
             {/* Distance */}
-            <p className="mt-4 text-[14px]" style={{ color: '#888' }}>
+            <p className="mt-4 text-[14px]" style={{ color: '#8A8A9A' }}>
               📍 {distanceMiles(friend.lat, friend.lng)} miles away
             </p>
 
@@ -116,22 +119,25 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
               <button
                 onClick={handlePing}
                 disabled={pinged}
-                className="flex-1 rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.97]"
+                className="flex-1 text-[15px] font-bold transition-all active:scale-[0.97]"
                 style={{
                   height: 46,
-                  backgroundColor: pinged ? '#059669' : '#e94560',
+                  borderRadius: 14,
+                  backgroundColor: pinged ? '#34D399' : '#C2E9FF',
+                  color: '#0A0A0F',
                 }}
               >
                 {pinged ? 'Pinged! ✓' : 'Ping 👋'}
               </button>
               <button
                 onClick={handleDirections}
-                className="flex-1 rounded-xl text-[15px] font-bold transition-all active:scale-[0.97]"
+                className="flex-1 text-[15px] font-bold transition-all active:scale-[0.97]"
                 style={{
                   height: 46,
+                  borderRadius: 14,
                   backgroundColor: 'transparent',
-                  border: '1.5px solid #e94560',
-                  color: '#e94560',
+                  border: '1.5px solid #C2E9FF',
+                  color: '#C2E9FF',
                 }}
               >
                 Directions 📍

@@ -12,9 +12,11 @@ import {
 } from '@/lib/friendsMock';
 
 const TOAST_STYLE = {
-  backgroundColor: '#1a1a2e',
+  backgroundColor: '#141419',
   color: '#fff',
-  border: '1px solid #2a2a3e',
+  border: '1px solid #2A2A35',
+  borderRadius: 12,
+  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
 };
 
 type SubTab = 'friends' | 'add';
@@ -23,7 +25,6 @@ export default function FriendsScreen() {
   const navigate = useNavigate();
   const [tab, setTab] = useState<SubTab>('friends');
 
-  // Local mock state
   const [friends, setFriends] = useState<MockFriendListItem[]>(FRIEND_LIST);
   const [requests, setRequests] = useState(FRIEND_REQUESTS);
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set());
@@ -90,7 +91,7 @@ export default function FriendsScreen() {
   return (
     <div
       className="flex flex-col h-[calc(100dvh-56px-env(safe-area-inset-bottom,8px))]"
-      style={{ backgroundColor: '#0f0f1a' }}
+      style={{ backgroundColor: '#0A0A0F' }}
     >
       {/* Header */}
       <div className="px-4 pt-[calc(env(safe-area-inset-top,12px)+16px)] pb-3">
@@ -102,12 +103,12 @@ export default function FriendsScreen() {
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className="text-[14px] font-bold transition-colors active:scale-[0.97]"
+                className="text-[14px] font-bold transition-all active:scale-[0.97]"
                 style={{
                   padding: '8px 24px',
-                  borderRadius: 20,
-                  backgroundColor: active ? '#e94560' : '#2a2a3e',
-                  color: active ? '#fff' : '#888',
+                  borderRadius: 24,
+                  backgroundColor: active ? '#C2E9FF' : '#1C1C24',
+                  color: active ? '#0A0A0F' : '#8A8A9A',
                 }}
               >
                 {t === 'friends' ? 'My Friends' : 'Add Friends'}
@@ -150,7 +151,7 @@ function FriendList({
   if (friends.length === 0) {
     return (
       <div className="mt-16 flex flex-col items-center gap-3">
-        <p className="text-[#888]">No friends yet</p>
+        <p style={{ color: '#8A8A9A' }}>No friends yet</p>
       </div>
     );
   }
@@ -160,17 +161,17 @@ function FriendList({
         <button
           key={f.id}
           onClick={() => onTap(f)}
-          className="flex items-center gap-3 py-3 active:bg-[#1a1a2e] transition-colors text-left"
-          style={{ borderBottom: '1px solid #1a1a2e', minHeight: 72 }}
+          className="flex items-center gap-3 py-3 transition-colors text-left"
+          style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
         >
           <Avatar initial={f.initial} color={f.color} size={44} online={f.isOnline} />
           <div className="flex-1 min-w-0">
             <p className="text-white text-[16px] font-bold leading-tight">{f.name}</p>
-            <p className="text-[#888] text-[13px]">@{f.username}</p>
+            <p className="text-[13px]" style={{ color: '#8A8A9A' }}>@{f.username}</p>
           </div>
           <p
-            className="text-[#aaa] text-[13px] text-right truncate"
-            style={{ maxWidth: 140 }}
+            className="text-[13px] text-right truncate"
+            style={{ maxWidth: 140, color: '#aaa' }}
           >
             {f.status}
           </p>
@@ -209,16 +210,16 @@ function AddFriendsTab({
         <Search
           size={16}
           className="absolute left-3 top-1/2 -translate-y-1/2"
-          color="#666"
+          color="#555566"
         />
         <input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by username..."
-          className="w-full text-[14px] text-white outline-none"
+          className="w-full text-[14px] text-white outline-none placeholder:text-[#555566]"
           style={{
-            backgroundColor: '#1a1a2e',
-            border: '1px solid #2a2a3e',
+            backgroundColor: '#141419',
+            border: '1px solid #2A2A35',
             borderRadius: 12,
             padding: '12px 16px 12px 38px',
           }}
@@ -233,22 +234,22 @@ function AddFriendsTab({
             <div
               key={r.id}
               className="flex items-center gap-3 py-3"
-              style={{ borderBottom: '1px solid #1a1a2e', minHeight: 72 }}
+              style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
             >
               <Avatar initial={r.initial} color={r.color} size={44} />
               <div className="flex-1 min-w-0">
                 <p className="text-white text-[16px] font-bold leading-tight">{r.name}</p>
-                <p className="text-[#888] text-[13px]">@{r.username}</p>
+                <p className="text-[13px]" style={{ color: '#8A8A9A' }}>@{r.username}</p>
               </div>
               <button
                 onClick={() => !pending && onAdd(r.id, r.name)}
                 disabled={pending}
-                className="text-[13px] font-bold transition-colors active:scale-[0.97]"
+                className="text-[13px] font-bold transition-all active:scale-[0.97]"
                 style={{
                   padding: '6px 16px',
                   borderRadius: 20,
-                  backgroundColor: pending ? '#333' : '#e94560',
-                  color: pending ? '#888' : '#fff',
+                  backgroundColor: pending ? '#1C1C24' : '#C2E9FF',
+                  color: pending ? '#555566' : '#0A0A0F',
                 }}
               >
                 {pending ? 'Pending' : 'Add +'}
@@ -257,7 +258,7 @@ function AddFriendsTab({
           );
         })}
         {results.length === 0 && (
-          <p className="text-center text-[#666] text-[13px] py-6">No matches</p>
+          <p className="text-center text-[13px] py-6" style={{ color: '#555566' }}>No matches</p>
         )}
       </div>
 
@@ -267,9 +268,10 @@ function AddFriendsTab({
           <h2 className="text-white text-[16px] font-bold">Friend Requests</h2>
           {requests.length > 0 && (
             <span
-              className="flex items-center justify-center text-[11px] font-bold text-white"
+              className="flex items-center justify-center text-[11px] font-bold"
               style={{
-                backgroundColor: '#e94560',
+                backgroundColor: '#C2E9FF',
+                color: '#0A0A0F',
                 minWidth: 18,
                 height: 18,
                 borderRadius: 9,
@@ -291,24 +293,25 @@ function AddFriendsTab({
                 exit={{ opacity: 0, x: 40 }}
                 transition={{ duration: 0.25 }}
                 className="flex items-center gap-3 py-3"
-                style={{ borderBottom: '1px solid #1a1a2e', minHeight: 72 }}
+                style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
               >
                 <Avatar initial={req.initial} color={req.color} size={44} />
                 <div className="flex-1 min-w-0">
                   <p className="text-white text-[16px] font-bold leading-tight">{req.name}</p>
-                  <p className="text-[#888] text-[13px]">@{req.username}</p>
+                  <p className="text-[13px]" style={{ color: '#8A8A9A' }}>@{req.username}</p>
                 </div>
                 {accepted ? (
-                  <span className="text-[13px] font-bold" style={{ color: '#22C55E' }}>
+                  <span className="text-[13px] font-bold" style={{ color: '#34D399' }}>
                     Added! ✓
                   </span>
                 ) : (
                   <div className="flex gap-2">
                     <button
                       onClick={() => onAccept(req)}
-                      className="text-[12px] font-bold text-white active:scale-[0.97]"
+                      className="text-[12px] font-bold active:scale-[0.97] transition-all"
                       style={{
-                        backgroundColor: '#22C55E',
+                        backgroundColor: '#34D399',
+                        color: '#0A0A0F',
                         padding: '6px 14px',
                         borderRadius: 16,
                       }}
@@ -317,10 +320,10 @@ function AddFriendsTab({
                     </button>
                     <button
                       onClick={() => onDecline(req.id)}
-                      className="text-[12px] font-bold active:scale-[0.97]"
+                      className="text-[12px] font-bold active:scale-[0.97] transition-all"
                       style={{
-                        backgroundColor: '#333',
-                        color: '#888',
+                        backgroundColor: '#1C1C24',
+                        color: '#555566',
                         padding: '6px 14px',
                         borderRadius: 16,
                       }}
@@ -335,7 +338,7 @@ function AddFriendsTab({
         </AnimatePresence>
 
         {requests.length === 0 && (
-          <p className="text-[#666] text-[13px] py-3">No pending requests</p>
+          <p className="text-[13px] py-3" style={{ color: '#555566' }}>No pending requests</p>
         )}
       </div>
     </div>
@@ -374,8 +377,8 @@ function Avatar({
             width: 10,
             height: 10,
             borderRadius: 5,
-            backgroundColor: '#22C55E',
-            border: '2px solid #0f0f1a',
+            backgroundColor: '#34D399',
+            border: '2px solid #0A0A0F',
             right: 0,
             bottom: 0,
           }}
