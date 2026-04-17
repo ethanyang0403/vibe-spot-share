@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MOCK_NOTIFICATIONS } from '@/lib/notificationsMock';
 import ReactMapGL, { Marker, Source, Layer, type MapRef, type LayerProps } from 'react-map-gl';
 import { HEATMAP_GEOJSON } from '@/lib/heatmapData';
 import { supabase } from '@/integrations/supabase/client';
