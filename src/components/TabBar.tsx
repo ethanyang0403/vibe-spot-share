@@ -1,4 +1,4 @@
-import { Map, Radar, Compass, Users, User } from 'lucide-react';
+import { Map, Radar, Compass, Users, Bell, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const tabs = [
@@ -6,6 +6,7 @@ const tabs = [
   { path: '/nearby', icon: Radar, label: 'Nearby' },
   { path: '/explore', icon: Compass, label: 'Explore' },
   { path: '/friends', icon: Users, label: 'Friends' },
+  { path: '/pings', icon: Bell, label: 'Pings' },
   { path: '/profile', icon: User, label: 'Profile' },
 ];
 
@@ -30,7 +31,7 @@ export default function TabBar() {
             onClick={() => navigate(path)}
             className="flex flex-col items-center gap-0.5 transition-all active:scale-[0.95]"
           >
-            <Icon size={22} style={{ color }} />
+            <Icon size={20} style={{ color }} />
             <span className="text-[10px]" style={{ color }}>{label}</span>
           </button>
         );

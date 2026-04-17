@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MOCK_NOTIFICATIONS } from '@/lib/notificationsMock';
 import ReactMapGL, { Marker, Source, Layer, type MapRef, type LayerProps } from 'react-map-gl';
 import { HEATMAP_GEOJSON } from '@/lib/heatmapData';
 import { supabase } from '@/integrations/supabase/client';
@@ -83,7 +85,9 @@ const UCLA_CENTER = { latitude: 34.0689, longitude: -118.4452 };
 export default function MapScreen() {
   const { user } = useAuth();
   const { position } = useUserLocation();
+  const navigate = useNavigate();
   const mapRef = useRef<MapRef>(null);
+  const mockUnreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
   const [friends, setFriends] = useState<FriendLocation[]>([]);
   const [moments, setMoments] = useState<MockMoment[]>(() => buildMockMoments());
   const [isGhost, setIsGhost] = useState(false);
@@ -527,6 +531,7 @@ export default function MapScreen() {
             <Flame size={18} style={{ color: heatmapVisible ? '#C2E9FF' : '#555566' }} />
           </button>
           <button
+            onClick={() => navigate('/pings')}
             className="relative flex items-center justify-center transition-all active:scale-[0.95]"
             style={{
               width: 40,
@@ -535,14 +540,20 @@ export default function MapScreen() {
               backgroundColor: '#141419',
               boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
             }}
+            aria-label="Open activity"
           >
             <Bell size={20} style={{ color: '#8A8A9A' }} />
-            {unreadPings > 0 && (
+            {(unreadPings + mockUnreadCount) > 0 && (
               <span
-                className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold"
-                style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F' }}
+                className="absolute -top-1 -right-1 flex items-center justify-center rounded-full px-1 text-[10px] font-bold"
+                style={{
+                  height: 18,
+                  minWidth: 18,
+                  backgroundColor: '#C2E9FF',
+                  color: '#0A0A0F',
+                }}
               >
-                {unreadPings}
+                {unreadPings + mockUnreadCount}
               </span>
             )}
           </button>
