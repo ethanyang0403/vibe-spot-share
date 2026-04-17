@@ -5,44 +5,45 @@
 
 @layer base {
   :root {
-    --background: 233 33% 8%;
+    /* Sera v2 — cool dark + light blue accent */
+    --background: 240 22% 5%;            /* #0A0A0F */
     --foreground: 0 0% 100%;
 
-    --card: 233 33% 14%;
+    --card: 240 13% 9%;                  /* #141419 */
     --card-foreground: 0 0% 100%;
 
-    --popover: 233 33% 14%;
+    --popover: 240 13% 9%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 350 80% 59%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 202 100% 88%;             /* #C2E9FF */
+    --primary-foreground: 240 22% 5%;    /* dark text on light blue */
 
-    --secondary: 233 25% 20%;
+    --secondary: 240 13% 13%;            /* #1C1C24 */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 233 25% 20%;
-    --muted-foreground: 0 0% 53%;
+    --muted: 240 13% 13%;
+    --muted-foreground: 240 8% 57%;      /* #8A8A9A */
 
-    --accent: 350 80% 59%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 202 100% 88%;
+    --accent-foreground: 240 22% 5%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 233 25% 25%;
-    --input: 233 25% 25%;
-    --ring: 350 80% 59%;
+    --border: 240 12% 19%;               /* #2A2A35 */
+    --input: 240 12% 19%;
+    --ring: 202 100% 88%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
-    --sidebar-background: 233 33% 8%;
+    --sidebar-background: 240 22% 5%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 350 80% 59%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 233 25% 20%;
+    --sidebar-primary: 202 100% 88%;
+    --sidebar-primary-foreground: 240 22% 5%;
+    --sidebar-accent: 240 13% 13%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 233 25% 25%;
-    --sidebar-ring: 350 80% 59%;
+    --sidebar-border: 240 12% 19%;
+    --sidebar-ring: 202 100% 88%;
   }
 }
 
@@ -59,7 +60,8 @@
 
 @layer utilities {
   .sera-gradient {
-    background: linear-gradient(135deg, hsl(350, 80%, 59%), hsl(350, 90%, 45%));
+    background: linear-gradient(135deg, hsl(202, 100%, 88%), hsl(202, 80%, 78%));
+    color: #0A0A0F;
   }
 
   .pulse-beacon {
@@ -83,10 +85,10 @@
 
   @keyframes pulse-dot {
     0%, 100% {
-      box-shadow: 0 0 0 0 hsla(350, 80%, 59%, 0.5);
+      box-shadow: 0 0 0 0 hsla(202, 100%, 88%, 0.5);
     }
     50% {
-      box-shadow: 0 0 0 12px hsla(350, 80%, 59%, 0);
+      box-shadow: 0 0 0 12px hsla(202, 100%, 88%, 0);
     }
   }
 
