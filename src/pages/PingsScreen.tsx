@@ -175,8 +175,20 @@ export default function PingsScreen() {
                     }}
                   >
                     <div className="flex items-start gap-3">
-                      {/* Avatar (tappable for person notifications) */}
-                      {n.avatar.color !== '#1C1C24' ? (
+                      {/* Avatar (tappable for person notifications, soft for AI) */}
+                      {n.avatar.isAI ? (
+                        <div
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
+                          style={{
+                            backgroundColor: 'rgba(194, 233, 255, 0.1)',
+                            border: '1px solid rgba(194, 233, 255, 0.2)',
+                            fontSize: 18,
+                            lineHeight: 1,
+                          }}
+                        >
+                          {n.avatar.initial}
+                        </div>
+                      ) : n.avatar.color !== '#1C1C24' ? (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
