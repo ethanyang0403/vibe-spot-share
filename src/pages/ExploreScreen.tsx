@@ -6,6 +6,7 @@ import {
   Business,
 } from "@/lib/businessesMock";
 import BusinessDetailCard from "@/components/BusinessDetailCard";
+import { EXPLORE_PICK } from "@/lib/aiSuggestions";
 
 export default function ExploreScreen() {
   const [categoryId, setCategoryId] = useState("all");
