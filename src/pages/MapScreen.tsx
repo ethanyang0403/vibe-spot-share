@@ -4,12 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserLocation } from '@/hooks/useLocation';
 import StatusSheet from '@/components/StatusSheet';
-import CreateMoment from '@/components/CreateMoment';
+import CreateMomentSheet from '@/components/CreateMomentSheet';
+import MomentBeacon from '@/components/MomentBeacon';
+import MomentDetailCard, { type MomentDetail } from '@/components/MomentDetailCard';
 import { Ghost, Bell, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow } from 'date-fns';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
