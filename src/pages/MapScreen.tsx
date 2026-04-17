@@ -20,6 +20,9 @@ import { MOCK_BUSINESSES, FOCUS_BUSINESS_EVENT, Business } from '@/lib/businesse
 import BusinessPin from '@/components/BusinessPin';
 import BusinessBeacon from '@/components/BusinessBeacon';
 import BusinessDetailCard from '@/components/BusinessDetailCard';
+import AISuggestionCard from '@/components/AISuggestionCard';
+import MapWelcomeBanner from '@/components/MapWelcomeBanner';
+import type { AISuggestion } from '@/lib/aiSuggestions';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
