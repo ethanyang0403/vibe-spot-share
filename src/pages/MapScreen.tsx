@@ -543,7 +543,7 @@ export default function MapScreen() {
             aria-label="Open activity"
           >
             <Bell size={20} style={{ color: '#8A8A9A' }} />
-            {bellBadgeCount > 0 && (
+            {(unreadPings + mockUnreadCount) > 0 && (
               <span
                 className="absolute -top-1 -right-1 flex items-center justify-center rounded-full px-1 text-[10px] font-bold"
                 style={{
@@ -553,7 +553,7 @@ export default function MapScreen() {
                   color: '#0A0A0F',
                 }}
               >
-                {bellBadgeCount}
+                {unreadPings + mockUnreadCount}
               </span>
             )}
           </button>
