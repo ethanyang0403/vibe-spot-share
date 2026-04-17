@@ -41,28 +41,37 @@ export default function PingsScreen() {
   const handleRowTap = (n: AppNotification) => {
     markAsRead(n.id);
 
+    const goToMapAndFocus = (eventName: string, detail: Record<string, unknown>) => {
+      navigate('/');
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent(eventName, { detail }));
+      }, 50);
+    };
+
     if (n.action.type === 'show_on_map' && n.action.lat && n.action.lng) {
-      // Ping → focus friend on map; deal → focus business
       if (n.type === 'deal') {
-        // Find which business by coordinates
-        navigate('/');
-        setTimeout(() => {
-          window.dispatchEvent(
-            new CustomEvent(NOTIFICATION_FOCUS_BUSINESS_EVENT, {
-              detail: { lat: n.action.lat, lng: n.action.lng },
-            })
-          );
-        }, 50);
+        goToMapAndFocus(NOTIFICATION_FOCUS_BUSINESS_EVENT, {
+          lat: n.action.lat,
+          lng: n.action.lng,
+        });
       } else {
-        navigate('/');
-        setTimeout(() => {
-          window.dispatchEvent(
-            new CustomEvent(NOTIFICATION_FOCUS_FRIEND_EVENT, {
-              detail: { lat: n.action.lat, lng: n.action.lng },
-            })
-          );
-        }, 50);
+        goToMapAndFocus(NOTIFICATION_FOCUS_FRIEND_EVENT, {
+          lat: n.action.lat,
+          lng: n.action.lng,
+        });
       }
+    } else if (n.action.type === 'center_map' && n.action.lat && n.action.lng) {
+      goToMapAndFocus(NOTIFICATION_FOCUS_FRIEND_EVENT, {
+        lat: n.action.lat,
+        lng: n.action.lng,
+      });
+    } else if (n.action.type === 'show_business' && n.action.businessId) {
+      goToMapAndFocus(NOTIFICATION_FOCUS_BUSINESS_EVENT, {
+        businessId: n.action.businessId,
+      });
+    } else if (n.action.type === 'show_moment') {
+      // Just route to map; surfacing a specific Moment isn't wired yet.
+      navigate('/');
     } else if (n.action.type === 'show_recap') {
       setExpandedRecapId((prev) => (prev === n.id ? null : n.id));
     } else if (n.action.type === 'friend_request') {
