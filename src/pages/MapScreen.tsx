@@ -13,6 +13,10 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FOCUS_FRIEND_EVENT } from '@/lib/friendsMock';
+import { MOCK_BUSINESSES, FOCUS_BUSINESS_EVENT, Business } from '@/lib/businessesMock';
+import BusinessPin from '@/components/BusinessPin';
+import BusinessBeacon from '@/components/BusinessBeacon';
+import BusinessDetailCard from '@/components/BusinessDetailCard';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
@@ -90,6 +94,7 @@ export default function MapScreen() {
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
 
   // Listen for "focus friend" requests from the Friends tab
   useEffect(() => {
