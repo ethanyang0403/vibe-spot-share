@@ -32,6 +32,29 @@ interface Moment {
   creator?: { display_name: string | null; username: string };
 }
 
+interface MockFriend {
+  id: string;
+  name: string;
+  initial: string;
+  status: string;
+  lat: number;
+  lng: number;
+  color: string;
+}
+
+const MOCK_FRIENDS: MockFriend[] = [
+  { id: "f1", name: "Jordan Lee", initial: "J", status: "down to hang 🙌", lat: 34.0705, lng: -118.4442, color: "#7C3AED" },
+  { id: "f2", name: "Maya Patel", initial: "M", status: "grabbing food 🍕", lat: 34.0678, lng: -118.4468, color: "#2563EB" },
+  { id: "f3", name: "Cam Torres", initial: "C", status: "at the gym 💪", lat: 34.0692, lng: -118.4410, color: "#059669" },
+  { id: "f4", name: "Riley Kim", initial: "R", status: "studying 📚", lat: 34.0661, lng: -118.4490, color: "#D97706" },
+  { id: "f5", name: "Alex Chen", initial: "A", status: "exploring 🗺️", lat: 34.0720, lng: -118.4425, color: "#DC2626" },
+  { id: "f6", name: "Sam Rivera", initial: "S", status: "bored lol 😐", lat: 34.0648, lng: -118.4455, color: "#0891B2" },
+  { id: "f7", name: "Taylor Brooks", initial: "T", status: "pregaming 🎉", lat: 34.0715, lng: -118.4460, color: "#9333EA" },
+  { id: "f8", name: "Avery Nguyen", initial: "A", status: "looking for plans", lat: 34.0668, lng: -118.4430, color: "#E11D48" },
+];
+
+const UCLA_CENTER = { latitude: 34.0689, longitude: -118.4452 };
+
 export default function MapScreen() {
   const { user } = useAuth();
   const { position } = useUserLocation();
@@ -45,6 +68,21 @@ export default function MapScreen() {
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
+  const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
+
+  // Subtle drift animation for mock friends every 12s
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMockFriends((prev) =>
+        prev.map((f) => ({
+          ...f,
+          lat: f.lat + (Math.random() - 0.5) * 0.0006,
+          lng: f.lng + (Math.random() - 0.5) * 0.0006,
+        }))
+      );
+    }, 12000);
+    return () => clearInterval(id);
+  }, []);
 
   // Upsert own location
   useEffect(() => {
@@ -141,8 +179,8 @@ export default function MapScreen() {
   };
 
   const vp = {
-    latitude: position?.latitude ?? 40.7128,
-    longitude: position?.longitude ?? -74.006,
+    latitude: UCLA_CENTER.latitude,
+    longitude: UCLA_CENTER.longitude,
     zoom: 15,
   };
 
@@ -176,6 +214,35 @@ export default function MapScreen() {
                 </span>
               )}
             </button>
+          </Marker>
+        ))}
+
+        {/* Mock friends (demo data) */}
+        {mockFriends.map((f) => (
+          <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
+            <div
+              className="flex flex-col items-center"
+              style={{ transition: 'transform 2s ease-in-out' }}
+            >
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] font-bold text-white"
+                style={{
+                  backgroundColor: f.color,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                }}
+              >
+                {f.initial}
+              </div>
+              <span
+                className="mt-1 truncate rounded-md px-2 py-0.5 text-[11px] text-white"
+                style={{
+                  maxWidth: 140,
+                  backgroundColor: 'rgba(15, 15, 26, 0.85)',
+                }}
+              >
+                {f.status}
+              </span>
+            </div>
           </Marker>
         ))}
 
