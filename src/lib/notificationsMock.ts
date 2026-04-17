@@ -174,6 +174,16 @@ export const MOCK_NOTIFICATIONS: AppNotification[] = [
     action: { type: 'show_on_map', lat: 34.0658, lng: -118.4475 },
   },
   {
+    id: 'ai3',
+    type: 'ai_nudge',
+    title: 'You might like this Moment',
+    subtitle: "🍕 Pizza run nearby — Maya and 5 others are going. You've joined food Moments 4 times.",
+    timestamp: '2 hrs ago',
+    read: true,
+    avatar: { initial: '✨', color: '#C2E9FF', isAI: true },
+    action: { type: 'show_moment', momentId: 'm3' },
+  },
+  {
     id: 'p11',
     type: 'ping',
     title: 'Alex Chen pinged you 👋',
