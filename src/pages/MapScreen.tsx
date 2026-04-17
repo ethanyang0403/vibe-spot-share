@@ -68,6 +68,21 @@ export default function MapScreen() {
   const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
+  const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
+
+  // Subtle drift animation for mock friends every 12s
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMockFriends((prev) =>
+        prev.map((f) => ({
+          ...f,
+          lat: f.lat + (Math.random() - 0.5) * 0.0006,
+          lng: f.lng + (Math.random() - 0.5) * 0.0006,
+        }))
+      );
+    }, 12000);
+    return () => clearInterval(id);
+  }, []);
 
   // Upsert own location
   useEffect(() => {
