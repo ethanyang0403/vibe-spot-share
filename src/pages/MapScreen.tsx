@@ -4,12 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserLocation } from '@/hooks/useLocation';
 import StatusSheet from '@/components/StatusSheet';
-import CreateMoment from '@/components/CreateMoment';
+import CreateMomentSheet from '@/components/CreateMomentSheet';
+import MomentBeacon from '@/components/MomentBeacon';
+import MomentDetailCard, { type MomentDetail } from '@/components/MomentDetailCard';
 import { Ghost, Bell, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { formatDistanceToNow } from 'date-fns';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
@@ -22,14 +23,31 @@ interface FriendLocation {
   profile?: { display_name: string | null; username: string };
 }
 
-interface Moment {
+interface MockMoment {
   id: string;
   title: string;
-  latitude: number;
-  longitude: number;
-  expires_at: string;
-  creator_id: string;
-  creator?: { display_name: string | null; username: string };
+  creator: string;
+  lat: number;
+  lng: number;
+  expiresAt: Date;
+}
+
+const MOCK_MOMENTS_SEED = [
+  { id: 'm1', title: '🏀 pickup basketball', creator: 'Jordan Lee', lat: 34.0698, lng: -118.4435, durationMin: 60, startedMinAgo: 8 },
+  { id: 'm2', title: '🎵 free concert on the lawn', creator: 'Campus Events', lat: 34.0671, lng: -118.4478, durationMin: 120, startedMinAgo: 42 },
+  { id: 'm3', title: '🍕 pizza run — who\'s in?', creator: 'Maya Patel', lat: 34.0685, lng: -118.4450, durationMin: 45, startedMinAgo: 12 },
+];
+
+function buildMockMoments(): MockMoment[] {
+  const now = Date.now();
+  return MOCK_MOMENTS_SEED.map((m) => ({
+    id: m.id,
+    title: m.title,
+    creator: m.creator,
+    lat: m.lat,
+    lng: m.lng,
+    expiresAt: new Date(now - m.startedMinAgo * 60_000 + m.durationMin * 60_000),
+  }));
 }
 
 interface MockFriend {
@@ -60,12 +78,12 @@ export default function MapScreen() {
   const { position } = useUserLocation();
   const mapRef = useRef<MapRef>(null);
   const [friends, setFriends] = useState<FriendLocation[]>([]);
-  const [moments, setMoments] = useState<Moment[]>([]);
+  const [moments, setMoments] = useState<MockMoment[]>(() => buildMockMoments());
   const [isGhost, setIsGhost] = useState(false);
   const [statusOpen, setStatusOpen] = useState(false);
   const [momentOpen, setMomentOpen] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState<FriendLocation | null>(null);
-  const [selectedMoment, setSelectedMoment] = useState<Moment | null>(null);
+  const [selectedMoment, setSelectedMoment] = useState<MomentDetail | null>(null);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
@@ -109,15 +127,13 @@ export default function MapScreen() {
     if (data) setFriends(data.map((d: any) => ({ ...d, profile: d.profile })));
   }, [user]);
 
-  // Fetch moments
-  const fetchMoments = useCallback(async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from('moments')
-      .select('*, creator:profiles(display_name, username)')
-      .gt('expires_at', new Date().toISOString());
-    if (data) setMoments(data.map((d: any) => ({ ...d, creator: d.creator })));
-  }, [user]);
+  // Auto-purge expired moments every 30s
+  useEffect(() => {
+    const id = setInterval(() => {
+      setMoments((prev) => prev.filter((m) => m.expiresAt.getTime() > Date.now()));
+    }, 30000);
+    return () => clearInterval(id);
+  }, []);
 
   // Fetch my status
   useEffect(() => {
@@ -141,22 +157,20 @@ export default function MapScreen() {
 
   useEffect(() => {
     fetchFriends();
-    fetchMoments();
-  }, [fetchFriends, fetchMoments]);
+  }, [fetchFriends]);
 
   // Realtime subscriptions
   useEffect(() => {
     if (!user) return;
     const ch = supabase.channel('map-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'user_locations' }, () => fetchFriends())
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'moments' }, () => fetchMoments())
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'pings', filter: `recipient_id=eq.${user.id}` }, () => {
         setUnreadPings(p => p + 1);
         toast('New ping! 📍');
       })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [user, fetchFriends, fetchMoments]);
+  }, [user, fetchFriends]);
 
   const toggleGhost = async () => {
     if (!user) return;
@@ -248,15 +262,22 @@ export default function MapScreen() {
 
         {/* Moment beacons */}
         {moments.map((m) => (
-          <Marker key={m.id} latitude={m.latitude} longitude={m.longitude}>
-            <button onClick={() => { setSelectedMoment(m); setSelectedFriend(null); }} className="flex flex-col items-center">
-              <div className="pulse-beacon">
-                <div className="h-6 w-6 rounded-full sera-gradient opacity-80" />
-              </div>
-              <span className="mt-0.5 max-w-[100px] truncate rounded-full bg-card/90 px-2 py-0.5 text-[10px] text-foreground font-medium">
-                {m.title}
-              </span>
-            </button>
+          <Marker key={m.id} latitude={m.lat} longitude={m.lng} anchor="center">
+            <MomentBeacon
+              title={m.title}
+              expiresAt={m.expiresAt}
+              onClick={() => {
+                setSelectedFriend(null);
+                setSelectedMoment({
+                  id: m.id,
+                  title: m.title,
+                  creator: m.creator,
+                  lat: m.lat,
+                  lng: m.lng,
+                  expiresAt: m.expiresAt,
+                });
+              }}
+            />
           </Marker>
         ))}
       </ReactMapGL>
@@ -320,30 +341,28 @@ export default function MapScreen() {
         )}
       </AnimatePresence>
 
-      {/* Moment card */}
-      <AnimatePresence>
-        {selectedMoment && (
-          <motion.div
-            initial={{ y: 200, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 200, opacity: 0 }}
-            className="absolute bottom-20 left-4 right-4 z-20 rounded-2xl bg-card p-4 border border-border"
-          >
-            <h4 className="font-semibold text-foreground">{selectedMoment.title}</h4>
-            <p className="text-sm text-muted-foreground">
-              by {selectedMoment.creator?.display_name || selectedMoment.creator?.username} · expires {formatDistanceToNow(new Date(selectedMoment.expires_at), { addSuffix: true })}
-            </p>
-            <Button
-              onClick={() => window.open(`https://maps.google.com/?q=${selectedMoment.latitude},${selectedMoment.longitude}`, '_blank')}
-              className="mt-3 w-full rounded-xl sera-gradient text-primary-foreground"
-            >
-              Go →
-            </Button>
-            <button onClick={() => setSelectedMoment(null)} className="absolute top-2 right-3 text-muted-foreground text-sm">✕</button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <MomentDetailCard moment={selectedMoment} onClose={() => setSelectedMoment(null)} />
 
       <StatusSheet open={statusOpen} onClose={() => setStatusOpen(false)} currentStatus={myStatus} />
-      <CreateMoment open={momentOpen} onClose={() => setMomentOpen(false)} latitude={position?.latitude ?? 40.7128} longitude={position?.longitude ?? -74.006} />
+      <CreateMomentSheet
+        open={momentOpen}
+        onClose={() => setMomentOpen(false)}
+        onCreate={(title, durationMin) => {
+          const lat = position?.latitude ?? 34.0689;
+          const lng = position?.longitude ?? -118.4452;
+          setMoments((prev) => [
+            ...prev,
+            {
+              id: `local-${Date.now()}`,
+              title,
+              creator: 'You',
+              lat: lat + (Math.random() - 0.5) * 0.002,
+              lng: lng + (Math.random() - 0.5) * 0.002,
+              expiresAt: new Date(Date.now() + durationMin * 60_000),
+            },
+          ]);
+        }}
+      />
     </div>
   );
 }
