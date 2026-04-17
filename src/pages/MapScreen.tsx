@@ -13,6 +13,10 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { FOCUS_FRIEND_EVENT } from '@/lib/friendsMock';
+import { MOCK_BUSINESSES, FOCUS_BUSINESS_EVENT, Business } from '@/lib/businessesMock';
+import BusinessPin from '@/components/BusinessPin';
+import BusinessBeacon from '@/components/BusinessBeacon';
+import BusinessDetailCard from '@/components/BusinessDetailCard';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
@@ -90,6 +94,7 @@ export default function MapScreen() {
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
+  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
 
   // Listen for "focus friend" requests from the Friends tab
   useEffect(() => {
@@ -114,6 +119,22 @@ export default function MapScreen() {
     window.addEventListener(FOCUS_FRIEND_EVENT, handler);
     return () => window.removeEventListener(FOCUS_FRIEND_EVENT, handler);
   }, [mockFriends]);
+
+  // Listen for "focus business" requests from the Explore tab
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent<{ businessId: string }>).detail;
+      const b = MOCK_BUSINESSES.find((x) => x.id === detail.businessId);
+      if (!b) return;
+      mapRef.current?.flyTo({ center: [b.lng, b.lat], zoom: 16, duration: 900 });
+      setSelectedFriend(null);
+      setSelectedMoment(null);
+      setSelectedMockFriend(null);
+      setSelectedBusiness(b);
+    };
+    window.addEventListener(FOCUS_BUSINESS_EVENT, handler);
+    return () => window.removeEventListener(FOCUS_BUSINESS_EVENT, handler);
+  }, []);
 
   // Subtle drift animation for mock friends every 12s
   useEffect(() => {
@@ -237,6 +258,7 @@ export default function MapScreen() {
     setSelectedFriend(null);
     setSelectedMockFriend(null);
     setSelectedMoment(null);
+    setSelectedBusiness(null);
     setStatusOpen(true);
   };
 
@@ -293,10 +315,41 @@ export default function MapScreen() {
           </Marker>
         )}
 
-        {/* Friend dots */}
+        {/* Inactive business pins (lowest layer) */}
+        {MOCK_BUSINESSES.filter((b) => !b.promotedMoment.active).map((b) => (
+          <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
+            <BusinessPin
+              icon={b.icon}
+              onClick={() => {
+                setSelectedFriend(null);
+                setSelectedMockFriend(null);
+                setSelectedMoment(null);
+                setSelectedBusiness(b);
+              }}
+            />
+          </Marker>
+        ))}
+
+        {/* Active business beacons (above inactive pins, below user Moments + friends) */}
+        {MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).map((b) => (
+          <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
+            <BusinessBeacon
+              icon={b.icon}
+              title={b.promotedMoment.title!}
+              expiresInMinutes={b.promotedMoment.expiresInMinutes!}
+              onClick={() => {
+                setSelectedFriend(null);
+                setSelectedMockFriend(null);
+                setSelectedMoment(null);
+                setSelectedBusiness(b);
+              }}
+            />
+          </Marker>
+        ))}
+
         {friends.map((f) => (
           <Marker key={f.user_id} latitude={f.latitude} longitude={f.longitude}>
-            <button onClick={() => { setSelectedFriend(f); setSelectedMoment(null); }} className="flex flex-col items-center">
+            <button onClick={() => { setSelectedFriend(f); setSelectedMoment(null); setSelectedBusiness(null); }} className="flex flex-col items-center">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-bold text-foreground border-2 border-primary/50">
                 {(f.profile?.display_name || f.profile?.username || '?')[0].toUpperCase()}
               </div>
@@ -316,6 +369,7 @@ export default function MapScreen() {
               onClick={() => {
                 setSelectedFriend(null);
                 setSelectedMoment(null);
+                setSelectedBusiness(null);
                 setSelectedMockFriend({
                   id: f.id,
                   name: f.name,
@@ -369,6 +423,7 @@ export default function MapScreen() {
               onClick={() => {
                 setSelectedFriend(null);
                 setSelectedMockFriend(null);
+                setSelectedBusiness(null);
                 setSelectedMoment({
                   id: m.id,
                   title: m.title,
@@ -490,6 +545,10 @@ export default function MapScreen() {
       <FriendDetailCard
         friend={selectedMockFriend}
         onClose={() => setSelectedMockFriend(null)}
+      />
+      <BusinessDetailCard
+        business={selectedBusiness}
+        onClose={() => setSelectedBusiness(null)}
       />
 
       <StatusSheet

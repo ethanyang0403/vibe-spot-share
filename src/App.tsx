@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Auth from "@/pages/Auth";
 import MapScreen from "@/pages/MapScreen";
 import NearbyScreen from "@/pages/NearbyScreen";
+import ExploreScreen from "@/pages/ExploreScreen";
 import FriendsScreen from "@/pages/FriendsScreen";
 import PingsScreen from "@/pages/PingsScreen";
 import ProfileScreen from "@/pages/ProfileScreen";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/" element={<ProtectedRoute><AppLayout><MapScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/nearby" element={<ProtectedRoute><AppLayout><NearbyScreen /></AppLayout></ProtectedRoute>} />
+            <Route path="/explore" element={<ProtectedRoute><AppLayout><ExploreScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/friends" element={<ProtectedRoute><AppLayout><FriendsScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/pings" element={<ProtectedRoute><AppLayout><PingsScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfileScreen /></AppLayout></ProtectedRoute>} />
