@@ -174,12 +174,43 @@ export default function MapScreen() {
     return () => { supabase.removeChannel(ch); };
   }, [user, fetchFriends]);
 
+  const TOAST_STYLE = {
+    backgroundColor: '#1a1a2e',
+    color: '#fff',
+    border: '1px solid #2a2a3e',
+  };
+
   const toggleGhost = async () => {
-    if (!user) return;
     const newVal = !isGhost;
     setIsGhost(newVal);
-    await supabase.from('user_locations').update({ is_visible: !newVal, updated_at: new Date().toISOString() }).eq('user_id', user.id);
-    toast(newVal ? 'Ghost mode on 👻' : 'You\'re visible now');
+    if (user) {
+      await supabase.from('user_locations').update({
+        is_visible: !newVal,
+        updated_at: new Date().toISOString(),
+      }).eq('user_id', user.id);
+    }
+    toast(newVal ? "You're invisible 👻" : "You're back on the map 📍", {
+      style: TOAST_STYLE,
+      position: 'top-center',
+      duration: 2500,
+    });
+  };
+
+  const handleSetStatus = async (text: string) => {
+    setMyStatus(text);
+    if (user) {
+      await supabase.from('user_locations').update({
+        status_text: text,
+        updated_at: new Date().toISOString(),
+      }).eq('user_id', user.id);
+    }
+  };
+
+  const openStatusSheet = () => {
+    setSelectedFriend(null);
+    setSelectedMockFriend(null);
+    setSelectedMoment(null);
+    setStatusOpen(true);
   };
 
   const sendPing = async (recipientId: string) => {
@@ -212,8 +243,24 @@ export default function MapScreen() {
       >
         {/* Own location */}
         {position && (
-          <Marker latitude={position.latitude} longitude={position.longitude}>
-            <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
+          <Marker latitude={position.latitude} longitude={position.longitude} anchor="center">
+            <div
+              className="flex flex-col items-center transition-opacity duration-300"
+              style={{ opacity: isGhost ? 0 : 1 }}
+            >
+              <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
+              {myStatus && (
+                <span
+                  className="mt-1 truncate rounded-md px-2 py-0.5 text-[11px] font-medium text-white"
+                  style={{
+                    maxWidth: 140,
+                    backgroundColor: 'rgba(15, 15, 26, 0.85)',
+                  }}
+                >
+                  {myStatus}
+                </span>
+              )}
+            </div>
           </Marker>
         )}
 
