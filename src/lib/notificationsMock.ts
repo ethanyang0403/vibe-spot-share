@@ -6,13 +6,16 @@ export type NotificationType =
   | 'deal'
   | 'friend_accepted'
   | 'friend_request'
-  | 'moment_expired';
+  | 'moment_expired'
+  | 'ai_nudge';
 
 export interface NotificationAction {
-  type: 'show_on_map' | 'show_recap' | 'friend_request' | 'none';
+  type: 'show_on_map' | 'show_recap' | 'friend_request' | 'center_map' | 'show_business' | 'show_moment' | 'none';
   lat?: number;
   lng?: number;
   requestId?: string;
+  businessId?: string;
+  momentId?: string;
 }
 
 export interface MomentRecap {
@@ -29,7 +32,7 @@ export interface AppNotification {
   subtitle: string;
   timestamp: string;
   read: boolean;
-  avatar: { initial: string; color: string };
+  avatar: { initial: string; color: string; isAI?: boolean };
   action: NotificationAction;
   recap?: MomentRecap;
 }
@@ -57,6 +60,16 @@ export const MOCK_NOTIFICATIONS: AppNotification[] = [
     read: false,
     avatar: { initial: '🏀', color: '#1C1C24' },
     action: { type: 'show_on_map', lat: 34.0698, lng: -118.4435 },
+  },
+  {
+    id: 'ai1',
+    type: 'ai_nudge',
+    title: "It's Friday — your friends are active",
+    subtitle: '5 friends are out right now near East Village. Jordan just set their status to "down to hang."',
+    timestamp: 'Just now',
+    read: false,
+    avatar: { initial: '✨', color: '#C2E9FF', isAI: true },
+    action: { type: 'center_map', lat: 34.07, lng: -118.445 },
   },
   {
     id: 'p3',
@@ -111,6 +124,16 @@ export const MOCK_NOTIFICATIONS: AppNotification[] = [
     },
   },
   {
+    id: 'ai2',
+    type: 'ai_nudge',
+    title: 'Popular tonight near you',
+    subtitle: 'Velvet Rooftop and Neon Nights are both popping off — 45+ people between them',
+    timestamp: '25 min ago',
+    read: true,
+    avatar: { initial: '✨', color: '#C2E9FF', isAI: true },
+    action: { type: 'show_business', businessId: 'b1' },
+  },
+  {
     id: 'p7',
     type: 'ping',
     title: 'Cam Torres pinged you 👋',
@@ -149,6 +172,16 @@ export const MOCK_NOTIFICATIONS: AppNotification[] = [
     read: true,
     avatar: { initial: '🍜', color: '#1C1C24' },
     action: { type: 'show_on_map', lat: 34.0658, lng: -118.4475 },
+  },
+  {
+    id: 'ai3',
+    type: 'ai_nudge',
+    title: 'You might like this Moment',
+    subtitle: "🍕 Pizza run nearby — Maya and 5 others are going. You've joined food Moments 4 times.",
+    timestamp: '2 hrs ago',
+    read: true,
+    avatar: { initial: '✨', color: '#C2E9FF', isAI: true },
+    action: { type: 'show_moment', momentId: 'm3' },
   },
   {
     id: 'p11',

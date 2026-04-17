@@ -6,6 +6,7 @@ import {
   Business,
 } from "@/lib/businessesMock";
 import BusinessDetailCard from "@/components/BusinessDetailCard";
+import { EXPLORE_PICK } from "@/lib/aiSuggestions";
 
 export default function ExploreScreen() {
   const [categoryId, setCategoryId] = useState("all");
@@ -56,6 +57,68 @@ export default function ExploreScreen() {
           );
         })}
       </div>
+
+      {/* "Picked for you" — single AI suggestion above the live deals */}
+      {(() => {
+        const pick = MOCK_BUSINESSES.find((b) => b.id === EXPLORE_PICK.businessId);
+        if (!pick) return null;
+        return (
+          <div className="px-4 pt-2">
+            <button
+              onClick={() => setSelected(pick)}
+              className="w-full text-left transition-all active:scale-[0.99]"
+              style={{
+                backgroundColor: "rgba(194, 233, 255, 0.04)",
+                border: "1px solid rgba(194, 233, 255, 0.12)",
+                borderRadius: 14,
+                padding: 16,
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 10,
+                  color: "#555566",
+                  textTransform: "uppercase",
+                  letterSpacing: 1.5,
+                  fontWeight: 600,
+                }}
+              >
+                Picked for you
+              </span>
+              <div className="flex items-center gap-3">
+                <div
+                  className="flex shrink-0 items-center justify-center"
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: "9999px",
+                    backgroundColor: "#1C1C24",
+                    fontSize: 16,
+                    lineHeight: 1,
+                  }}
+                >
+                  {EXPLORE_PICK.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[15px] font-bold text-white truncate">
+                    {EXPLORE_PICK.name}
+                  </p>
+                  <p className="text-[12px] truncate" style={{ color: "#8A8A9A" }}>
+                    {EXPLORE_PICK.reason}
+                  </p>
+                  <p className="text-[13px] truncate" style={{ color: "#C2E9FF" }}>
+                    {EXPLORE_PICK.deal}
+                  </p>
+                </div>
+                <span style={{ color: "#555566", fontSize: 18 }}>›</span>
+              </div>
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Live Deals */}
       {liveDeals.length > 0 && (
