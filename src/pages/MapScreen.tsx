@@ -330,6 +330,13 @@ export default function MapScreen() {
         style={{ width: '100%', height: '100%' }}
         attributionControl={false}
       >
+        {/* Heatmap density layer (lowest z-index, beneath all markers) */}
+        {heatmapVisible && (
+          <Source id="heatmap-source" type="geojson" data={HEATMAP_GEOJSON}>
+            <Layer {...heatmapLayer} />
+          </Source>
+        )}
+
         {/* Own location */}
         {position && (
           <Marker latitude={position.latitude} longitude={position.longitude} anchor="center">
