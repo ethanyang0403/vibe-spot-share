@@ -200,9 +200,11 @@ export default function MapScreen() {
   }, [user, fetchFriends]);
 
   const TOAST_STYLE = {
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#141419',
     color: '#fff',
-    border: '1px solid #2a2a3e',
+    border: '1px solid #2A2A35',
+    borderRadius: 12,
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
   };
 
   const toggleGhost = async () => {
@@ -276,10 +278,12 @@ export default function MapScreen() {
               <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
               {myStatus && (
                 <span
-                  className="mt-1 truncate rounded-md px-2 py-0.5 text-[11px] font-medium text-white"
+                  className="mt-1 truncate px-2 py-0.5 text-[11px] font-medium text-white"
                   style={{
                     maxWidth: 140,
-                    backgroundColor: 'rgba(15, 15, 26, 0.85)',
+                    backgroundColor: 'rgba(10, 10, 15, 0.85)',
+                    border: '1px solid rgba(194, 233, 255, 0.15)',
+                    borderRadius: 8,
                   }}
                 >
                   {myStatus}
@@ -342,10 +346,12 @@ export default function MapScreen() {
                 {f.initial}
               </div>
               <span
-                className="mt-1 truncate rounded-md px-2 py-0.5 text-[11px] text-white"
+                className="mt-1 truncate px-2 py-0.5 text-[11px] text-white"
                 style={{
                   maxWidth: 140,
-                  backgroundColor: 'rgba(15, 15, 26, 0.85)',
+                  backgroundColor: 'rgba(10, 10, 15, 0.85)',
+                  border: '1px solid rgba(194, 233, 255, 0.15)',
+                  borderRadius: 8,
                 }}
               >
                 {f.status}
@@ -386,24 +392,36 @@ export default function MapScreen() {
             width: 40,
             height: 40,
             borderRadius: 12,
-            backgroundColor: '#1a1a2e',
-            border: isGhost ? '1.5px solid #e94560' : '1.5px solid transparent',
+            backgroundColor: '#141419',
+            border: isGhost ? '1.5px solid #C2E9FF' : '1.5px solid transparent',
             boxShadow: isGhost
-              ? '0 0 12px rgba(233, 69, 96, 0.4), 0 2px 8px rgba(0,0,0,0.3)'
-              : '0 2px 8px rgba(0,0,0,0.3)',
+              ? '0 0 12px rgba(194, 233, 255, 0.3), 0 2px 8px rgba(0,0,0,0.4)'
+              : '0 2px 8px rgba(0,0,0,0.4)',
             fontSize: 22,
             lineHeight: 1,
-            filter: isGhost ? 'drop-shadow(0 0 4px rgba(233, 69, 96, 0.6))' : 'none',
+            filter: isGhost ? 'drop-shadow(0 0 4px rgba(194, 233, 255, 0.5))' : 'none',
           }}
           aria-label="Toggle ghost mode"
         >
           👻
         </button>
-        <span className="text-lg font-black text-primary">sera</span>
-        <button className="relative rounded-full bg-card/80 p-2.5 backdrop-blur-sm">
-          <Bell size={20} className="text-foreground" />
+        <span className="text-lg font-black" style={{ color: '#C2E9FF' }}>sera</span>
+        <button
+          className="relative flex items-center justify-center transition-all active:scale-[0.95]"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            backgroundColor: '#141419',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
+          }}
+        >
+          <Bell size={20} style={{ color: '#8A8A9A' }} />
           {unreadPings > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full sera-gradient px-1 text-[10px] font-bold text-primary-foreground">
+            <span
+              className="absolute -top-1 -right-1 flex h-4 min-w-[16px] items-center justify-center rounded-full px-1 text-[10px] font-bold"
+              style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F' }}
+            >
               {unreadPings}
             </span>
           )}
@@ -413,21 +431,26 @@ export default function MapScreen() {
       {/* FAB for moment */}
       <button
         onClick={() => setMomentOpen(true)}
-        className="absolute bottom-6 right-4 z-10 flex h-14 w-14 items-center justify-center rounded-full sera-gradient shadow-lg"
+        className="absolute bottom-6 right-4 z-10 flex h-14 w-14 items-center justify-center rounded-full transition-all active:scale-[0.95]"
+        style={{
+          backgroundColor: '#C2E9FF',
+          boxShadow: '0 4px 16px rgba(194, 233, 255, 0.25)',
+        }}
       >
-        <Plus size={28} className="text-primary-foreground" />
+        <Plus size={28} style={{ color: '#0A0A0F' }} />
       </button>
 
       {/* Status setter button */}
       <button
         onClick={openStatusSheet}
-        className="absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] text-white transition-all active:scale-[0.97]"
+        className="absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] font-medium transition-all active:scale-[0.97]"
         style={{
-          backgroundColor: '#1a1a2e',
-          border: '1px solid #2a2a3e',
+          backgroundColor: '#141419',
+          border: '1px solid #2A2A35',
+          color: '#C2E9FF',
           borderRadius: 9999,
           padding: '8px 16px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
         }}
       >
         {myStatus || '+ set status'}
