@@ -85,7 +85,9 @@ const UCLA_CENTER = { latitude: 34.0689, longitude: -118.4452 };
 export default function MapScreen() {
   const { user } = useAuth();
   const { position } = useUserLocation();
+  const navigate = useNavigate();
   const mapRef = useRef<MapRef>(null);
+  const mockUnreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
   const [friends, setFriends] = useState<FriendLocation[]>([]);
   const [moments, setMoments] = useState<MockMoment[]>(() => buildMockMoments());
   const [isGhost, setIsGhost] = useState(false);
