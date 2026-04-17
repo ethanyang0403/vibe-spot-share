@@ -179,8 +179,8 @@ export default function MapScreen() {
   };
 
   const vp = {
-    latitude: position?.latitude ?? 40.7128,
-    longitude: position?.longitude ?? -74.006,
+    latitude: UCLA_CENTER.latitude,
+    longitude: UCLA_CENTER.longitude,
     zoom: 15,
   };
 
