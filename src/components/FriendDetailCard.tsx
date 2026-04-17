@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { mutualCountForFriend } from '@/lib/nearbyMock';
+import { openPersonProfile } from '@/lib/profileBus';
 
 export interface FriendCardData {
   id: string;
