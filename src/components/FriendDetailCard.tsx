@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { mutualCountForFriend } from '@/lib/nearbyMock';
 
 export interface FriendCardData {
   id: string;
@@ -103,8 +104,19 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
                 {friend.initial}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[18px] font-bold text-white">{friend.name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-[18px] font-bold text-white">{friend.name}</p>
+                  <span
+                    className="inline-flex items-center text-[10px] font-bold"
+                    style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F', padding: '2px 8px', borderRadius: 999 }}
+                  >
+                    1st
+                  </span>
+                </div>
                 <p className="text-[14px]" style={{ color: '#8A8A9A' }}>@{friend.username}</p>
+                <p className="text-[12px]" style={{ color: '#8A8A9A' }}>
+                  🔗 {mutualCountForFriend(friend.id)} mutual friends
+                </p>
                 <p className="mt-0.5 truncate text-[14px]" style={{ color: '#aaa' }}>{friend.status}</p>
               </div>
             </div>

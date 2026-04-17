@@ -1,4 +1,4 @@
-import { Map, Users, Bell, User } from 'lucide-react';
+import { Map, Radar, Users, Bell, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const tabs = [
   { path: '/', icon: Map, label: 'Map' },
+  { path: '/nearby', icon: Radar, label: 'Nearby' },
   { path: '/friends', icon: Users, label: 'Friends' },
   { path: '/pings', icon: Bell, label: 'Pings' },
   { path: '/profile', icon: User, label: 'Profile' },
