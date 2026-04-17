@@ -395,8 +395,15 @@ export default function MapScreen() {
 
       {/* Status setter button */}
       <button
-        onClick={() => setStatusOpen(true)}
-        className="absolute bottom-6 left-4 z-10 rounded-full bg-card/90 px-4 py-2.5 text-sm font-medium text-foreground backdrop-blur-sm border border-border"
+        onClick={openStatusSheet}
+        className="absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] text-white transition-all active:scale-[0.97]"
+        style={{
+          backgroundColor: '#1a1a2e',
+          border: '1px solid #2a2a3e',
+          borderRadius: 9999,
+          padding: '8px 16px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        }}
       >
         {myStatus || '+ set status'}
       </button>
