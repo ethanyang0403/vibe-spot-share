@@ -349,7 +349,7 @@ export default function MapScreen() {
 
         {friends.map((f) => (
           <Marker key={f.user_id} latitude={f.latitude} longitude={f.longitude}>
-            <button onClick={() => { setSelectedFriend(f); setSelectedMoment(null); }} className="flex flex-col items-center">
+            <button onClick={() => { setSelectedFriend(f); setSelectedMoment(null); setSelectedBusiness(null); }} className="flex flex-col items-center">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-bold text-foreground border-2 border-primary/50">
                 {(f.profile?.display_name || f.profile?.username || '?')[0].toUpperCase()}
               </div>
