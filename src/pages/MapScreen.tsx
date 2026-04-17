@@ -492,6 +492,36 @@ export default function MapScreen() {
         ))}
       </ReactMapGL>
 
+      {/* Time-aware welcome banner (auto-dismisses after 5s) */}
+      <MapWelcomeBanner />
+
+      {/* AI suggestion card — hidden when any sheet/card is open */}
+      <AISuggestionCard
+        hidden={!!(selectedFriend || selectedMockFriend || selectedMoment || selectedBusiness || statusOpen || momentOpen)}
+        onAction={(action: AISuggestion['action']) => {
+          if (action.type === 'show_business') {
+            const b = MOCK_BUSINESSES.find((x) => x.id === action.id);
+            if (!b) return;
+            mapRef.current?.flyTo({ center: [b.lng, b.lat], zoom: 16, duration: 900 });
+            setSelectedBusiness(b);
+          } else if (action.type === 'center_map') {
+            mapRef.current?.flyTo({ center: [action.lng, action.lat], zoom: 16, duration: 900 });
+          } else if (action.type === 'show_moment') {
+            const m = moments.find((x) => x.id === action.id);
+            if (!m) return;
+            mapRef.current?.flyTo({ center: [m.lng, m.lat], zoom: 16, duration: 900 });
+            setSelectedMoment({
+              id: m.id,
+              title: m.title,
+              creator: m.creator,
+              lat: m.lat,
+              lng: m.lng,
+              expiresAt: m.expiresAt,
+            });
+          }
+        }}
+      />
+
       {/* Top bar */}
       <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)]">
         <button
