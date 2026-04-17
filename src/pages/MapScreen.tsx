@@ -444,7 +444,12 @@ export default function MapScreen() {
         onClose={() => setSelectedMockFriend(null)}
       />
 
-      <StatusSheet open={statusOpen} onClose={() => setStatusOpen(false)} currentStatus={myStatus} />
+      <StatusSheet
+        open={statusOpen}
+        onClose={() => setStatusOpen(false)}
+        currentStatus={myStatus}
+        onSetStatus={handleSetStatus}
+      />
       <CreateMomentSheet
         open={momentOpen}
         onClose={() => setMomentOpen(false)}
