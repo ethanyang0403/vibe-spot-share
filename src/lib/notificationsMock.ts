@@ -124,6 +124,16 @@ export const MOCK_NOTIFICATIONS: AppNotification[] = [
     },
   },
   {
+    id: 'ai2',
+    type: 'ai_nudge',
+    title: 'Popular tonight near you',
+    subtitle: 'Velvet Rooftop and Neon Nights are both popping off — 45+ people between them',
+    timestamp: '25 min ago',
+    read: true,
+    avatar: { initial: '✨', color: '#C2E9FF', isAI: true },
+    action: { type: 'show_business', businessId: 'b1' },
+  },
+  {
     id: 'p7',
     type: 'ping',
     title: 'Cam Torres pinged you 👋',
