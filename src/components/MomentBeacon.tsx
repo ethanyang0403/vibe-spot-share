@@ -33,20 +33,16 @@ export default function MomentBeacon({ title, expiresAt, onClick }: Props) {
       className="flex flex-col items-center"
       style={{ pointerEvents: 'auto' }}
     >
-      {/* Title pill above */}
+      {/* Title pill above (glass) */}
       <span
-        className="mb-1 truncate rounded-lg px-2.5 py-1 text-[12px] font-bold text-white"
-        style={{
-          maxWidth: 160,
-          backgroundColor: 'rgba(10, 10, 15, 0.9)',
-          border: '1px solid rgba(194, 233, 255, 0.2)',
-        }}
+        className="glass-pill mb-1 truncate px-2.5 py-1 text-[12px] font-bold text-white"
+        style={{ maxWidth: 160, borderRadius: 10 }}
       >
         {title}
       </span>
 
-      {/* Beacon: inner dot + animated outer ring */}
-      <div className="relative flex h-5 w-5 items-center justify-center">
+      {/* Beacon: glass inner + animated outer ring */}
+      <div className="relative flex h-6 w-6 items-center justify-center">
         <span
           className={urgent ? 'moment-ring-urgent' : 'moment-ring'}
           style={{
@@ -57,13 +53,15 @@ export default function MomentBeacon({ title, expiresAt, onClick }: Props) {
           }}
         />
         <span
+          className="glass-card"
           style={{
             position: 'relative',
-            width: 20,
-            height: 20,
+            width: 22,
+            height: 22,
             borderRadius: '9999px',
-            backgroundColor: '#C2E9FF',
-            boxShadow: '0 2px 8px rgba(194, 233, 255, 0.5)',
+            border: '1px solid rgba(194, 233, 255, 0.4)',
+            boxShadow: '0 4px 16px rgba(194, 233, 255, 0.25)',
+            backgroundColor: 'rgba(194, 233, 255, 0.25)',
           }}
         />
       </div>
@@ -73,6 +71,8 @@ export default function MomentBeacon({ title, expiresAt, onClick }: Props) {
         className="mt-1.5 rounded-full px-2 py-0.5 text-[11px] font-bold"
         style={{
           backgroundColor: urgent ? 'rgba(251, 191, 36, 0.18)' : 'rgba(194, 233, 255, 0.12)',
+          backdropFilter: 'blur(12px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(12px) saturate(140%)',
           border: urgent ? '1px solid rgba(251, 191, 36, 0.4)' : '1px solid rgba(194, 233, 255, 0.25)',
           color: urgent ? '#FBBF24' : '#C2E9FF',
         }}

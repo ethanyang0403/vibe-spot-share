@@ -1,5 +1,7 @@
 import { Map, Radar, Compass, Users, Bell, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useLayoutEffect, useRef, useState } from 'react';
+import { motion } from 'framer-motion';
 
 const tabs = [
   { path: '/', icon: Map, label: 'Map' },
@@ -13,23 +15,66 @@ const tabs = [
 export default function TabBar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const [pillStyle, setPillStyle] = useState<{ left: number; width: number; top: number; height: number } | null>(null);
+
+  const activeIndex = tabs.findIndex((t) => t.path === location.pathname);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const btn = btnRefs.current[activeIndex];
+    if (!container || !btn) return;
+    const cRect = container.getBoundingClientRect();
+    const bRect = btn.getBoundingClientRect();
+    setPillStyle({
+      left: bRect.left - cRect.left,
+      top: bRect.top - cRect.top,
+      width: bRect.width,
+      height: bRect.height,
+    });
+  }, [activeIndex, location.pathname]);
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 flex items-end justify-around bg-background pb-[env(safe-area-inset-bottom,8px)] pt-2"
+      ref={containerRef}
+      className="glass fixed bottom-0 left-0 right-0 z-50 flex items-end justify-around pb-[env(safe-area-inset-bottom,8px)] pt-2"
       style={{
         height: 'calc(56px + env(safe-area-inset-bottom, 8px))',
-        borderTop: '1px solid #1C1C24',
+        borderTop: '1px solid rgba(255, 255, 255, 0.06)',
+        boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.3)',
       }}
     >
-      {tabs.map(({ path, icon: Icon, label }) => {
+      {/* Animated active pill — sits behind icons */}
+      {pillStyle && (
+        <motion.div
+          initial={false}
+          animate={{
+            left: pillStyle.left,
+            top: pillStyle.top,
+            width: pillStyle.width,
+            height: pillStyle.height,
+          }}
+          transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+          className="pointer-events-none absolute"
+          style={{
+            backgroundColor: 'rgba(194, 233, 255, 0.1)',
+            borderRadius: 14,
+            zIndex: 1,
+          }}
+        />
+      )}
+
+      {tabs.map(({ path, icon: Icon, label }, i) => {
         const active = location.pathname === path;
         const color = active ? '#C2E9FF' : '#555566';
         return (
           <button
             key={path}
+            ref={(el) => (btnRefs.current[i] = el)}
             onClick={() => navigate(path)}
-            className="flex flex-col items-center gap-0.5 transition-all active:scale-[0.95]"
+            className="relative z-10 flex flex-col items-center gap-0.5 transition-all active:scale-[0.95]"
+            style={{ paddingLeft: 10, paddingRight: 10 }}
           >
             <Icon size={20} style={{ color }} />
             <span className="text-[10px]" style={{ color }}>{label}</span>

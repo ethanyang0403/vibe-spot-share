@@ -3,24 +3,20 @@ interface Props {
   onClick: () => void;
 }
 
-// Small subtle pin for businesses with NO active Promoted Moment.
-// Sits quietly on the map landscape — doesn't compete with friends or Moments.
+// Subtle inactive business pin (glass treatment).
 export default function BusinessPin({ icon, onClick }: Props) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center justify-center transition-opacity"
+      className="glass-pill flex items-center justify-center transition-opacity"
       style={{
-        width: 24,
-        height: 24,
+        width: 28,
+        height: 28,
         borderRadius: "9999px",
-        backgroundColor: "rgba(28, 28, 36, 0.7)",
-        border: "1px solid #2A2A35",
-        opacity: 0.6,
-        fontSize: 13,
+        fontSize: 14,
         lineHeight: 1,
-        // Expand tap target without changing visual size
-        padding: 0,
+        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.2)",
+        opacity: 0.85,
       }}
       aria-label="Business pin"
     >
