@@ -346,23 +346,40 @@ export default function MapScreen() {
           </Source>
         )}
 
-        {/* Own location */}
+        {/* Own location — Apple Find My style */}
         {position && (
           <Marker latitude={position.latitude} longitude={position.longitude} anchor="center">
             <div
               className="flex flex-col items-center transition-opacity duration-300"
               style={{ opacity: isGhost ? 0 : 1 }}
             >
-              <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
+              <div className="relative flex items-center justify-center" style={{ width: 50, height: 50 }}>
+                <span
+                  className="user-pulse-ring"
+                  style={{
+                    position: 'absolute',
+                    width: 14,
+                    height: 14,
+                    borderRadius: '9999px',
+                    backgroundColor: 'rgba(194, 233, 255, 0.15)',
+                  }}
+                />
+                <span
+                  style={{
+                    position: 'relative',
+                    width: 14,
+                    height: 14,
+                    borderRadius: '9999px',
+                    backgroundColor: '#C2E9FF',
+                    border: '2.5px solid #fff',
+                    boxShadow: '0 0 12px rgba(194, 233, 255, 0.5), 0 2px 6px rgba(0,0,0,0.3)',
+                  }}
+                />
+              </div>
               {myStatus && (
                 <span
-                  className="mt-1 truncate px-2 py-0.5 text-[11px] font-medium text-white"
-                  style={{
-                    maxWidth: 140,
-                    backgroundColor: 'rgba(10, 10, 15, 0.85)',
-                    border: '1px solid rgba(194, 233, 255, 0.15)',
-                    borderRadius: 8,
-                  }}
+                  className="glass-pill mt-1 truncate px-2 py-0.5 text-[11px] font-medium text-white"
+                  style={{ maxWidth: 140, borderRadius: 8 }}
                 >
                   {myStatus}
                 </span>
@@ -447,22 +464,31 @@ export default function MapScreen() {
               }}
             >
               <div
-                className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] font-bold text-white"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-[14px] font-bold text-white"
                 style={{
                   backgroundColor: f.color,
+                  border: '1.5px solid #fff',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
                 }}
               >
                 {f.initial}
+                {/* Online indicator */}
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: -1,
+                    right: -1,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '9999px',
+                    backgroundColor: '#34D399',
+                    border: '1.5px solid #fff',
+                  }}
+                />
               </div>
               <span
-                className="mt-1 truncate px-2 py-0.5 text-[11px] text-white"
-                style={{
-                  maxWidth: 140,
-                  backgroundColor: 'rgba(10, 10, 15, 0.85)',
-                  border: '1px solid rgba(194, 233, 255, 0.15)',
-                  borderRadius: 8,
-                }}
+                className="glass-pill mt-1 truncate px-2 py-0.5 text-[10px] text-white"
+                style={{ maxWidth: 120, borderRadius: 10 }}
               >
                 {f.status}
               </span>
