@@ -11,7 +11,6 @@ export default function MapWelcomeBanner() {
     return () => clearTimeout(t);
   }, []);
 
-  // Render text with highlighted numbers
   const parts = welcome.text.split(/\{(\d)\}/g);
 
   return (
@@ -22,20 +21,16 @@ export default function MapWelcomeBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.3 }}
-          className="absolute left-4 right-4 z-10"
+          className="glass-card absolute z-10 flex items-center gap-2"
           style={{
-            top: 'calc(env(safe-area-inset-top, 12px) + 60px)',
-            backgroundColor: '#141419',
-            border: '1px solid #2A2A35',
-            borderRadius: 12,
+            top: 'calc(env(safe-area-inset-top, 12px) + 110px)',
+            left: 16,
+            right: 16,
+            borderRadius: 14,
             padding: '12px 16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
           }}
         >
-          <p style={{ fontSize: 13, color: '#fff', flex: 1, lineHeight: 1.3 }}>
+          <p style={{ fontSize: 13, color: '#fff', flex: 1, lineHeight: 1.3, position: 'relative', zIndex: 2 }}>
             {parts.map((part, i) => {
               if (/^\d$/.test(part)) {
                 return (
@@ -50,7 +45,7 @@ export default function MapWelcomeBanner() {
           <button
             onClick={() => setVisible(false)}
             aria-label="Dismiss welcome"
-            style={{ color: '#555566', fontSize: 16, lineHeight: 1, padding: 4 }}
+            style={{ color: '#555566', fontSize: 16, lineHeight: 1, padding: 4, position: 'relative', zIndex: 2 }}
           >
             ×
           </button>

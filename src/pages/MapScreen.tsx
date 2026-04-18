@@ -11,7 +11,7 @@ import CreateMomentSheet from '@/components/CreateMomentSheet';
 import MomentBeacon from '@/components/MomentBeacon';
 import MomentDetailCard, { type MomentDetail } from '@/components/MomentDetailCard';
 import FriendDetailCard, { type FriendCardData } from '@/components/FriendDetailCard';
-import { Ghost, Bell, Plus, Flame } from 'lucide-react';
+import { Ghost, Bell, Plus, Flame, Crosshair } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -268,11 +268,13 @@ export default function MapScreen() {
   }, [user, fetchFriends]);
 
   const TOAST_STYLE = {
-    backgroundColor: '#141419',
+    background: 'rgba(14, 14, 20, 0.65)',
+    backdropFilter: 'blur(40px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(40px) saturate(180%)',
     color: '#fff',
-    border: '1px solid #2A2A35',
-    borderRadius: 12,
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
   };
 
   const toggleGhost = async () => {
@@ -344,23 +346,40 @@ export default function MapScreen() {
           </Source>
         )}
 
-        {/* Own location */}
+        {/* Own location — Apple Find My style */}
         {position && (
           <Marker latitude={position.latitude} longitude={position.longitude} anchor="center">
             <div
               className="flex flex-col items-center transition-opacity duration-300"
               style={{ opacity: isGhost ? 0 : 1 }}
             >
-              <div className="h-4 w-4 rounded-full bg-primary pulse-dot" />
+              <div className="relative flex items-center justify-center" style={{ width: 50, height: 50 }}>
+                <span
+                  className="user-pulse-ring"
+                  style={{
+                    position: 'absolute',
+                    width: 14,
+                    height: 14,
+                    borderRadius: '9999px',
+                    backgroundColor: 'rgba(194, 233, 255, 0.15)',
+                  }}
+                />
+                <span
+                  style={{
+                    position: 'relative',
+                    width: 14,
+                    height: 14,
+                    borderRadius: '9999px',
+                    backgroundColor: '#C2E9FF',
+                    border: '2.5px solid #fff',
+                    boxShadow: '0 0 12px rgba(194, 233, 255, 0.5), 0 2px 6px rgba(0,0,0,0.3)',
+                  }}
+                />
+              </div>
               {myStatus && (
                 <span
-                  className="mt-1 truncate px-2 py-0.5 text-[11px] font-medium text-white"
-                  style={{
-                    maxWidth: 140,
-                    backgroundColor: 'rgba(10, 10, 15, 0.85)',
-                    border: '1px solid rgba(194, 233, 255, 0.15)',
-                    borderRadius: 8,
-                  }}
+                  className="glass-pill mt-1 truncate px-2 py-0.5 text-[11px] font-medium text-white"
+                  style={{ maxWidth: 140, borderRadius: 8 }}
                 >
                   {myStatus}
                 </span>
@@ -445,22 +464,31 @@ export default function MapScreen() {
               }}
             >
               <div
-                className="flex h-8 w-8 items-center justify-center rounded-full text-[14px] font-bold text-white"
+                className="relative flex h-9 w-9 items-center justify-center rounded-full text-[14px] font-bold text-white"
                 style={{
                   backgroundColor: f.color,
+                  border: '1.5px solid #fff',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
                 }}
               >
                 {f.initial}
+                {/* Online indicator */}
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: -1,
+                    right: -1,
+                    width: 8,
+                    height: 8,
+                    borderRadius: '9999px',
+                    backgroundColor: '#34D399',
+                    border: '1.5px solid #fff',
+                  }}
+                />
               </div>
               <span
-                className="mt-1 truncate px-2 py-0.5 text-[11px] text-white"
-                style={{
-                  maxWidth: 140,
-                  backgroundColor: 'rgba(10, 10, 15, 0.85)',
-                  border: '1px solid rgba(194, 233, 255, 0.15)',
-                  borderRadius: 8,
-                }}
+                className="glass-pill mt-1 truncate px-2 py-0.5 text-[10px] text-white"
+                style={{ maxWidth: 120, borderRadius: 10 }}
               >
                 {f.status}
               </span>
@@ -522,75 +550,121 @@ export default function MapScreen() {
         }}
       />
 
-      {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)]">
+      {/* Floating top-left: sera + ghost toggle (glass pill) */}
+      <div
+        className="glass-widget absolute z-10 flex items-center gap-2"
+        style={{
+          top: 'calc(env(safe-area-inset-top, 12px) + 42px)',
+          left: 16,
+          borderRadius: 22,
+          padding: '8px 14px',
+        }}
+      >
+        <span
+          className="text-[18px] font-black"
+          style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }}
+        >
+          sera
+        </span>
         <button
           onClick={toggleGhost}
-          className="flex items-center justify-center transition-all active:scale-[0.95]"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            backgroundColor: '#141419',
-            border: isGhost ? '1.5px solid #C2E9FF' : '1.5px solid transparent',
-            boxShadow: isGhost
-              ? '0 0 12px rgba(194, 233, 255, 0.3), 0 2px 8px rgba(0,0,0,0.4)'
-              : '0 2px 8px rgba(0,0,0,0.4)',
-            fontSize: 22,
-            lineHeight: 1,
-            filter: isGhost ? 'drop-shadow(0 0 4px rgba(194, 233, 255, 0.5))' : 'none',
-          }}
           aria-label="Toggle ghost mode"
+          className="flex items-center justify-center transition-transform active:scale-[0.92]"
+          style={{
+            width: 26,
+            height: 26,
+            borderRadius: '9999px',
+            fontSize: 16,
+            lineHeight: 1,
+            position: 'relative',
+            zIndex: 2,
+            border: isGhost ? '1.5px solid #C2E9FF' : '1.5px solid transparent',
+            boxShadow: isGhost ? '0 0 10px rgba(194, 233, 255, 0.45)' : 'none',
+            filter: isGhost ? 'none' : 'grayscale(0.4)',
+            opacity: isGhost ? 1 : 0.85,
+          }}
         >
           👻
         </button>
-        <span className="text-lg font-black" style={{ color: '#C2E9FF' }}>sera</span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleHeatmap}
-            className="flex items-center justify-center transition-all active:scale-[0.95]"
+      </div>
+
+      {/* Floating top-right: vertical glass control stack */}
+      <div
+        className="absolute z-10 flex flex-col gap-2"
+        style={{
+          top: 'calc(env(safe-area-inset-top, 12px) + 42px)',
+          right: 16,
+        }}
+      >
+        <button
+          onClick={() => navigate('/pings')}
+          className="glass-widget relative flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{ width: 40, height: 40, borderRadius: 14 }}
+          aria-label="Open activity"
+        >
+          <Bell size={20} style={{ color: '#FFFFFF', position: 'relative', zIndex: 2 }} />
+          {(unreadPings + mockUnreadCount) > 0 && (
+            <span
+              className="absolute -top-1 -right-1 flex items-center justify-center rounded-full px-1 text-[10px] font-bold"
+              style={{
+                height: 18,
+                minWidth: 18,
+                backgroundColor: '#C2E9FF',
+                color: '#0A0A0F',
+                zIndex: 3,
+                boxShadow: '0 0 6px rgba(194, 233, 255, 0.5)',
+              }}
+            >
+              {unreadPings + mockUnreadCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={toggleHeatmap}
+          className="glass-widget flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 14,
+            boxShadow: heatmapVisible
+              ? '0 0 12px rgba(194, 233, 255, 0.25), 0 4px 16px rgba(0,0,0,0.25)'
+              : undefined,
+          }}
+          aria-label="Toggle heatmap"
+        >
+          <Flame
+            size={18}
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              backgroundColor: '#141419',
-              border: heatmapVisible ? '1px solid rgba(194, 233, 255, 0.4)' : '1px solid #2A2A35',
-              boxShadow: heatmapVisible
-                ? '0 0 8px rgba(194, 233, 255, 0.2), 0 2px 8px rgba(0,0,0,0.4)'
-                : '0 2px 8px rgba(0,0,0,0.4)',
+              color: heatmapVisible ? '#C2E9FF' : '#555566',
+              position: 'relative',
+              zIndex: 2,
             }}
-            aria-label="Toggle heatmap"
-          >
-            <Flame size={18} style={{ color: heatmapVisible ? '#C2E9FF' : '#555566' }} />
-          </button>
-          <button
-            onClick={() => navigate('/pings')}
-            className="relative flex items-center justify-center transition-all active:scale-[0.95]"
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              backgroundColor: '#141419',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-            }}
-            aria-label="Open activity"
-          >
-            <Bell size={20} style={{ color: '#8A8A9A' }} />
-            {(unreadPings + mockUnreadCount) > 0 && (
-              <span
-                className="absolute -top-1 -right-1 flex items-center justify-center rounded-full px-1 text-[10px] font-bold"
-                style={{
-                  height: 18,
-                  minWidth: 18,
-                  backgroundColor: '#C2E9FF',
-                  color: '#0A0A0F',
-                }}
-              >
-                {unreadPings + mockUnreadCount}
-              </span>
-            )}
-          </button>
-        </div>
+          />
+        </button>
+
+        <button
+          onClick={() => {
+            if (position) {
+              mapRef.current?.flyTo({
+                center: [position.longitude, position.latitude],
+                zoom: 16,
+                duration: 800,
+              });
+            } else {
+              mapRef.current?.flyTo({
+                center: [UCLA_CENTER.longitude, UCLA_CENTER.latitude],
+                zoom: 15,
+                duration: 800,
+              });
+            }
+          }}
+          className="glass-widget flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{ width: 40, height: 40, borderRadius: 14 }}
+          aria-label="Re-center map"
+        >
+          <Crosshair size={18} style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }} />
+        </button>
       </div>
 
       {/* FAB for moment */}
@@ -605,20 +679,17 @@ export default function MapScreen() {
         <Plus size={28} style={{ color: '#0A0A0F' }} />
       </button>
 
-      {/* Status setter button */}
+      {/* Status setter button (glass) */}
       <button
         onClick={openStatusSheet}
-        className="absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] font-medium transition-all active:scale-[0.97]"
+        className="glass-widget absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] font-medium transition-transform active:scale-[0.97]"
         style={{
-          backgroundColor: '#141419',
-          border: '1px solid #2A2A35',
           color: '#C2E9FF',
           borderRadius: 9999,
           padding: '8px 16px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
         }}
       >
-        {myStatus || '+ set status'}
+        <span style={{ position: 'relative', zIndex: 2 }}>{myStatus || '+ set status'}</span>
       </button>
 
       {/* Friend card */}

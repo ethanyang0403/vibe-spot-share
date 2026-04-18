@@ -67,17 +67,15 @@ export default function AISuggestionCard({ hidden, onAction }: Props) {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
+              className="glass-card"
               style={{
-                backgroundColor: '#141419',
-                border: '1px solid #2A2A35',
                 borderLeft: '3px solid #C2E9FF',
                 borderRadius: 16,
                 padding: '14px 16px',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)',
               }}
             >
               {/* Top label row */}
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2" style={{ position: 'relative', zIndex: 2 }}>
                 <span
                   style={{
                     fontSize: 10,
@@ -105,10 +103,10 @@ export default function AISuggestionCard({ hidden, onAction }: Props) {
               <button
                 onClick={() => {
                   setShowReason((v) => !v);
-                  // Trigger main action with a slight delay so reason can flash
                   setTimeout(() => onAction(s.action), 600);
                 }}
                 className="w-full text-left active:scale-[0.99] transition-transform"
+                style={{ position: 'relative', zIndex: 2 }}
               >
                 <div className="flex items-start gap-3">
                   <div
@@ -167,7 +165,7 @@ export default function AISuggestionCard({ hidden, onAction }: Props) {
                 </div>
               </button>
 
-              <div className="flex justify-end mt-2">
+              <div className="flex justify-end mt-2" style={{ position: 'relative', zIndex: 2 }}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

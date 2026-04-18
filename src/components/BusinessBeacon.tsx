@@ -15,9 +15,7 @@ function formatRemaining(min: number): string {
   return `${h}h ${m}m left`;
 }
 
-// Pulsing blue beacon for active business "Promoted Moments".
-// Visually similar to user MomentBeacon but slightly slower pulse,
-// emoji icon in the center, and a "Promoted" label below the timer.
+// Active business beacon with glass inner circle + pulsing ring.
 export default function BusinessBeacon({ icon, title, expiresInMinutes, onClick }: Props) {
   const [remaining, setRemaining] = useState(expiresInMinutes);
 
@@ -32,20 +30,16 @@ export default function BusinessBeacon({ icon, title, expiresInMinutes, onClick 
       className="flex flex-col items-center"
       style={{ pointerEvents: "auto" }}
     >
-      {/* Title pill */}
+      {/* Title pill (glass) */}
       <span
-        className="mb-1 truncate rounded-lg px-2.5 py-1 text-[11px] font-bold text-white"
-        style={{
-          maxWidth: 180,
-          backgroundColor: "rgba(10, 10, 15, 0.9)",
-          border: "1px solid rgba(194, 233, 255, 0.25)",
-        }}
+        className="glass-pill mb-1 truncate px-2.5 py-1 text-[11px] font-bold text-white"
+        style={{ maxWidth: 180, borderRadius: 10 }}
       >
         {title}
       </span>
 
-      {/* Beacon: 32px circle with emoji + slow pulse ring */}
-      <div className="relative flex h-8 w-8 items-center justify-center">
+      {/* Beacon: 36px glass circle + slow pulse ring */}
+      <div className="relative flex h-9 w-9 items-center justify-center">
         <span
           className="business-ring"
           style={{
@@ -53,40 +47,45 @@ export default function BusinessBeacon({ icon, title, expiresInMinutes, onClick 
             inset: 0,
             borderRadius: "9999px",
             backgroundColor: "#C2E9FF",
+            opacity: 0.5,
           }}
         />
         <span
+          className="glass-card"
           style={{
             position: "relative",
-            width: 32,
-            height: 32,
+            width: 36,
+            height: 36,
             borderRadius: "9999px",
-            backgroundColor: "rgba(194, 233, 255, 0.15)",
-            border: "1.5px solid #C2E9FF",
+            border: "1px solid rgba(194, 233, 255, 0.3)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            fontSize: 16,
+            fontSize: 18,
             lineHeight: 1,
+            boxShadow: "0 4px 16px rgba(194, 233, 255, 0.2)",
           }}
         >
-          {icon}
+          <span style={{ position: "relative", zIndex: 2 }}>{icon}</span>
         </span>
       </div>
 
-      {/* Timer pill */}
+      {/* "LIVE" tag */}
       <span
-        className="mt-1.5 rounded-full px-2 py-0.5 text-[10px] font-bold"
+        className="mt-1.5 px-2 py-0.5 text-[9px] font-bold"
         style={{
-          backgroundColor: "rgba(194, 233, 255, 0.12)",
+          backgroundColor: "rgba(194, 233, 255, 0.15)",
+          backdropFilter: "blur(12px) saturate(140%)",
+          WebkitBackdropFilter: "blur(12px) saturate(140%)",
           border: "1px solid rgba(194, 233, 255, 0.25)",
           color: "#C2E9FF",
+          borderRadius: 8,
+          letterSpacing: 0.5,
         }}
       >
-        {formatRemaining(remaining)}
+        LIVE · {formatRemaining(remaining)}
       </span>
 
-      {/* "Promoted" label — distinguishes business Moments from user Moments */}
       <span className="mt-0.5 text-[9px]" style={{ color: "#8A8A9A" }}>
         Promoted
       </span>
