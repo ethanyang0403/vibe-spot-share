@@ -89,6 +89,13 @@
     rgba(255, 255, 255, 0.02) 40%,
     transparent 100%
   );
+
+  /* === MOTION SYSTEM === */
+  --spring: cubic-bezier(0.32, 0.72, 0, 1);
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --duration-spring: 500ms;
 }
 
 @layer utilities {
