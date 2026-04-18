@@ -550,75 +550,121 @@ export default function MapScreen() {
         }}
       />
 
-      {/* Top bar */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 pt-[calc(env(safe-area-inset-top,12px)+8px)]">
+      {/* Floating top-left: sera + ghost toggle (glass pill) */}
+      <div
+        className="glass-widget absolute z-10 flex items-center gap-2"
+        style={{
+          top: 'calc(env(safe-area-inset-top, 12px) + 42px)',
+          left: 16,
+          borderRadius: 22,
+          padding: '8px 14px',
+        }}
+      >
+        <span
+          className="text-[18px] font-black"
+          style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }}
+        >
+          sera
+        </span>
         <button
           onClick={toggleGhost}
-          className="flex items-center justify-center transition-all active:scale-[0.95]"
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            backgroundColor: '#141419',
-            border: isGhost ? '1.5px solid #C2E9FF' : '1.5px solid transparent',
-            boxShadow: isGhost
-              ? '0 0 12px rgba(194, 233, 255, 0.3), 0 2px 8px rgba(0,0,0,0.4)'
-              : '0 2px 8px rgba(0,0,0,0.4)',
-            fontSize: 22,
-            lineHeight: 1,
-            filter: isGhost ? 'drop-shadow(0 0 4px rgba(194, 233, 255, 0.5))' : 'none',
-          }}
           aria-label="Toggle ghost mode"
+          className="flex items-center justify-center transition-transform active:scale-[0.92]"
+          style={{
+            width: 26,
+            height: 26,
+            borderRadius: '9999px',
+            fontSize: 16,
+            lineHeight: 1,
+            position: 'relative',
+            zIndex: 2,
+            border: isGhost ? '1.5px solid #C2E9FF' : '1.5px solid transparent',
+            boxShadow: isGhost ? '0 0 10px rgba(194, 233, 255, 0.45)' : 'none',
+            filter: isGhost ? 'none' : 'grayscale(0.4)',
+            opacity: isGhost ? 1 : 0.85,
+          }}
         >
           👻
         </button>
-        <span className="text-lg font-black" style={{ color: '#C2E9FF' }}>sera</span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={toggleHeatmap}
-            className="flex items-center justify-center transition-all active:scale-[0.95]"
+      </div>
+
+      {/* Floating top-right: vertical glass control stack */}
+      <div
+        className="absolute z-10 flex flex-col gap-2"
+        style={{
+          top: 'calc(env(safe-area-inset-top, 12px) + 42px)',
+          right: 16,
+        }}
+      >
+        <button
+          onClick={() => navigate('/pings')}
+          className="glass-widget relative flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{ width: 40, height: 40, borderRadius: 14 }}
+          aria-label="Open activity"
+        >
+          <Bell size={20} style={{ color: '#FFFFFF', position: 'relative', zIndex: 2 }} />
+          {(unreadPings + mockUnreadCount) > 0 && (
+            <span
+              className="absolute -top-1 -right-1 flex items-center justify-center rounded-full px-1 text-[10px] font-bold"
+              style={{
+                height: 18,
+                minWidth: 18,
+                backgroundColor: '#C2E9FF',
+                color: '#0A0A0F',
+                zIndex: 3,
+                boxShadow: '0 0 6px rgba(194, 233, 255, 0.5)',
+              }}
+            >
+              {unreadPings + mockUnreadCount}
+            </span>
+          )}
+        </button>
+
+        <button
+          onClick={toggleHeatmap}
+          className="glass-widget flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: 14,
+            boxShadow: heatmapVisible
+              ? '0 0 12px rgba(194, 233, 255, 0.25), 0 4px 16px rgba(0,0,0,0.25)'
+              : undefined,
+          }}
+          aria-label="Toggle heatmap"
+        >
+          <Flame
+            size={18}
             style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              backgroundColor: '#141419',
-              border: heatmapVisible ? '1px solid rgba(194, 233, 255, 0.4)' : '1px solid #2A2A35',
-              boxShadow: heatmapVisible
-                ? '0 0 8px rgba(194, 233, 255, 0.2), 0 2px 8px rgba(0,0,0,0.4)'
-                : '0 2px 8px rgba(0,0,0,0.4)',
+              color: heatmapVisible ? '#C2E9FF' : '#555566',
+              position: 'relative',
+              zIndex: 2,
             }}
-            aria-label="Toggle heatmap"
-          >
-            <Flame size={18} style={{ color: heatmapVisible ? '#C2E9FF' : '#555566' }} />
-          </button>
-          <button
-            onClick={() => navigate('/pings')}
-            className="relative flex items-center justify-center transition-all active:scale-[0.95]"
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 12,
-              backgroundColor: '#141419',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
-            }}
-            aria-label="Open activity"
-          >
-            <Bell size={20} style={{ color: '#8A8A9A' }} />
-            {(unreadPings + mockUnreadCount) > 0 && (
-              <span
-                className="absolute -top-1 -right-1 flex items-center justify-center rounded-full px-1 text-[10px] font-bold"
-                style={{
-                  height: 18,
-                  minWidth: 18,
-                  backgroundColor: '#C2E9FF',
-                  color: '#0A0A0F',
-                }}
-              >
-                {unreadPings + mockUnreadCount}
-              </span>
-            )}
-          </button>
-        </div>
+          />
+        </button>
+
+        <button
+          onClick={() => {
+            if (position) {
+              mapRef.current?.flyTo({
+                center: [position.longitude, position.latitude],
+                zoom: 16,
+                duration: 800,
+              });
+            } else {
+              mapRef.current?.flyTo({
+                center: [UCLA_CENTER.longitude, UCLA_CENTER.latitude],
+                zoom: 15,
+                duration: 800,
+              });
+            }
+          }}
+          className="glass-widget flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{ width: 40, height: 40, borderRadius: 14 }}
+          aria-label="Re-center map"
+        >
+          <Crosshair size={18} style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }} />
+        </button>
       </div>
 
       {/* FAB for moment */}
