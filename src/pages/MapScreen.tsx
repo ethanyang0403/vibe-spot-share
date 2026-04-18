@@ -11,7 +11,7 @@ import CreateMomentSheet from '@/components/CreateMomentSheet';
 import MomentBeacon from '@/components/MomentBeacon';
 import MomentDetailCard, { type MomentDetail } from '@/components/MomentDetailCard';
 import FriendDetailCard, { type FriendCardData } from '@/components/FriendDetailCard';
-import { Ghost, Bell, Plus, Flame } from 'lucide-react';
+import { Ghost, Bell, Plus, Flame, Crosshair } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
