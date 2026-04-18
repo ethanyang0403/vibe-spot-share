@@ -165,7 +165,7 @@ export default function AISuggestionCard({ hidden, onAction }: Props) {
                 </div>
               </button>
 
-              <div className="flex justify-end mt-2">
+              <div className="flex justify-end mt-2" style={{ position: 'relative', zIndex: 2 }}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
