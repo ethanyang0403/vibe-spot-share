@@ -126,9 +126,19 @@ export default function PingsScreen() {
           )}
         </div>
         {unreadCount > 0 && (
-          <p className="text-[13px] font-bold mt-1" style={{ color: '#C2E9FF' }}>
+          <span
+            className="inline-flex items-center mt-1 glass-pill"
+            style={{
+              color: '#C2E9FF',
+              backgroundColor: 'rgba(194, 233, 255, 0.1)',
+              padding: '4px 10px',
+              borderRadius: 10,
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
             {unreadCount} new
-          </p>
+          </span>
         )}
       </div>
 
@@ -171,7 +181,7 @@ export default function PingsScreen() {
                     style={{
                       padding: '14px 16px',
                       backgroundColor: !n.read ? 'rgba(194, 233, 255, 0.04)' : 'transparent',
-                      borderBottom: '1px solid #141419',
+                      borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
                     }}
                   >
                     <div className="flex items-start gap-3">
@@ -309,9 +319,8 @@ export default function PingsScreen() {
                                 e.stopPropagation();
                                 declineRequest(n);
                               }}
-                              className="font-bold transition-all active:scale-[0.97]"
+                              className="font-bold transition-all active:scale-[0.97] glass-pill"
                               style={{
-                                backgroundColor: '#1C1C24',
                                 color: '#555566',
                                 fontSize: 12,
                                 padding: '6px 18px',
@@ -347,11 +356,10 @@ export default function PingsScreen() {
                         className="overflow-hidden"
                       >
                         <div
+                          className="glass-card"
                           style={{
                             margin: '8px 8px 8px 8px',
                             padding: 16,
-                            backgroundColor: '#141419',
-                            border: '1px solid #2A2A35',
                             borderRadius: 14,
                           }}
                         >
