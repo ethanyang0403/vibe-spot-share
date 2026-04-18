@@ -103,10 +103,10 @@ export default function AISuggestionCard({ hidden, onAction }: Props) {
               <button
                 onClick={() => {
                   setShowReason((v) => !v);
-                  // Trigger main action with a slight delay so reason can flash
                   setTimeout(() => onAction(s.action), 600);
                 }}
                 className="w-full text-left active:scale-[0.99] transition-transform"
+                style={{ position: 'relative', zIndex: 2 }}
               >
                 <div className="flex items-start gap-3">
                   <div
