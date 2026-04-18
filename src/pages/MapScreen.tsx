@@ -6,22 +6,17 @@ import { HEATMAP_GEOJSON } from '@/lib/heatmapData';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserLocation } from '@/hooks/useLocation';
-import StatusSheet from '@/components/StatusSheet';
-import CreateMomentSheet from '@/components/CreateMomentSheet';
 import MomentBeacon from '@/components/MomentBeacon';
-import MomentDetailCard, { type MomentDetail } from '@/components/MomentDetailCard';
-import FriendDetailCard, { type FriendCardData } from '@/components/FriendDetailCard';
-import { Ghost, Bell, Plus, Flame, Crosshair } from 'lucide-react';
+import type { MomentDetail } from '@/components/MomentDetailCard';
+import type { FriendCardData } from '@/components/FriendDetailCard';
+import { Bell, Plus, Flame, Crosshair } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { FOCUS_FRIEND_EVENT } from '@/lib/friendsMock';
 import { MOCK_BUSINESSES, FOCUS_BUSINESS_EVENT, Business } from '@/lib/businessesMock';
 import BusinessPin from '@/components/BusinessPin';
 import BusinessBeacon from '@/components/BusinessBeacon';
-import BusinessDetailCard from '@/components/BusinessDetailCard';
-import AISuggestionCard from '@/components/AISuggestionCard';
 import MapWelcomeBanner from '@/components/MapWelcomeBanner';
+import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/components/MapBottomSheet';
 import type { AISuggestion } from '@/lib/aiSuggestions';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
@@ -85,6 +80,29 @@ const MOCK_FRIENDS: MockFriend[] = [
 
 const UCLA_CENTER = { latitude: 34.0689, longitude: -118.4452 };
 
+function mockFriendToCard(f: MockFriend): FriendCardData {
+  return {
+    id: f.id,
+    name: f.name,
+    username: '@' + f.name.toLowerCase().replace(/\s+/g, ''),
+    initial: f.initial,
+    color: f.color,
+    status: f.status,
+    lat: f.lat,
+    lng: f.lng,
+  };
+}
+
+const TOAST_STYLE = {
+  background: 'rgba(14, 14, 20, 0.65)',
+  backdropFilter: 'blur(40px) saturate(180%)',
+  WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+  color: '#fff',
+  border: '1px solid rgba(255, 255, 255, 0.12)',
+  borderRadius: 16,
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+};
+
 export default function MapScreen() {
   const { user } = useAuth();
   const { position } = useUserLocation();
@@ -94,16 +112,14 @@ export default function MapScreen() {
   const [friends, setFriends] = useState<FriendLocation[]>([]);
   const [moments, setMoments] = useState<MockMoment[]>(() => buildMockMoments());
   const [isGhost, setIsGhost] = useState(false);
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [momentOpen, setMomentOpen] = useState(false);
-  const [selectedFriend, setSelectedFriend] = useState<FriendLocation | null>(null);
-  const [selectedMockFriend, setSelectedMockFriend] = useState<FriendCardData | null>(null);
-  const [selectedMoment, setSelectedMoment] = useState<MomentDetail | null>(null);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
-  const [selectedBusiness, setSelectedBusiness] = useState<Business | null>(null);
   const [heatmapVisible, setHeatmapVisible] = useState(true);
+
+  // Unified sheet state
+  const [sheetHeight, setSheetHeight] = useState<SheetHeight>('peek');
+  const [sheetContent, setSheetContent] = useState<SheetContent>({ type: 'default' });
 
   const heatmapLayer: LayerProps = {
     id: 'heatmap-layer',
@@ -131,57 +147,60 @@ export default function MapScreen() {
     const newVal = !heatmapVisible;
     setHeatmapVisible(newVal);
     toast(newVal ? 'Heatmap visible' : 'Heatmap hidden', {
-      style: {
-        backgroundColor: '#141419',
-        color: '#fff',
-        border: '1px solid #2A2A35',
-        borderRadius: 12,
-        boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
-      },
+      style: TOAST_STYLE,
       position: 'top-center',
       duration: 2000,
     });
   };
+
+  // Helpers to open specific sheet content
+  const openFriend = useCallback((f: MockFriend) => {
+    mapRef.current?.flyTo({ center: [f.lng, f.lat], zoom: 16, duration: 800 });
+    setSheetContent({ type: 'friend', friend: mockFriendToCard(f) });
+    setSheetHeight((h) => (h === 'peek' ? 'half' : h));
+  }, []);
+
+  const openBusiness = useCallback((b: Business) => {
+    mapRef.current?.flyTo({ center: [b.lng, b.lat], zoom: 16, duration: 800 });
+    setSheetContent({ type: 'business', business: b });
+    setSheetHeight((h) => (h === 'peek' ? 'half' : h));
+  }, []);
+
+  const openMoment = useCallback((m: MockMoment) => {
+    mapRef.current?.flyTo({ center: [m.lng, m.lat], zoom: 16, duration: 800 });
+    setSheetContent({
+      type: 'moment',
+      moment: { id: m.id, title: m.title, creator: m.creator, lat: m.lat, lng: m.lng, expiresAt: m.expiresAt },
+    });
+    setSheetHeight((h) => (h === 'peek' ? 'half' : h));
+  }, []);
+
+  const closeSheet = useCallback(() => {
+    setSheetContent({ type: 'default' });
+    setSheetHeight('peek');
+  }, []);
 
   // Listen for "focus friend" requests from the Friends tab
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<{ friendId: string }>).detail;
       const f = mockFriends.find((m) => m.id === detail.friendId);
-      if (!f) return;
-      mapRef.current?.flyTo({ center: [f.lng, f.lat], zoom: 16, duration: 900 });
-      setSelectedFriend(null);
-      setSelectedMoment(null);
-      setSelectedMockFriend({
-        id: f.id,
-        name: f.name,
-        username: '@' + f.name.toLowerCase().replace(/\s+/g, ''),
-        initial: f.initial,
-        color: f.color,
-        status: f.status,
-        lat: f.lat,
-        lng: f.lng,
-      });
+      if (f) openFriend(f);
     };
     window.addEventListener(FOCUS_FRIEND_EVENT, handler);
     return () => window.removeEventListener(FOCUS_FRIEND_EVENT, handler);
-  }, [mockFriends]);
+  }, [mockFriends, openFriend]);
 
   // Listen for "focus business" requests from the Explore tab
   useEffect(() => {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent<{ businessId: string }>).detail;
       const b = MOCK_BUSINESSES.find((x) => x.id === detail.businessId);
-      if (!b) return;
-      mapRef.current?.flyTo({ center: [b.lng, b.lat], zoom: 16, duration: 900 });
-      setSelectedFriend(null);
-      setSelectedMoment(null);
-      setSelectedMockFriend(null);
-      setSelectedBusiness(b);
+      if (b) openBusiness(b);
     };
     window.addEventListener(FOCUS_BUSINESS_EVENT, handler);
     return () => window.removeEventListener(FOCUS_BUSINESS_EVENT, handler);
-  }, []);
+  }, [openBusiness]);
 
   // Subtle drift animation for mock friends every 12s
   useEffect(() => {
@@ -212,7 +231,6 @@ export default function MapScreen() {
     upsert();
   }, [user, position, isGhost]);
 
-  // Fetch friends locations
   const fetchFriends = useCallback(async () => {
     if (!user) return;
     const { data } = await supabase
@@ -250,9 +268,7 @@ export default function MapScreen() {
       .then(({ count }) => setUnreadPings(count ?? 0));
   }, [user]);
 
-  useEffect(() => {
-    fetchFriends();
-  }, [fetchFriends]);
+  useEffect(() => { fetchFriends(); }, [fetchFriends]);
 
   // Realtime subscriptions
   useEffect(() => {
@@ -266,16 +282,6 @@ export default function MapScreen() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, [user, fetchFriends]);
-
-  const TOAST_STYLE = {
-    background: 'rgba(14, 14, 20, 0.65)',
-    backdropFilter: 'blur(40px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(40px) saturate(180%)',
-    color: '#fff',
-    border: '1px solid rgba(255, 255, 255, 0.12)',
-    borderRadius: 16,
-    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
-  };
 
   const toggleGhost = async () => {
     const newVal = !isGhost;
@@ -301,32 +307,60 @@ export default function MapScreen() {
         updated_at: new Date().toISOString(),
       }).eq('user_id', user.id);
     }
+    toast('Status updated ✓', { style: TOAST_STYLE, position: 'top-center', duration: 2000 });
   };
 
-  const openStatusSheet = () => {
-    setSelectedFriend(null);
-    setSelectedMockFriend(null);
-    setSelectedMoment(null);
-    setSelectedBusiness(null);
-    setStatusOpen(true);
+  const handleCreateMoment = (title: string, durationMin: number) => {
+    const lat = position?.latitude ?? 34.0689;
+    const lng = position?.longitude ?? -118.4452;
+    setMoments((prev) => [
+      ...prev,
+      {
+        id: `local-${Date.now()}`,
+        title,
+        creator: 'You',
+        lat: lat + (Math.random() - 0.5) * 0.002,
+        lng: lng + (Math.random() - 0.5) * 0.002,
+        expiresAt: new Date(Date.now() + durationMin * 60_000),
+      },
+    ]);
+    toast('Moment dropped! 🔥', { style: TOAST_STYLE, position: 'top-center', duration: 2500 });
   };
 
   const sendPing = async (recipientId: string) => {
     if (!user) return;
-    const { error } = await supabase.from('pings').insert({
+    await supabase.from('pings').insert({
       sender_id: user.id,
       recipient_id: recipientId,
       latitude: position?.latitude,
       longitude: position?.longitude,
     });
-    if (error) toast.error('Failed to send ping');
-    else { toast.success('Ping sent! 📍'); setSelectedFriend(null); }
+  };
+
+  const handleAISuggestion = (action: AISuggestion['action']) => {
+    if (action.type === 'show_business') {
+      const b = MOCK_BUSINESSES.find((x) => x.id === action.id);
+      if (b) openBusiness(b);
+    } else if (action.type === 'center_map') {
+      mapRef.current?.flyTo({ center: [action.lng, action.lat], zoom: 16, duration: 900 });
+    } else if (action.type === 'show_moment') {
+      const m = moments.find((x) => x.id === action.id);
+      if (m) openMoment(m);
+    }
   };
 
   const vp = {
     latitude: UCLA_CENTER.latitude,
     longitude: UCLA_CENTER.longitude,
     zoom: 15,
+  };
+
+  // Tap on the map (not a marker) collapses the sheet from Half/Full to Peek
+  const handleMapClick = () => {
+    if (sheetHeight !== 'peek') {
+      setSheetHeight('peek');
+      setSheetContent({ type: 'default' });
+    }
   };
 
   return (
@@ -338,8 +372,8 @@ export default function MapScreen() {
         mapStyle="mapbox://styles/mapbox/dark-v11"
         style={{ width: '100%', height: '100%' }}
         attributionControl={false}
+        onClick={handleMapClick}
       >
-        {/* Heatmap density layer (lowest z-index, beneath all markers) */}
         {heatmapVisible && (
           <Source id="heatmap-source" type="geojson" data={HEATMAP_GEOJSON}>
             <Layer {...heatmapLayer} />
@@ -388,46 +422,46 @@ export default function MapScreen() {
           </Marker>
         )}
 
-        {/* Inactive business pins (lowest layer) */}
         {MOCK_BUSINESSES.filter((b) => !b.promotedMoment.active).map((b) => (
           <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
-            <BusinessPin
-              icon={b.icon}
-              onClick={() => {
-                setSelectedFriend(null);
-                setSelectedMockFriend(null);
-                setSelectedMoment(null);
-                setSelectedBusiness(b);
-              }}
-            />
+            <BusinessPin icon={b.icon} onClick={() => openBusiness(b)} />
           </Marker>
         ))}
 
-        {/* Active business beacons (above inactive pins, below user Moments + friends) */}
         {MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).map((b) => (
           <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
             <BusinessBeacon
               icon={b.icon}
               title={b.promotedMoment.title!}
               expiresInMinutes={b.promotedMoment.expiresInMinutes!}
-              onClick={() => {
-                setSelectedFriend(null);
-                setSelectedMockFriend(null);
-                setSelectedMoment(null);
-                setSelectedBusiness(b);
-              }}
+              onClick={() => openBusiness(b)}
             />
           </Marker>
         ))}
 
         {friends.map((f) => (
           <Marker key={f.user_id} latitude={f.latitude} longitude={f.longitude}>
-            <button onClick={() => { setSelectedFriend(f); setSelectedMoment(null); setSelectedBusiness(null); }} className="flex flex-col items-center">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-sm font-bold text-foreground border-2 border-primary/50">
+            <button
+              onClick={() => {
+                // Map real friends into mock-style card data so the sheet can render them
+                const fakeMock: MockFriend = {
+                  id: f.user_id,
+                  name: f.profile?.display_name || f.profile?.username || 'Friend',
+                  initial: ((f.profile?.display_name || f.profile?.username || '?')[0] || '?').toUpperCase(),
+                  status: f.status_text || '',
+                  lat: f.latitude,
+                  lng: f.longitude,
+                  color: '#C2E9FF',
+                };
+                openFriend(fakeMock);
+              }}
+              className="flex flex-col items-center"
+            >
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-sm font-bold text-foreground border-2 border-white">
                 {(f.profile?.display_name || f.profile?.username || '?')[0].toUpperCase()}
               </div>
               {f.status_text && (
-                <span className="mt-0.5 max-w-[80px] truncate rounded-full bg-card/90 px-2 py-0.5 text-[10px] text-foreground">
+                <span className="glass-pill mt-1 max-w-[120px] truncate px-2 py-0.5 text-[10px] text-white" style={{ borderRadius: 10 }}>
                   {f.status_text}
                 </span>
               )}
@@ -435,29 +469,13 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {/* Mock friends (demo data) */}
         {mockFriends.map((f) => (
           <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
             <button
-              onClick={() => {
-                setSelectedFriend(null);
-                setSelectedMoment(null);
-                setSelectedBusiness(null);
-                setSelectedMockFriend({
-                  id: f.id,
-                  name: f.name,
-                  username: '@' + f.name.toLowerCase().replace(/\s+/g, ''),
-                  initial: f.initial,
-                  color: f.color,
-                  status: f.status,
-                  lat: f.lat,
-                  lng: f.lng,
-                });
-              }}
+              onClick={() => openFriend(f)}
               className="flex flex-col items-center"
               style={{
                 transition: 'transform 2s ease-in-out',
-                // Expand tap target without changing visual size
                 padding: 6,
                 minWidth: 44,
                 minHeight: 44,
@@ -472,7 +490,6 @@ export default function MapScreen() {
                 }}
               >
                 {f.initial}
-                {/* Online indicator */}
                 <span
                   style={{
                     position: 'absolute',
@@ -496,63 +513,22 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {/* Moment beacons */}
         {moments.map((m) => (
           <Marker key={m.id} latitude={m.lat} longitude={m.lng} anchor="center">
             <MomentBeacon
               title={m.title}
               expiresAt={m.expiresAt}
-              onClick={() => {
-                setSelectedFriend(null);
-                setSelectedMockFriend(null);
-                setSelectedBusiness(null);
-                setSelectedMoment({
-                  id: m.id,
-                  title: m.title,
-                  creator: m.creator,
-                  lat: m.lat,
-                  lng: m.lng,
-                  expiresAt: m.expiresAt,
-                });
-              }}
+              onClick={() => openMoment(m)}
             />
           </Marker>
         ))}
       </ReactMapGL>
 
-      {/* Time-aware welcome banner (auto-dismisses after 5s) */}
       <MapWelcomeBanner />
 
-      {/* AI suggestion card — hidden when any sheet/card is open */}
-      <AISuggestionCard
-        hidden={!!(selectedFriend || selectedMockFriend || selectedMoment || selectedBusiness || statusOpen || momentOpen)}
-        onAction={(action: AISuggestion['action']) => {
-          if (action.type === 'show_business') {
-            const b = MOCK_BUSINESSES.find((x) => x.id === action.id);
-            if (!b) return;
-            mapRef.current?.flyTo({ center: [b.lng, b.lat], zoom: 16, duration: 900 });
-            setSelectedBusiness(b);
-          } else if (action.type === 'center_map') {
-            mapRef.current?.flyTo({ center: [action.lng, action.lat], zoom: 16, duration: 900 });
-          } else if (action.type === 'show_moment') {
-            const m = moments.find((x) => x.id === action.id);
-            if (!m) return;
-            mapRef.current?.flyTo({ center: [m.lng, m.lat], zoom: 16, duration: 900 });
-            setSelectedMoment({
-              id: m.id,
-              title: m.title,
-              creator: m.creator,
-              lat: m.lat,
-              lng: m.lng,
-              expiresAt: m.expiresAt,
-            });
-          }
-        }}
-      />
-
-      {/* Floating top-left: sera + ghost toggle (glass pill) */}
+      {/* Floating top-left: sera + ghost toggle (long-press → status setter) */}
       <div
-        className="glass-widget absolute z-10 flex items-center gap-2"
+        className="glass-widget absolute z-20 flex items-center gap-2"
         style={{
           top: 'calc(env(safe-area-inset-top, 12px) + 42px)',
           left: 16,
@@ -560,12 +536,18 @@ export default function MapScreen() {
           padding: '8px 14px',
         }}
       >
-        <span
-          className="text-[18px] font-black"
+        <button
+          onClick={() => {
+            // Tap → open status setter inside sheet
+            setSheetContent({ type: 'status' });
+            setSheetHeight('half');
+          }}
+          className="text-[18px] font-black transition-opacity active:opacity-80"
           style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }}
+          aria-label="Open status setter"
         >
           sera
-        </span>
+        </button>
         <button
           onClick={toggleGhost}
           aria-label="Toggle ghost mode"
@@ -590,7 +572,7 @@ export default function MapScreen() {
 
       {/* Floating top-right: vertical glass control stack */}
       <div
-        className="absolute z-10 flex flex-col gap-2"
+        className="absolute z-20 flex flex-col gap-2"
         style={{
           top: 'calc(env(safe-area-inset-top, 12px) + 42px)',
           right: 16,
@@ -667,96 +649,49 @@ export default function MapScreen() {
         </button>
       </div>
 
-      {/* FAB for moment */}
-      <button
-        onClick={() => setMomentOpen(true)}
-        className="absolute bottom-6 right-4 z-10 flex h-14 w-14 items-center justify-center rounded-full transition-all active:scale-[0.95]"
-        style={{
-          backgroundColor: '#C2E9FF',
-          boxShadow: '0 4px 16px rgba(194, 233, 255, 0.25)',
+      {/* Persistent bottom sheet */}
+      <MapBottomSheet
+        height={sheetHeight}
+        content={sheetContent}
+        onHeightChange={setSheetHeight}
+        onClose={closeSheet}
+        friendsActive={mockFriends}
+        momentsActive={moments}
+        onSelectFriend={(id) => {
+          const f = mockFriends.find((x) => x.id === id);
+          if (f) openFriend(f);
         }}
-      >
-        <Plus size={28} style={{ color: '#0A0A0F' }} />
-      </button>
-
-      {/* Status setter button (glass) */}
-      <button
-        onClick={openStatusSheet}
-        className="glass-widget absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] font-medium transition-transform active:scale-[0.97]"
-        style={{
-          color: '#C2E9FF',
-          borderRadius: 9999,
-          padding: '8px 16px',
+        onSelectBusiness={openBusiness}
+        onSelectMoment={(id) => {
+          const m = moments.find((x) => x.id === id);
+          if (m) openMoment(m);
         }}
-      >
-        <span style={{ position: 'relative', zIndex: 2 }}>{myStatus || '+ set status'}</span>
-      </button>
-
-      {/* Friend card */}
-      <AnimatePresence>
-        {selectedFriend && (
-          <motion.div
-            initial={{ y: 200, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 200, opacity: 0 }}
-            className="absolute bottom-20 left-4 right-4 z-20 rounded-2xl bg-card p-4 border border-border"
-          >
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-lg font-bold text-foreground">
-                {(selectedFriend.profile?.display_name || selectedFriend.profile?.username || '?')[0].toUpperCase()}
-              </div>
-              <div className="flex-1">
-                <p className="font-semibold text-foreground">{selectedFriend.profile?.display_name || selectedFriend.profile?.username}</p>
-                <p className="text-sm text-muted-foreground">@{selectedFriend.profile?.username}</p>
-                {selectedFriend.status_text && (
-                  <p className="text-xs text-primary mt-0.5">{selectedFriend.status_text}</p>
-                )}
-              </div>
-              <Button onClick={() => sendPing(selectedFriend.user_id)} className="rounded-xl sera-gradient text-primary-foreground">
-                Ping
-              </Button>
-            </div>
-            <button onClick={() => setSelectedFriend(null)} className="absolute top-2 right-3 text-muted-foreground text-sm">✕</button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <MomentDetailCard
-        moment={selectedMoment}
-        onClose={() => setSelectedMoment(null)}
-      />
-      <FriendDetailCard
-        friend={selectedMockFriend}
-        onClose={() => setSelectedMockFriend(null)}
-      />
-      <BusinessDetailCard
-        business={selectedBusiness}
-        onClose={() => setSelectedBusiness(null)}
-      />
-
-      <StatusSheet
-        open={statusOpen}
-        onClose={() => setStatusOpen(false)}
+        onAISuggestion={handleAISuggestion}
         currentStatus={myStatus}
+        isGhost={isGhost}
         onSetStatus={handleSetStatus}
+        onToggleGhost={toggleGhost}
+        onCreateMoment={handleCreateMoment}
+        onPing={sendPing}
       />
-      <CreateMomentSheet
-        open={momentOpen}
-        onClose={() => setMomentOpen(false)}
-        onCreate={(title, durationMin) => {
-          const lat = position?.latitude ?? 34.0689;
-          const lng = position?.longitude ?? -118.4452;
-          setMoments((prev) => [
-            ...prev,
-            {
-              id: `local-${Date.now()}`,
-              title,
-              creator: 'You',
-              lat: lat + (Math.random() - 0.5) * 0.002,
-              lng: lng + (Math.random() - 0.5) * 0.002,
-              expiresAt: new Date(Date.now() + durationMin * 60_000),
-            },
-          ]);
+
+      {/* FAB for creating a Moment — sits above the bottom sheet at peek height,
+          and above the tab bar */}
+      <button
+        onClick={() => {
+          setSheetContent({ type: 'create-moment' });
+          setSheetHeight('half');
         }}
-      />
+        className="absolute right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full transition-transform active:scale-[0.95]"
+        style={{
+          bottom: 'calc(72px + env(safe-area-inset-bottom, 8px) + 16px)',
+          backgroundColor: '#C2E9FF',
+          boxShadow: '0 4px 20px rgba(194, 233, 255, 0.3)',
+        }}
+        aria-label="Create Moment"
+      >
+        <Plus size={28} style={{ color: '#0A0A0F' }} strokeWidth={2.5} />
+      </button>
     </div>
   );
 }
