@@ -679,20 +679,17 @@ export default function MapScreen() {
         <Plus size={28} style={{ color: '#0A0A0F' }} />
       </button>
 
-      {/* Status setter button */}
+      {/* Status setter button (glass) */}
       <button
         onClick={openStatusSheet}
-        className="absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] font-medium transition-all active:scale-[0.97]"
+        className="glass-widget absolute bottom-6 left-4 z-10 max-w-[60%] truncate text-[13px] font-medium transition-transform active:scale-[0.97]"
         style={{
-          backgroundColor: '#141419',
-          border: '1px solid #2A2A35',
           color: '#C2E9FF',
           borderRadius: 9999,
           padding: '8px 16px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.4)',
         }}
       >
-        {myStatus || '+ set status'}
+        <span style={{ position: 'relative', zIndex: 2 }}>{myStatus || '+ set status'}</span>
       </button>
 
       {/* Friend card */}
