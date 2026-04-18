@@ -41,14 +41,15 @@ export default function ExploreScreen() {
             <button
               key={cat.id}
               onClick={() => setCategoryId(cat.id)}
-              className="shrink-0 transition-all active:scale-[0.97]"
+              className={`shrink-0 transition-all active:scale-[0.97] ${active ? '' : 'glass-pill'}`}
               style={{
                 padding: "8px 16px",
                 borderRadius: 20,
                 fontSize: 13,
                 fontWeight: 600,
-                backgroundColor: active ? "#C2E9FF" : "#1C1C24",
-                color: active ? "#0A0A0F" : "#8A8A9A",
+                backgroundColor: active ? "rgba(194, 233, 255, 0.15)" : undefined,
+                border: active ? "1px solid rgba(194, 233, 255, 0.25)" : undefined,
+                color: active ? "#C2E9FF" : "#8A8A9A",
                 whiteSpace: "nowrap",
               }}
             >
@@ -66,10 +67,9 @@ export default function ExploreScreen() {
           <div className="px-4 pt-2">
             <button
               onClick={() => setSelected(pick)}
-              className="w-full text-left transition-all active:scale-[0.99]"
+              className="w-full text-left transition-all active:scale-[0.99] glass-card"
               style={{
-                backgroundColor: "rgba(194, 233, 255, 0.04)",
-                border: "1px solid rgba(194, 233, 255, 0.12)",
+                borderLeft: "3px solid rgba(194, 233, 255, 0.3)",
                 borderRadius: 14,
                 padding: 16,
                 display: "flex",
@@ -129,10 +129,8 @@ export default function ExploreScreen() {
               <button
                 key={b.id}
                 onClick={() => setSelected(b)}
-                className="w-full text-left transition-all active:scale-[0.99]"
+                className="w-full text-left transition-all active:scale-[0.99] glass-card"
                 style={{
-                  backgroundColor: "#141419",
-                  border: "1px solid #2A2A35",
                   borderRadius: 14,
                   padding: 14,
                   display: "flex",
@@ -202,16 +200,15 @@ export default function ExploreScreen() {
                 alignItems: "center",
                 gap: 12,
                 padding: "12px 4px",
-                borderBottom: "1px solid #141419",
+                borderBottom: "1px solid rgba(255, 255, 255, 0.04)",
               }}
             >
               <div
-                className="flex items-center justify-center shrink-0"
+                className="flex items-center justify-center shrink-0 glass-pill"
                 style={{
                   width: 40,
                   height: 40,
                   borderRadius: "9999px",
-                  backgroundColor: "#1C1C24",
                   fontSize: 18,
                   lineHeight: 1,
                 }}
@@ -229,13 +226,11 @@ export default function ExploreScreen() {
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <span
-                  className="text-[10px]"
+                  className="text-[10px] glass-pill"
                   style={{
                     padding: "3px 8px",
                     borderRadius: 999,
-                    backgroundColor: "#1C1C24",
                     color: "#8A8A9A",
-                    border: "1px solid #2A2A35",
                   }}
                 >
                   {CROWD_LABEL[b.crowdLevel]}

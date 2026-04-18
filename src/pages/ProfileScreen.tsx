@@ -73,13 +73,24 @@ export default function ProfileScreen() {
           paddingBottom: 8,
         }}
       >
-        <button aria-label="Settings" className="active:scale-95 transition-all">
-          <Settings size={20} color="#8A8A9A" />
+        <button
+          aria-label="Settings"
+          className="active:scale-95 transition-all glass-pill flex items-center justify-center"
+          style={{ width: 36, height: 36, borderRadius: 12 }}
+        >
+          <Settings size={18} color="#8A8A9A" />
         </button>
         <button
           onClick={() => setEditing((e) => !e)}
-          className="active:scale-95 transition-all"
-          style={{ color: '#C2E9FF', fontSize: 14, fontWeight: 600 }}
+          className="active:scale-95 transition-all glass-pill"
+          style={{
+            color: '#C2E9FF',
+            fontSize: 14,
+            fontWeight: 600,
+            padding: '6px 16px',
+            borderRadius: 12,
+            border: '1px solid rgba(194, 233, 255, 0.25)',
+          }}
         >
           {editing ? 'Done' : 'Edit'}
         </button>
@@ -100,11 +111,9 @@ export default function ProfileScreen() {
           <div className="mx-4" style={{ marginTop: 32, marginBottom: 120 }}>
             {/* Ghost Mode row */}
             <div
-              className="flex items-center justify-between"
+              className="flex items-center justify-between glass-card"
               style={{
                 padding: '14px 16px',
-                backgroundColor: '#141419',
-                border: '1px solid #2A2A35',
                 borderRadius: 14,
               }}
             >
@@ -120,7 +129,8 @@ export default function ProfileScreen() {
                   width: 46,
                   height: 26,
                   borderRadius: 13,
-                  backgroundColor: isGhost ? '#C2E9FF' : '#2A2A35',
+                  backgroundColor: isGhost ? '#C2E9FF' : 'rgba(28, 28, 38, 0.45)',
+                  border: isGhost ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
                 }}
               >
                 <span
@@ -151,7 +161,7 @@ export default function ProfileScreen() {
                 marginTop: 16,
                 height: 46,
                 backgroundColor: 'transparent',
-                border: '1.5px solid #2A2A35',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 color: '#8A8A9A',
                 fontSize: 14,
                 fontWeight: 600,

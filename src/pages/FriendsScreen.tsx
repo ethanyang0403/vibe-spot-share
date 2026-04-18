@@ -105,12 +105,13 @@ export default function FriendsScreen() {
               <button
                 key={t}
                 onClick={() => setTab(t)}
-                className="text-[14px] font-bold transition-all active:scale-[0.97]"
+                className={`text-[14px] font-bold transition-all active:scale-[0.97] ${active ? '' : 'glass-pill'}`}
                 style={{
                   padding: '8px 24px',
                   borderRadius: 24,
-                  backgroundColor: active ? '#C2E9FF' : '#1C1C24',
-                  color: active ? '#0A0A0F' : '#8A8A9A',
+                  backgroundColor: active ? 'rgba(194, 233, 255, 0.15)' : undefined,
+                  border: active ? '1px solid rgba(194, 233, 255, 0.25)' : undefined,
+                  color: active ? '#C2E9FF' : '#8A8A9A',
                 }}
               >
                 {t === 'friends' ? 'My Friends' : 'Add Friends'}
@@ -163,7 +164,7 @@ function FriendList({
         <div
           key={f.id}
           className="flex items-center gap-3 py-3"
-          style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
+          style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', minHeight: 72 }}
         >
           <button
             onClick={() => onTap(f)}
@@ -241,18 +242,16 @@ function AddFriendsTab({
       <div className="relative mt-1 mb-3">
         <Search
           size={16}
-          className="absolute left-3 top-1/2 -translate-y-1/2"
+          className="absolute left-3 top-1/2 -translate-y-1/2 z-[2]"
           color="#555566"
         />
         <input
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by username..."
-          className="w-full text-[14px] text-white outline-none placeholder:text-[#555566]"
+          className="w-full text-[14px] text-white outline-none placeholder:text-[#555566] glass-card relative"
           style={{
-            backgroundColor: '#141419',
-            border: '1px solid #2A2A35',
-            borderRadius: 12,
+            borderRadius: 14,
             padding: '12px 16px 12px 38px',
           }}
         />
@@ -266,7 +265,7 @@ function AddFriendsTab({
             <div
               key={r.id}
               className="flex items-center gap-3 py-3"
-              style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
+              style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', minHeight: 72 }}
             >
               <Avatar initial={r.initial} color={r.color} size={44} />
               <div className="flex-1 min-w-0">
@@ -276,12 +275,13 @@ function AddFriendsTab({
               <button
                 onClick={() => !pending && onAdd(r.id, r.name)}
                 disabled={pending}
-                className="text-[13px] font-bold transition-all active:scale-[0.97]"
+                className={`text-[13px] font-bold transition-all active:scale-[0.97] ${pending ? 'glass-pill' : ''}`}
                 style={{
                   padding: '6px 16px',
                   borderRadius: 20,
-                  backgroundColor: pending ? '#1C1C24' : '#C2E9FF',
-                  color: pending ? '#555566' : '#0A0A0F',
+                  backgroundColor: pending ? undefined : 'rgba(194, 233, 255, 0.15)',
+                  border: pending ? undefined : '1px solid rgba(194, 233, 255, 0.25)',
+                  color: pending ? '#555566' : '#C2E9FF',
                 }}
               >
                 {pending ? 'Pending' : 'Add +'}
@@ -325,7 +325,7 @@ function AddFriendsTab({
                 exit={{ opacity: 0, x: 40 }}
                 transition={{ duration: 0.25 }}
                 className="flex items-center gap-3 py-3"
-                style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
+                style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', minHeight: 72 }}
               >
                 <Avatar initial={req.initial} color={req.color} size={44} />
                 <div className="flex-1 min-w-0">
@@ -342,7 +342,7 @@ function AddFriendsTab({
                       onClick={() => onAccept(req)}
                       className="text-[12px] font-bold active:scale-[0.97] transition-all"
                       style={{
-                        backgroundColor: '#34D399',
+                        backgroundColor: '#C2E9FF',
                         color: '#0A0A0F',
                         padding: '6px 14px',
                         borderRadius: 16,
@@ -352,9 +352,8 @@ function AddFriendsTab({
                     </button>
                     <button
                       onClick={() => onDecline(req.id)}
-                      className="text-[12px] font-bold active:scale-[0.97] transition-all"
+                      className="text-[12px] font-bold active:scale-[0.97] transition-all glass-pill"
                       style={{
-                        backgroundColor: '#1C1C24',
                         color: '#555566',
                         padding: '6px 14px',
                         borderRadius: 16,
