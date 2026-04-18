@@ -54,12 +54,13 @@ export default function NearbyScreen() {
               <button
                 key={r}
                 onClick={() => setRadius(r)}
-                className="text-[13px] font-bold transition-all active:scale-[0.97]"
+                className={`text-[13px] font-bold transition-all active:scale-[0.97] ${active ? '' : 'glass-pill'}`}
                 style={{
                   padding: '8px 18px',
                   borderRadius: 20,
-                  backgroundColor: active ? '#C2E9FF' : '#1C1C24',
-                  color: active ? '#0A0A0F' : '#8A8A9A',
+                  backgroundColor: active ? 'rgba(194, 233, 255, 0.15)' : undefined,
+                  border: active ? '1px solid rgba(194, 233, 255, 0.25)' : undefined,
+                  color: active ? '#C2E9FF' : '#8A8A9A',
                 }}
               >
                 {r} mi
@@ -205,7 +206,7 @@ function FriendNearbyRow({ friend, onTap }: { friend: MockFriendListItem; onTap:
     <button
       onClick={onTap}
       className="flex items-center gap-3 py-3 text-left"
-      style={{ borderBottom: '1px solid #141419', minHeight: 72 }}
+      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', minHeight: 72 }}
     >
       <Avatar initial={friend.initial} color={friend.color} />
       <div className="flex-1 min-w-0">
@@ -236,7 +237,7 @@ function SecondDegreeRow({ person, onTap }: { person: NearbyPerson; onTap: () =>
     <button
       onClick={onTap}
       className="flex items-center gap-3 py-3 text-left"
-      style={{ borderBottom: '1px solid #141419', minHeight: 76 }}
+      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', minHeight: 76 }}
     >
       <Avatar initial={person.initial} color={person.color} />
       <div className="flex-1 min-w-0">
@@ -260,7 +261,7 @@ function OtherRow({ person, onTap }: { person: NearbyPerson; onTap: () => void }
     <button
       onClick={onTap}
       className="flex items-center gap-3 py-3 text-left"
-      style={{ borderBottom: '1px solid #141419', minHeight: 76 }}
+      style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', minHeight: 76 }}
     >
       <Avatar initial={person.initial} color={person.color} />
       <div className="flex-1 min-w-0">
