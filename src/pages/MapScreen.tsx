@@ -268,11 +268,13 @@ export default function MapScreen() {
   }, [user, fetchFriends]);
 
   const TOAST_STYLE = {
-    backgroundColor: '#141419',
+    background: 'rgba(14, 14, 20, 0.65)',
+    backdropFilter: 'blur(40px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(40px) saturate(180%)',
     color: '#fff',
-    border: '1px solid #2A2A35',
-    borderRadius: 12,
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.4)',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    borderRadius: 16,
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
   };
 
   const toggleGhost = async () => {
