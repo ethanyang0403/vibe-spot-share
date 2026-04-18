@@ -250,4 +250,138 @@
       opacity: 0;
     }
   }
+
+  /* === INTERACTIVE GLASS === */
+  .glass-interactive {
+    transition:
+      background var(--duration-fast) ease,
+      border-color var(--duration-fast) ease,
+      transform var(--duration-fast) var(--spring),
+      box-shadow var(--duration-fast) ease;
+  }
+  .glass-interactive:hover {
+    background: var(--glass-bg-hover);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .glass-interactive:active {
+    transform: scale(0.97);
+    background: var(--glass-bg-active);
+  }
+
+  /* === PRIMARY BUTTON BOUNCE === */
+  .btn-primary-spring {
+    transition:
+      transform var(--duration-fast) var(--spring),
+      box-shadow var(--duration-fast) ease;
+  }
+  .btn-primary-spring:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px rgba(194, 233, 255, 0.2);
+  }
+
+  /* === SCREEN TRANSITIONS === */
+  .screen-enter {
+    animation: screenIn var(--duration-normal) var(--spring) both;
+  }
+  @keyframes screenIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === SHEET CONTENT CROSSFADE === */
+  .sheet-content-enter {
+    animation: sheetContentIn var(--duration-normal) var(--spring);
+  }
+  @keyframes sheetContentIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* === MARKER APPEAR (staggered popping) === */
+  .friend-dot-enter {
+    animation: dotAppear 400ms var(--spring) both;
+  }
+  @keyframes dotAppear {
+    0%   { transform: scale(0); opacity: 0; }
+    60%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* === REFINED MOMENT BEACON PULSE === */
+  .moment-pulse-ring {
+    animation: beaconPulse 2.5s var(--spring) infinite;
+  }
+  @keyframes beaconPulse {
+    0%   { transform: scale(1);   opacity: 0.4; box-shadow: 0 0 0 0 rgba(194, 233, 255, 0.3); }
+    50%  { transform: scale(1.8); opacity: 0.15; box-shadow: 0 0 20px 8px rgba(194, 233, 255, 0.08); }
+    100% { transform: scale(2.4); opacity: 0;    box-shadow: 0 0 30px 12px rgba(194, 233, 255, 0); }
+  }
+
+  /* === REFINED TOAST === */
+  .toast-enter { animation: toastIn var(--duration-normal) var(--spring); }
+  .toast-exit  { animation: toastOut var(--duration-fast) ease-out; }
+  @keyframes toastIn {
+    0%   { opacity: 0; transform: translateY(20px) scale(0.92); filter: blur(4px); }
+    100% { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0); }
+  }
+  @keyframes toastOut {
+    0%   { opacity: 1; transform: translateY(0)     scale(1);    filter: blur(0); }
+    100% { opacity: 0; transform: translateY(-10px) scale(0.95); filter: blur(2px); }
+  }
+
+  /* === RECAP EXPAND === */
+  .recap-card-enter {
+    animation: recapExpand 300ms var(--spring);
+  }
+  @keyframes recapExpand {
+    from { opacity: 0; max-height: 0;     padding-top: 0;    padding-bottom: 0; margin-bottom: 0; }
+    to   { opacity: 1; max-height: 400px; padding-top: 16px; padding-bottom: 16px; margin-bottom: 8px; }
+  }
+
+  /* === AI SUGGESTION HORIZONTAL CROSSFADE === */
+  .suggestion-enter { animation: suggestionFadeIn var(--duration-normal) var(--spring); }
+  .suggestion-exit  { animation: suggestionFadeOut var(--duration-fast) ease-out; }
+  @keyframes suggestionFadeIn {
+    from { opacity: 0; transform: translateX(12px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes suggestionFadeOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(-12px); }
+  }
+
+  /* === GLASS SKELETON SHIMMER === */
+  .glass-skeleton {
+    background: linear-gradient(
+      90deg,
+      var(--glass-bg-tertiary) 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      var(--glass-bg-tertiary) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s ease infinite;
+    border-radius: 8px;
+  }
+  @keyframes skeletonShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* === "WHY THIS?" TOOLTIP === */
+  .why-this-tooltip {
+    animation: tooltipReveal var(--duration-normal) var(--spring);
+    overflow: hidden;
+  }
+  @keyframes tooltipReveal {
+    from { opacity: 0; max-height: 0;    transform: translateY(-4px); }
+    to   { opacity: 1; max-height: 80px; transform: translateY(0); }
+  }
+}
+
+/* === REDUCED MOTION === */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
