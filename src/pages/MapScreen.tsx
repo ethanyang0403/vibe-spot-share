@@ -376,7 +376,7 @@ export default function MapScreen() {
         attributionControl={false}
         onClick={handleMapClick}
       >
-        {heatmapVisible && (
+        {demoMode && heatmapVisible && (
           <Source id="heatmap-source" type="geojson" data={HEATMAP_GEOJSON}>
             <Layer {...heatmapLayer} />
           </Source>
