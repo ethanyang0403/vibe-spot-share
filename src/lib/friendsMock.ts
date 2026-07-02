@@ -13,16 +13,16 @@ export interface MockFriendListItem {
   lng: number;
 }
 
-// Keep coordinates in sync with MOCK_FRIENDS in MapScreen.tsx
+// Coordinates spread across Brandeis campus (Waltham, MA).
 export const FRIEND_LIST: MockFriendListItem[] = [
-  { id: "f1", name: "Jordan Lee",    username: "jordanlee",    initial: "J", status: "down to hang 🙌",   color: "#7C3AED", isOnline: true,  lat: 34.0705, lng: -118.4442 },
-  { id: "f2", name: "Maya Patel",    username: "mayapatel",    initial: "M", status: "grabbing food 🍕", color: "#2563EB", isOnline: true,  lat: 34.0678, lng: -118.4468 },
-  { id: "f3", name: "Cam Torres",    username: "camtorres",    initial: "C", status: "at the gym 💪",    color: "#059669", isOnline: true,  lat: 34.0692, lng: -118.4410 },
-  { id: "f4", name: "Riley Kim",     username: "rileykim",     initial: "R", status: "studying 📚",      color: "#D97706", isOnline: false, lat: 34.0661, lng: -118.4490 },
-  { id: "f5", name: "Alex Chen",     username: "alexchen",     initial: "A", status: "exploring 🗺️",     color: "#DC2626", isOnline: true,  lat: 34.0720, lng: -118.4425 },
-  { id: "f6", name: "Sam Rivera",    username: "samrivera",    initial: "S", status: "bored lol 😐",     color: "#0891B2", isOnline: true,  lat: 34.0648, lng: -118.4455 },
-  { id: "f7", name: "Taylor Brooks", username: "taylorbrooks", initial: "T", status: "pregaming 🎉",     color: "#9333EA", isOnline: true,  lat: 34.0715, lng: -118.4460 },
-  { id: "f8", name: "Avery Nguyen",  username: "averynguyen",  initial: "A", status: "looking for plans",color: "#E11D48", isOnline: false, lat: 34.0668, lng: -118.4430 },
+  { id: "f1", name: "Jordan Lee",    username: "jordanlee",    initial: "J", status: "on the way to Usdan 🙌",     color: "#7C3AED", isOnline: true,  lat: 42.3667, lng: -71.2593 },
+  { id: "f2", name: "Maya Patel",    username: "mayapatel",    initial: "M", status: "dinner at Sherman 🍕",       color: "#2563EB", isOnline: true,  lat: 42.3666, lng: -71.2610 },
+  { id: "f3", name: "Cam Torres",    username: "camtorres",    initial: "C", status: "at Gosman 💪",               color: "#059669", isOnline: true,  lat: 42.3676, lng: -71.2580 },
+  { id: "f4", name: "Riley Kim",     username: "rileykim",     initial: "R", status: "studying in Goldfarb 📚",    color: "#D97706", isOnline: false, lat: 42.3653, lng: -71.2588 },
+  { id: "f5", name: "Alex Chen",     username: "alexchen",     initial: "A", status: "walking the Great Lawn 🗺️", color: "#DC2626", isOnline: true,  lat: 42.3663, lng: -71.2600 },
+  { id: "f6", name: "Sam Rivera",    username: "samrivera",    initial: "S", status: "Shapiro atrium, bored 😐",   color: "#0891B2", isOnline: true,  lat: 42.3660, lng: -71.2586 },
+  { id: "f7", name: "Taylor Brooks", username: "taylorbrooks", initial: "T", status: "pregaming in Massell 🎉",    color: "#9333EA", isOnline: true,  lat: 42.3671, lng: -71.2603 },
+  { id: "f8", name: "Avery Nguyen",  username: "averynguyen",  initial: "A", status: "on Moody Street 👀",         color: "#E11D48", isOnline: false, lat: 42.3760, lng: -71.2360 },
 ];
 
 export interface MockSearchResult {

@@ -1,5 +1,4 @@
 // Mock AI suggestion engine — all hardcoded for demo.
-// No real AI; designed to look like ambient intelligence.
 
 export type AISuggestionAction =
   | { type: 'show_business'; id: string }
@@ -19,19 +18,19 @@ export const AI_SUGGESTIONS: AISuggestion[] = [
     icon: '🍸',
     text: 'Velvet Rooftop is buzzing right now',
     context: '14 people there · Half-price cocktails for 68 more min',
-    reason: 'You usually go out around this time on Fridays',
+    reason: 'You usually head to Moody Street around this time on Fridays',
     action: { type: 'show_business', id: 'b1' },
   },
   {
     icon: '👥',
-    text: '3 friends are within 2 blocks of each other',
-    context: 'Jordan, Maya, and Taylor are all near Strathmore',
+    text: '3 friends are within a block of each other',
+    context: 'Jordan, Maya, and Taylor are all near Usdan',
     reason: 'Based on your friend activity',
-    action: { type: 'center_map', lat: 34.07, lng: -118.445 },
+    action: { type: 'center_map', lat: 42.3667, lng: -71.2593 },
   },
   {
     icon: '🏀',
-    text: 'Pickup basketball is happening nearby',
+    text: 'Pickup basketball is happening at Gosman',
     context: '12 people at the court · 50 min left',
     reason: "You've joined 3 sports Moments this month",
     action: { type: 'show_moment', id: 'm1' },
@@ -39,8 +38,8 @@ export const AI_SUGGESTIONS: AISuggestion[] = [
   {
     icon: '🍜',
     text: 'Koi Ramen has $9 bowls right now',
-    context: "22 people said they're going · 0.3 mi away",
-    reason: 'You like food spots in this area',
+    context: "22 people said they're going · on Moody Street",
+    reason: 'You like food spots on Moody',
     action: { type: 'show_business', id: 'b4' },
   },
   {
@@ -61,7 +60,6 @@ export const EXPLORE_PICK = {
 };
 
 export function getTimeAwareWelcome(): { text: string; highlights: string[] } {
-  // Hardcoded evening version for demo.
   return {
     text: 'Friday night is heating up 🔥 — {0} people nearby, {1} live deals, {2} Moments happening',
     highlights: ['18', '5', '3'],

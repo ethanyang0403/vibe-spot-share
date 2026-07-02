@@ -1,5 +1,4 @@
-// Heatmap data points generated from friends, Moments, businesses, and ambient crowd.
-// Used to render Snap Map–style density layer beneath all markers.
+// Heatmap points clustered around Brandeis campus + Moody Street.
 
 export interface HeatPoint {
   lat: number;
@@ -25,32 +24,35 @@ function generateCluster(
 }
 
 export const HEATMAP_POINTS: HeatPoint[] = [
-  // --- Friend dots (8) ---
-  { lat: 34.0705, lng: -118.4442, weight: 1 },
-  { lat: 34.0678, lng: -118.4468, weight: 1 },
-  { lat: 34.0692, lng: -118.4410, weight: 1 },
-  { lat: 34.0661, lng: -118.4490, weight: 1 },
-  { lat: 34.0720, lng: -118.4425, weight: 1 },
-  { lat: 34.0648, lng: -118.4455, weight: 1 },
-  { lat: 34.0715, lng: -118.4460, weight: 1 },
-  { lat: 34.0668, lng: -118.4430, weight: 1 },
+  // --- Friend dots ---
+  { lat: 42.3667, lng: -71.2593, weight: 1 },
+  { lat: 42.3666, lng: -71.2610, weight: 1 },
+  { lat: 42.3676, lng: -71.2580, weight: 1 },
+  { lat: 42.3653, lng: -71.2588, weight: 1 },
+  { lat: 42.3663, lng: -71.2600, weight: 1 },
+  { lat: 42.3660, lng: -71.2586, weight: 1 },
+  { lat: 42.3671, lng: -71.2603, weight: 1 },
+  { lat: 42.3760, lng: -71.2360, weight: 1 },
 
   // --- Moments crowds ---
-  ...generateCluster(34.0698, -118.4435, 12, 0.0008), // pickup basketball
-  ...generateCluster(34.0671, -118.4478, 25, 0.001),  // free concert
-  ...generateCluster(34.0685, -118.4450, 6, 0.0005),  // pizza run
+  ...generateCluster(42.3663, -71.2600, 25, 0.001),  // Great Lawn concert
+  ...generateCluster(42.3676, -71.2580, 12, 0.0008), // Gosman pickup ball
+  ...generateCluster(42.3667, -71.2593, 8,  0.0006), // Usdan pizza run
 
-  // --- Busy businesses ---
-  ...generateCluster(34.0701, -118.4438, 35, 0.0012), // Velvet Rooftop
-  ...generateCluster(34.0695, -118.4420, 50, 0.0015), // Neon Nights (packed)
-  ...generateCluster(34.0658, -118.4475, 20, 0.001),  // Koi Ramen
-  ...generateCluster(34.0680, -118.4428, 15, 0.0008), // Vinyl Tap
-  ...generateCluster(34.0675, -118.4462, 10, 0.0006), // The Grind Coffee
+  // --- Busy spots on campus ---
+  ...generateCluster(42.3660, -71.2588, 35, 0.0012), // Shapiro / Grind Coffee
+  ...generateCluster(42.3666, -71.2610, 30, 0.001),  // Sherman
+  ...generateCluster(42.3653, -71.2588, 20, 0.001),  // Goldfarb Library
+  ...generateCluster(42.3671, -71.2603, 15, 0.0009), // Massell Quad
+
+  // --- Moody Street nightlife ---
+  ...generateCluster(42.3758, -71.2365, 50, 0.0015), // Velvet Rooftop / Neon Nights cluster
+  ...generateCluster(42.3752, -71.2360, 25, 0.0012), // Koi Ramen
 
   // --- Ambient foot traffic ---
-  ...generateCluster(34.0690, -118.4445, 20, 0.003),
-  ...generateCluster(34.0670, -118.4460, 15, 0.002),
-  ...generateCluster(34.0710, -118.4440, 10, 0.002),
+  ...generateCluster(42.3665, -71.2595, 20, 0.003),
+  ...generateCluster(42.3658, -71.2600, 15, 0.0025),
+  ...generateCluster(42.3760, -71.2362, 12, 0.002),
 ];
 
 export const HEATMAP_GEOJSON: GeoJSON.FeatureCollection = {
