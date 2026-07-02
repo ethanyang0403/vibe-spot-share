@@ -18,6 +18,7 @@ import BusinessBeacon from '@/components/BusinessBeacon';
 import MapWelcomeBanner from '@/components/MapWelcomeBanner';
 import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/components/MapBottomSheet';
 import type { AISuggestion } from '@/lib/aiSuggestions';
+import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
@@ -40,9 +41,9 @@ interface MockMoment {
 }
 
 const MOCK_MOMENTS_SEED = [
-  { id: 'm1', title: '🏀 pickup basketball', creator: 'Jordan Lee', lat: 34.0698, lng: -118.4435, durationMin: 60, startedMinAgo: 8 },
-  { id: 'm2', title: '🎵 free concert on the lawn', creator: 'Campus Events', lat: 34.0671, lng: -118.4478, durationMin: 120, startedMinAgo: 42 },
-  { id: 'm3', title: '🍕 pizza run — who\'s in?', creator: 'Maya Patel', lat: 34.0685, lng: -118.4450, durationMin: 45, startedMinAgo: 12 },
+  { id: 'm1', title: '🏀 pickup basketball', creator: 'Jordan Lee', lat: 42.3676, lng: -71.2580, durationMin: 60, startedMinAgo: 8 },
+  { id: 'm2', title: '🎵 free concert on the Great Lawn', creator: 'Student Events', lat: 42.3663, lng: -71.2600, durationMin: 120, startedMinAgo: 42 },
+  { id: 'm3', title: '🍕 pizza run at Usdan — who\'s in?', creator: 'Maya Patel', lat: 42.3667, lng: -71.2593, durationMin: 45, startedMinAgo: 12 },
 ];
 
 function buildMockMoments(): MockMoment[] {
@@ -68,17 +69,17 @@ interface MockFriend {
 }
 
 const MOCK_FRIENDS: MockFriend[] = [
-  { id: "f1", name: "Jordan Lee", initial: "J", status: "down to hang 🙌", lat: 34.0705, lng: -118.4442, color: "#7C3AED" },
-  { id: "f2", name: "Maya Patel", initial: "M", status: "grabbing food 🍕", lat: 34.0678, lng: -118.4468, color: "#2563EB" },
-  { id: "f3", name: "Cam Torres", initial: "C", status: "at the gym 💪", lat: 34.0692, lng: -118.4410, color: "#059669" },
-  { id: "f4", name: "Riley Kim", initial: "R", status: "studying 📚", lat: 34.0661, lng: -118.4490, color: "#D97706" },
-  { id: "f5", name: "Alex Chen", initial: "A", status: "exploring 🗺️", lat: 34.0720, lng: -118.4425, color: "#DC2626" },
-  { id: "f6", name: "Sam Rivera", initial: "S", status: "bored lol 😐", lat: 34.0648, lng: -118.4455, color: "#0891B2" },
-  { id: "f7", name: "Taylor Brooks", initial: "T", status: "pregaming 🎉", lat: 34.0715, lng: -118.4460, color: "#9333EA" },
-  { id: "f8", name: "Avery Nguyen", initial: "A", status: "looking for plans", lat: 34.0668, lng: -118.4430, color: "#E11D48" },
+  { id: "f1", name: "Jordan Lee",    initial: "J", status: "on the way to Usdan 🙌",     lat: 42.3667, lng: -71.2593, color: "#7C3AED" },
+  { id: "f2", name: "Maya Patel",    initial: "M", status: "dinner at Sherman 🍕",       lat: 42.3666, lng: -71.2610, color: "#2563EB" },
+  { id: "f3", name: "Cam Torres",    initial: "C", status: "at Gosman 💪",               lat: 42.3676, lng: -71.2580, color: "#059669" },
+  { id: "f4", name: "Riley Kim",     initial: "R", status: "studying in Goldfarb 📚",    lat: 42.3653, lng: -71.2588, color: "#D97706" },
+  { id: "f5", name: "Alex Chen",     initial: "A", status: "walking the Great Lawn 🗺️", lat: 42.3663, lng: -71.2600, color: "#DC2626" },
+  { id: "f6", name: "Sam Rivera",    initial: "S", status: "Shapiro atrium, bored 😐",   lat: 42.3660, lng: -71.2586, color: "#0891B2" },
+  { id: "f7", name: "Taylor Brooks", initial: "T", status: "pregaming in Massell 🎉",    lat: 42.3671, lng: -71.2603, color: "#9333EA" },
+  { id: "f8", name: "Avery Nguyen",  initial: "A", status: "on Moody Street 👀",         lat: 42.3760, lng: -71.2360, color: "#E11D48" },
 ];
 
-const UCLA_CENTER = { latitude: 34.0689, longitude: -118.4452 };
+const MAP_CENTER = { latitude: BRANDEIS_CENTER.latitude, longitude: BRANDEIS_CENTER.longitude };
 
 function mockFriendToCard(f: MockFriend): FriendCardData {
   return {
@@ -116,6 +117,7 @@ export default function MapScreen() {
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
   const [heatmapVisible, setHeatmapVisible] = useState(true);
+  const [demoMode] = useDemoMode();
 
   // Unified sheet state
   const [sheetHeight, setSheetHeight] = useState<SheetHeight>('peek');
@@ -311,8 +313,8 @@ export default function MapScreen() {
   };
 
   const handleCreateMoment = (title: string, durationMin: number) => {
-    const lat = position?.latitude ?? 34.0689;
-    const lng = position?.longitude ?? -118.4452;
+    const lat = position?.latitude ?? 42.3655;
+    const lng = position?.longitude ?? -71.2597;
     setMoments((prev) => [
       ...prev,
       {
@@ -350,9 +352,9 @@ export default function MapScreen() {
   };
 
   const vp = {
-    latitude: UCLA_CENTER.latitude,
-    longitude: UCLA_CENTER.longitude,
-    zoom: 15,
+    latitude: MAP_CENTER.latitude,
+    longitude: MAP_CENTER.longitude,
+    zoom: BRANDEIS_ZOOM,
   };
 
   // Tap on the map (not a marker) collapses the sheet from Half/Full to Peek
@@ -374,7 +376,7 @@ export default function MapScreen() {
         attributionControl={false}
         onClick={handleMapClick}
       >
-        {heatmapVisible && (
+        {demoMode && heatmapVisible && (
           <Source id="heatmap-source" type="geojson" data={HEATMAP_GEOJSON}>
             <Layer {...heatmapLayer} />
           </Source>
@@ -422,13 +424,13 @@ export default function MapScreen() {
           </Marker>
         )}
 
-        {MOCK_BUSINESSES.filter((b) => !b.promotedMoment.active).map((b) => (
+        {demoMode && MOCK_BUSINESSES.filter((b) => !b.promotedMoment.active).map((b) => (
           <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
             <BusinessPin icon={b.icon} onClick={() => openBusiness(b)} />
           </Marker>
         ))}
 
-        {MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).map((b) => (
+        {demoMode && MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).map((b) => (
           <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
             <BusinessBeacon
               icon={b.icon}
@@ -635,7 +637,7 @@ export default function MapScreen() {
               });
             } else {
               mapRef.current?.flyTo({
-                center: [UCLA_CENTER.longitude, UCLA_CENTER.latitude],
+                center: [MAP_CENTER.longitude, MAP_CENTER.latitude],
                 zoom: 15,
                 duration: 800,
               });

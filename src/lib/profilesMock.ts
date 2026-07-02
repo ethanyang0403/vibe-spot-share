@@ -15,9 +15,9 @@ export interface ProfileData {
 }
 
 export const OWN_PROFILE: ProfileData = {
-  age: 21,
-  zone: 'Manhattan',
-  bio: "Spontaneous plans only. If the group chat takes more than 3 messages to decide, I'm already out the door. Find me wherever the food is. 🍕",
+  age: 20,
+  zone: 'Brandeis',
+  bio: "Spontaneous plans only. If the group chat takes more than 3 messages to decide, I'm already at Usdan. Find me wherever the food is. 🍕",
   interests: [
     '🍕 Food spots',
     '🏀 Pickup games',
@@ -30,10 +30,10 @@ export const OWN_PROFILE: ProfileData = {
   prompts: [
     {
       question: "A spontaneous plan I'm always down for...",
-      answer: "Midnight food run. No debate. We're going.",
+      answer: "Midnight food run on Moody. No debate. We're going.",
     },
     {
-      question: 'My go-to spot in the city is...',
+      question: 'My go-to spot on campus is...',
       answer: 'Wherever has the shortest line and the best vibes',
     },
   ],
@@ -44,9 +44,9 @@ export const OWN_PROFILE: ProfileData = {
 export const DEMO_PROFILES: Record<string, ProfileData> = {
   'Jordan Lee': {
     age: 22,
-    zone: 'East Village',
-    bio: "If I'm not at the basketball court, I'm finding the best taco spot within walking distance. Always down.",
-    interests: ['🏀 Basketball', '🌮 Tacos', '🎵 Hip hop', '🗺️ Urban exploring', '🎮 Gaming'],
+    zone: 'Usdan',
+    bio: "If I'm not at Gosman shooting hoops, I'm finding the best taco spot on Moody. Always down.",
+    interests: ['🏀 Basketball', '🌮 Tacos', '🎵 Hip hop', '🗺️ Campus exploring', '🎮 Gaming'],
     prompts: [
       {
         question: "On a Friday night you'll find me...",
@@ -54,41 +54,41 @@ export const DEMO_PROFILES: Record<string, ProfileData> = {
       },
       {
         question: "Best spontaneous night I've had...",
-        answer: 'Found a rooftop party through a random invite. Stayed till 3 AM.',
+        answer: 'Found a rooftop party on Moody through a random invite. Stayed till 3 AM.',
       },
     ],
     photoCount: 4,
   },
   'Maya Patel': {
     age: 21,
-    zone: 'West Village',
-    bio: 'Food is my love language. Currently on a mission to find the best dumplings in Manhattan. Join me or don\'t. 🥟',
+    zone: 'Sherman',
+    bio: 'Food is my love language. On a mission to find the best dumplings within a mile of campus. Join me or don\'t. 🥟',
     interests: ['🍜 Ramen hunting', '📸 Film photography', '🧘 Yoga', '☕ Specialty coffee', '🎨 Gallery walks'],
     prompts: [
       {
         question: "A spontaneous plan I'm always down for...",
-        answer: 'Late night dessert run. Non-negotiable.',
+        answer: 'Late night dessert run on Moody. Non-negotiable.',
       },
       {
         question: 'My hidden talent is...',
-        answer: 'Finding the best restaurant in any neighborhood within 10 minutes',
+        answer: 'Finding the best restaurant on Moody Street within 10 minutes',
       },
     ],
     photoCount: 4,
   },
   'Cam Torres': {
     age: 23,
-    zone: 'Lower East Side',
+    zone: 'Gosman',
     bio: 'Gym in the morning, exploring all day, out all night. Sleep is a suggestion.',
     interests: ['🏋️ Fitness', '🍕 Pizza critic', '🎶 Live shows', '🛹 Skating', '📚 Non-fiction'],
     prompts: [
       {
         question: 'The way to my heart is...',
-        answer: "Suggest a workout then grab food after. That's the perfect hangout.",
+        answer: "Suggest a Gosman workout then grab food after. That's the perfect hangout.",
       },
       {
         question: "I'm convinced that...",
-        answer: 'The best things happen after midnight in this city.',
+        answer: 'The best things happen after midnight around Waltham.',
       },
     ],
     photoCount: 4,
@@ -98,8 +98,8 @@ export const DEMO_PROFILES: Record<string, ProfileData> = {
 export function getProfileFor(name: string): ProfileData {
   return (
     DEMO_PROFILES[name] ?? {
-      age: 21,
-      zone: 'Manhattan',
+      age: 20,
+      zone: 'Brandeis',
       bio: "This person hasn't filled out their profile yet.",
       interests: [],
       prompts: [],

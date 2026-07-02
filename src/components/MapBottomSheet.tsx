@@ -76,7 +76,7 @@ function useViewportHeight() {
 }
 
 function distanceMiles(lat: number, lng: number): string {
-  const raw = (Math.abs(lat - 34.0689) + Math.abs(lng + 118.4452)) * 200;
+  const raw = (Math.abs(lat - 42.3655) + Math.abs(lng + 71.2597)) * 200;
   const clamped = Math.min(0.8, Math.max(0.1, raw));
   return clamped.toFixed(1);
 }

@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { Settings } from 'lucide-react';
 import ProfileView from '@/components/ProfileView';
 import { OWN_PROFILE } from '@/lib/profilesMock';
+import { FRIEND_LIST } from '@/lib/friendsMock';
+import { useDemoMode } from '@/lib/demoMode';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
@@ -20,9 +22,10 @@ export default function ProfileScreen() {
   const { profile } = useProfile();
   const [editing, setEditing] = useState(false);
   const [isGhost, setIsGhost] = useState(false);
-  const [friendCount, setFriendCount] = useState(8);
+  const [friendCount, setFriendCount] = useState(FRIEND_LIST.length);
   const [momentCount, setMomentCount] = useState(3);
   const [pingCount] = useState(12);
+  const [demoMode, setDemoModeFlag] = useDemoMode();
 
   useEffect(() => {
     if (!user) return;
@@ -31,7 +34,7 @@ export default function ProfileScreen() {
     supabase.from('friendships').select('*', { count: 'exact', head: true })
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
       .eq('status', 'accepted')
-      .then(({ count }) => setFriendCount(count ?? 8));
+      .then(({ count }) => setFriendCount((count ?? 0) + FRIEND_LIST.length));
     supabase.from('moments').select('*', { count: 'exact', head: true })
       .eq('creator_id', user.id)
       .then(({ count }) => setMomentCount(count ?? 3));
@@ -148,7 +151,49 @@ export default function ProfileScreen() {
               </button>
             </div>
 
-            {/* Email */}
+            {/* Demo Mode row */}
+            <div
+              className="flex items-center justify-between glass-card mt-3"
+              style={{ padding: '14px 16px', borderRadius: 14 }}
+            >
+              <div>
+                <p style={{ color: '#fff', fontSize: 15, fontWeight: 600 }}>Demo Mode</p>
+                <p style={{ color: '#555566', fontSize: 12, marginTop: 2 }}>
+                  Seeded pins, deals, heatmap & suggestions
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const next = !demoMode;
+                  setDemoModeFlag(next);
+                  toast(next ? 'Demo Mode on ✨' : 'Real Mode on', {
+                    style: TOAST_STYLE, position: 'top-center', duration: 2000,
+                  });
+                }}
+                aria-label="Toggle demo mode"
+                className="relative transition-all active:scale-95"
+                style={{
+                  width: 46,
+                  height: 26,
+                  borderRadius: 13,
+                  backgroundColor: demoMode ? '#C2E9FF' : 'rgba(28, 28, 38, 0.45)',
+                  border: demoMode ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                }}
+              >
+                <span
+                  className="absolute top-1/2"
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: 10,
+                    backgroundColor: '#fff',
+                    transform: `translateY(-50%) translateX(${demoMode ? 23 : 3}px)`,
+                    transition: 'transform 0.2s ease',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                  }}
+                />
+              </button>
+            </div>
             <p className="mt-4 text-center" style={{ color: '#555566', fontSize: 12 }}>
               {user?.email}
             </p>

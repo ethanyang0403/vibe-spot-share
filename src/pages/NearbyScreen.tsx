@@ -10,11 +10,13 @@ import {
   mutualCountForFriend,
   type NearbyPerson,
 } from '@/lib/nearbyMock';
+import { useDemoMode } from '@/lib/demoMode';
 
 const RADII = [0.5, 1, 3, 5] as const;
 
 export default function NearbyScreen() {
   const navigate = useNavigate();
+  const [demoMode] = useDemoMode();
   const [radius, setRadius] = useState<number>(1);
   const [selected, setSelected] = useState<NearbyPerson | null>(null);
 
@@ -82,7 +84,7 @@ export default function NearbyScreen() {
         )}
 
         {/* People You May Know */}
-        {secondDegree.length > 0 && (
+        {demoMode && secondDegree.length > 0 && (
           <Section
             title="People You May Know"
             subtitle="Friends of your friends"
