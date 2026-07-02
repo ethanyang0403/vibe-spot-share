@@ -76,8 +76,8 @@ export default function FriendsScreen() {
           status: 'new here 👋',
           color: req.color,
           isOnline: true,
-          lat: 34.0689 + (Math.random() - 0.5) * 0.004,
-          lng: -118.4452 + (Math.random() - 0.5) * 0.004,
+          lat: 42.3655 + (Math.random() - 0.5) * 0.004,
+          lng: -71.2597 + (Math.random() - 0.5) * 0.004,
         },
       ]);
     }, 1000);
