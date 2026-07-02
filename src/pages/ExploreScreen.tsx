@@ -22,6 +22,31 @@ export default function ExploreScreen() {
 
   const liveDeals = filtered.filter((b) => b.promotedMoment.active);
 
+  if (!demoMode) {
+    return (
+      <div className="min-h-[calc(100dvh-56px-env(safe-area-inset-bottom,8px))] bg-background pb-6">
+        <div className="px-5 pt-[calc(env(safe-area-inset-top,12px)+16px)]">
+          <h1 className="text-[24px] font-bold text-white">Explore</h1>
+          <p className="text-[14px]" style={{ color: "#8A8A9A" }}>
+            Live drops from people around you
+          </p>
+        </div>
+        <div
+          className="mx-5 mt-8 glass-card flex flex-col items-center justify-center text-center"
+          style={{ padding: 32, borderRadius: 20, minHeight: 240 }}
+        >
+          <div style={{ fontSize: 42, lineHeight: 1 }}>✨</div>
+          <p className="mt-3 text-white" style={{ fontSize: 16, fontWeight: 600 }}>
+            No drops yet — start one.
+          </p>
+          <p className="mt-1.5" style={{ color: "#8A8A9A", fontSize: 13 }}>
+            When friends drop a Moment nearby, it'll show up here.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[calc(100dvh-56px-env(safe-area-inset-bottom,8px))] bg-background pb-6">
       {/* Header */}
