@@ -18,6 +18,7 @@ import BusinessBeacon from '@/components/BusinessBeacon';
 import MapWelcomeBanner from '@/components/MapWelcomeBanner';
 import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/components/MapBottomSheet';
 import type { AISuggestion } from '@/lib/aiSuggestions';
+import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
