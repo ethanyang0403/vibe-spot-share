@@ -10,6 +10,7 @@ import {
   mutualCountForFriend,
   type NearbyPerson,
 } from '@/lib/nearbyMock';
+import { useDemoMode } from '@/lib/demoMode';
 
 const RADII = [0.5, 1, 3, 5] as const;
 
