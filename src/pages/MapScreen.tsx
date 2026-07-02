@@ -424,13 +424,13 @@ export default function MapScreen() {
           </Marker>
         )}
 
-        {MOCK_BUSINESSES.filter((b) => !b.promotedMoment.active).map((b) => (
+        {demoMode && MOCK_BUSINESSES.filter((b) => !b.promotedMoment.active).map((b) => (
           <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
             <BusinessPin icon={b.icon} onClick={() => openBusiness(b)} />
           </Marker>
         ))}
 
-        {MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).map((b) => (
+        {demoMode && MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).map((b) => (
           <Marker key={b.id} latitude={b.lat} longitude={b.lng} anchor="center">
             <BusinessBeacon
               icon={b.icon}
