@@ -117,6 +117,7 @@ export default function MapScreen() {
   const [unreadPings, setUnreadPings] = useState(0);
   const [mockFriends, setMockFriends] = useState<MockFriend[]>(MOCK_FRIENDS);
   const [heatmapVisible, setHeatmapVisible] = useState(true);
+  const [demoMode] = useDemoMode();
 
   // Unified sheet state
   const [sheetHeight, setSheetHeight] = useState<SheetHeight>('peek');
