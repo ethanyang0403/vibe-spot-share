@@ -16,6 +16,7 @@ const RADII = [0.5, 1, 3, 5] as const;
 
 export default function NearbyScreen() {
   const navigate = useNavigate();
+  const [demoMode] = useDemoMode();
   const [radius, setRadius] = useState<number>(1);
   const [selected, setSelected] = useState<NearbyPerson | null>(null);
 
