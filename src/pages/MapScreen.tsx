@@ -353,7 +353,7 @@ export default function MapScreen() {
   const vp = {
     latitude: MAP_CENTER.latitude,
     longitude: MAP_CENTER.longitude,
-    zoom: 15,
+    zoom: BRANDEIS_ZOOM,
   };
 
   // Tap on the map (not a marker) collapses the sheet from Half/Full to Peek
