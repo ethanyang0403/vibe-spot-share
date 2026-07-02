@@ -98,8 +98,8 @@ export const DEMO_PROFILES: Record<string, ProfileData> = {
 export function getProfileFor(name: string): ProfileData {
   return (
     DEMO_PROFILES[name] ?? {
-      age: 21,
-      zone: 'Manhattan',
+      age: 20,
+      zone: 'Brandeis',
       bio: "This person hasn't filled out their profile yet.",
       interests: [],
       prompts: [],
