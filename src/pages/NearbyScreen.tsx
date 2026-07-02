@@ -84,7 +84,7 @@ export default function NearbyScreen() {
         )}
 
         {/* People You May Know */}
-        {secondDegree.length > 0 && (
+        {demoMode && secondDegree.length > 0 && (
           <Section
             title="People You May Know"
             subtitle="Friends of your friends"
