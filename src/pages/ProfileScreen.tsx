@@ -22,9 +22,10 @@ export default function ProfileScreen() {
   const { profile } = useProfile();
   const [editing, setEditing] = useState(false);
   const [isGhost, setIsGhost] = useState(false);
-  const [friendCount, setFriendCount] = useState(8);
+  const [friendCount, setFriendCount] = useState(FRIEND_LIST.length);
   const [momentCount, setMomentCount] = useState(3);
   const [pingCount] = useState(12);
+  const [demoMode, setDemoModeFlag] = useDemoMode();
 
   useEffect(() => {
     if (!user) return;
@@ -33,7 +34,7 @@ export default function ProfileScreen() {
     supabase.from('friendships').select('*', { count: 'exact', head: true })
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
       .eq('status', 'accepted')
-      .then(({ count }) => setFriendCount(count ?? 8));
+      .then(({ count }) => setFriendCount((count ?? 0) + FRIEND_LIST.length));
     supabase.from('moments').select('*', { count: 'exact', head: true })
       .eq('creator_id', user.id)
       .then(({ count }) => setMomentCount(count ?? 3));
