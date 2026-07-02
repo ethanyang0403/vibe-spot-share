@@ -312,8 +312,8 @@ export default function MapScreen() {
   };
 
   const handleCreateMoment = (title: string, durationMin: number) => {
-    const lat = position?.latitude ?? 34.0689;
-    const lng = position?.longitude ?? -118.4452;
+    const lat = position?.latitude ?? 42.3655;
+    const lng = position?.longitude ?? -71.2597;
     setMoments((prev) => [
       ...prev,
       {
@@ -351,8 +351,8 @@ export default function MapScreen() {
   };
 
   const vp = {
-    latitude: UCLA_CENTER.latitude,
-    longitude: UCLA_CENTER.longitude,
+    latitude: MAP_CENTER.latitude,
+    longitude: MAP_CENTER.longitude,
     zoom: 15,
   };
 
@@ -636,7 +636,7 @@ export default function MapScreen() {
               });
             } else {
               mapRef.current?.flyTo({
-                center: [UCLA_CENTER.longitude, UCLA_CENTER.latitude],
+                center: [MAP_CENTER.longitude, MAP_CENTER.latitude],
                 zoom: 15,
                 duration: 800,
               });
