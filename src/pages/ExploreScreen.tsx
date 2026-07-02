@@ -7,8 +7,10 @@ import {
 } from "@/lib/businessesMock";
 import BusinessDetailCard from "@/components/BusinessDetailCard";
 import { EXPLORE_PICK } from "@/lib/aiSuggestions";
+import { useDemoMode } from "@/lib/demoMode";
 
 export default function ExploreScreen() {
+  const [demoMode] = useDemoMode();
   const [categoryId, setCategoryId] = useState("all");
   const [selected, setSelected] = useState<Business | null>(null);
 
