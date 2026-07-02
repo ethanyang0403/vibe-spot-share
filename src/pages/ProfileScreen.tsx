@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { Settings } from 'lucide-react';
 import ProfileView from '@/components/ProfileView';
 import { OWN_PROFILE } from '@/lib/profilesMock';
+import { FRIEND_LIST } from '@/lib/friendsMock';
+import { useDemoMode } from '@/lib/demoMode';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
