@@ -10,20 +10,34 @@ import ExploreScreen from "@/pages/ExploreScreen";
 import FriendsScreen from "@/pages/FriendsScreen";
 import PingsScreen from "@/pages/PingsScreen";
 import ProfileScreen from "@/pages/ProfileScreen";
+import Onboarding from "@/pages/Onboarding";
+import Preferences from "@/pages/Preferences";
 import TabBar from "@/components/TabBar";
 import PersonProfileHost from "@/components/PersonProfileHost";
 import NotFound from "./pages/NotFound.tsx";
+import { useIntakeStatus } from "@/hooks/useIntakeStatus";
 
 const queryClient = new QueryClient();
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth();
-  if (loading) return (
+function Loading() {
+  return (
     <div className="flex min-h-screen items-center justify-center bg-background">
       <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
     </div>
   );
+}
+
+function ProtectedRoute({ children, allowIncomplete = false }: { children: React.ReactNode; allowIncomplete?: boolean }) {
+  const { session, loading } = useAuth();
+  const { status } = useIntakeStatus();
+  if (loading) return <Loading />;
   if (!session) return <Navigate to="/auth" replace />;
+  if (status === 'loading') return <Loading />;
+  if (!allowIncomplete && status === 'incomplete') return <Navigate to="/onboarding" replace />;
+  if (allowIncomplete && status === 'complete') {
+    // Onboarding route: block re-entry when done.
+    return <Navigate to="/" replace />;
+  }
   return <>{children}</>;
 }
 
@@ -48,6 +62,16 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/onboarding" element={
+              <ProtectedRoute allowIncomplete>
+                <Onboarding />
+              </ProtectedRoute>
+            } />
+            <Route path="/preferences" element={
+              <ProtectedRoute>
+                <Preferences />
+              </ProtectedRoute>
+            } />
             <Route path="/" element={<ProtectedRoute><AppLayout><MapScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/nearby" element={<ProtectedRoute><AppLayout><NearbyScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/explore" element={<ProtectedRoute><AppLayout><ExploreScreen /></AppLayout></ProtectedRoute>} />

@@ -9,7 +9,7 @@ import { useUserLocation } from '@/hooks/useLocation';
 import MomentBeacon from '@/components/MomentBeacon';
 import type { MomentDetail } from '@/components/MomentDetailCard';
 import type { FriendCardData } from '@/components/FriendDetailCard';
-import { Bell, Plus, Flame, Crosshair } from 'lucide-react';
+import { Bell, Plus, Flame, Crosshair, SlidersHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 import { FOCUS_FRIEND_EVENT } from '@/lib/friendsMock';
 import { MOCK_BUSINESSES, FOCUS_BUSINESS_EVENT, Business } from '@/lib/businessesMock';
@@ -19,6 +19,7 @@ import MapWelcomeBanner from '@/components/MapWelcomeBanner';
 import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/components/MapBottomSheet';
 import type { AISuggestion } from '@/lib/aiSuggestions';
 import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
+import PausedBanner from '@/components/PausedBanner';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
@@ -527,6 +528,7 @@ export default function MapScreen() {
       </ReactMapGL>
 
       <MapWelcomeBanner />
+      <PausedBanner />
 
       {/* Floating top-left: sera + ghost toggle (long-press → status setter) */}
       <div
@@ -648,6 +650,15 @@ export default function MapScreen() {
           aria-label="Re-center map"
         >
           <Crosshair size={18} style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }} />
+        </button>
+
+        <button
+          onClick={() => navigate('/preferences')}
+          className="glass-widget flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{ width: 40, height: 40, borderRadius: 14 }}
+          aria-label="Open preferences"
+        >
+          <SlidersHorizontal size={18} style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }} />
         </button>
       </div>
 
