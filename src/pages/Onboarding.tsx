@@ -604,4 +604,3 @@ function CrewSeeds({ values, onChange }: { values: string[]; onChange: (v: strin
 }
 
 // Silence unused import when memoizing later
-const _t = useMemo;
