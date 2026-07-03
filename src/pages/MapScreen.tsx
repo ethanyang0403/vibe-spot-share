@@ -9,7 +9,7 @@ import { useUserLocation } from '@/hooks/useLocation';
 import MomentBeacon from '@/components/MomentBeacon';
 import type { MomentDetail } from '@/components/MomentDetailCard';
 import type { FriendCardData } from '@/components/FriendDetailCard';
-import { Bell, Plus, Flame, Crosshair } from 'lucide-react';
+import { Bell, Plus, Flame, Crosshair, SlidersHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
 import { FOCUS_FRIEND_EVENT } from '@/lib/friendsMock';
 import { MOCK_BUSINESSES, FOCUS_BUSINESS_EVENT, Business } from '@/lib/businessesMock';
