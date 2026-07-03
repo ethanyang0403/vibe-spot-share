@@ -20,6 +20,7 @@ const TOAST_STYLE = {
 
 export default function ProfileScreen() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { profile } = useProfile();
   const [editing, setEditing] = useState(false);
   const [isGhost, setIsGhost] = useState(false);
