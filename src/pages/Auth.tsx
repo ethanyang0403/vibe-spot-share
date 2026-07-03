@@ -47,7 +47,7 @@ export default function Auth() {
           password,
           options: {
             data: { username, display_name: username },
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: nextPath ? `${window.location.origin}${nextPath}` : window.location.origin,
           },
         });
         if (error) throw error;
