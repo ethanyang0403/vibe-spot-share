@@ -649,6 +649,15 @@ export default function MapScreen() {
         >
           <Crosshair size={18} style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }} />
         </button>
+
+        <button
+          onClick={() => navigate('/preferences')}
+          className="glass-widget flex items-center justify-center transition-transform active:scale-[0.95]"
+          style={{ width: 40, height: 40, borderRadius: 14 }}
+          aria-label="Open preferences"
+        >
+          <SlidersHorizontal size={18} style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }} />
+        </button>
       </div>
 
       {/* Persistent bottom sheet */}
