@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Auth from "@/pages/Auth";
+import OAuthConsent from "@/pages/OAuthConsent";
 import MapScreen from "@/pages/MapScreen";
 import NearbyScreen from "@/pages/NearbyScreen";
 import ExploreScreen from "@/pages/ExploreScreen";
@@ -62,6 +63,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/onboarding" element={
               <ProtectedRoute allowIncomplete>
                 <Onboarding />
