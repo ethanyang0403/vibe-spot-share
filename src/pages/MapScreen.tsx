@@ -528,6 +528,7 @@ export default function MapScreen() {
       </ReactMapGL>
 
       <MapWelcomeBanner />
+      <PausedBanner />
 
       {/* Floating top-left: sera + ghost toggle (long-press → status setter) */}
       <div
