@@ -8,7 +8,7 @@ export type Step =
   | { n: number; kind: 'compound'; question: string; helper?: string; rows: Array<{ field: keyof IntakeAnswers; label: string; kind: 'single' | 'multi'; options: OptionCode[] }>; section: number; skippable?: boolean }
   | { n: number; field: keyof IntakeAnswers; kind: 'crewseeds'; question: string; helper?: string; skippable?: boolean; section: number }
   | { n: number; field: keyof IntakeAnswers; kind: 'multi-with-note'; question: string; helper?: string; options: OptionCode[]; noteField: keyof IntakeAnswers; skippable?: boolean; section: number }
-  | { n: number; field: keyof IntakeAnswers; kind: 'single-reveal'; question: string; options: OptionCode[]; revealOn: string[]; revealField: keyof IntakeAnswers; revealLabel: string; revealSkippable?: boolean; section: number };
+  | { n: number; field: keyof IntakeAnswers; kind: 'single-reveal'; question: string; helper?: string; options: OptionCode[]; revealOn: string[]; revealField: keyof IntakeAnswers; revealLabel: string; revealSkippable?: boolean; section: number };
 
 export interface Availability {
   // rows: afternoon | evening | late ; cols: mon..sun
