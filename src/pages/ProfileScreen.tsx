@@ -114,6 +114,22 @@ export default function ProfileScreen() {
           editing={editing}
         >
           <div className="mx-4" style={{ marginTop: 32, marginBottom: 120 }}>
+            {/* Preferences row */}
+            <button
+              onClick={() => navigate('/preferences')}
+              className="flex items-center justify-between glass-card w-full active:scale-[0.98] transition-transform"
+              style={{ padding: '14px 16px', borderRadius: 14, marginBottom: 12 }}
+            >
+              <div className="flex items-center gap-3">
+                <SlidersHorizontal size={18} color="#C2E9FF" />
+                <div className="text-left">
+                  <p style={{ color: '#fff', fontSize: 15, fontWeight: 600 }}>Preferences</p>
+                  <p style={{ color: '#555566', fontSize: 12, marginTop: 2 }}>Filters for which plans reach you</p>
+                </div>
+              </div>
+              <ChevronRight size={18} color="#8A8A9A" />
+            </button>
+
             {/* Ghost Mode row */}
             <div
               className="flex items-center justify-between glass-card"
