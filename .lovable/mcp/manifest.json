@@ -1,0 +1,173 @@
+{
+  "version": 1,
+  "sdk_version": "0.20.0",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://yvkvgioomosldtjszdtk.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "drop-mcp",
+      "version": "0.1.0",
+      "title": "Drop"
+    },
+    "tools": [
+      {
+        "name": "list_friends",
+        "title": "List friends",
+        "description": "List the signed-in user's accepted friends on Drop.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_moments",
+        "title": "List active Drops (Moments)",
+        "description": "List currently active Drops (Moments) visible to the signed-in user — their own and accepted friends'. RLS enforces visibility.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "limit": {
+              "default": 50,
+              "description": "Max rows to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_moment",
+        "title": "Create a Drop (Moment)",
+        "description": "Create a Drop (Moment) — a plan at a Brandeis campus spot that expires after a set number of minutes. Visible to accepted friends per RLS.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "description": "Short plan title, e.g. 'Coffee at Einstein'."
+            },
+            "spot": {
+              "type": "string",
+              "enum": [
+                "usdan",
+                "shapiro",
+                "goldfarb",
+                "gosman",
+                "sherman",
+                "great_lawn",
+                "chapels_field",
+                "massell",
+                "north_quad",
+                "skyline",
+                "einstein",
+                "moody",
+                "south_street"
+              ],
+              "description": "Brandeis campus spot key."
+            },
+            "duration_minutes": {
+              "default": 90,
+              "description": "How long the Drop stays live (15–240 minutes).",
+              "type": "integer",
+              "minimum": 15,
+              "maximum": 240
+            }
+          },
+          "required": [
+            "title",
+            "spot"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_pings",
+        "title": "List received pings",
+        "description": "List pings received by the signed-in user, most recent first.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "unread_only": {
+              "default": false,
+              "description": "If true, return only unread pings.",
+              "type": "boolean"
+            },
+            "limit": {
+              "default": 50,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "send_ping",
+        "title": "Send a ping",
+        "description": "Send a lightweight ping (nudge) to an accepted friend on Drop. RLS enforces that the recipient must be a friend.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "recipient_id": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "Profile id of the friend to ping."
+            },
+            "message": {
+              "description": "Optional short message.",
+              "type": "string",
+              "maxLength": 200
+            }
+          },
+          "required": [
+            "recipient_id"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
