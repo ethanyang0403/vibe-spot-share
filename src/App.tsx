@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Auth from "@/pages/Auth";
+import OAuthConsent from "@/pages/OAuthConsent";
 import MapScreen from "@/pages/MapScreen";
 import NearbyScreen from "@/pages/NearbyScreen";
 import ExploreScreen from "@/pages/ExploreScreen";
