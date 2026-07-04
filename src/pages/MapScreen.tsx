@@ -531,6 +531,11 @@ export default function MapScreen() {
             />
           </Marker>
         ))}
+        {DEMO_DROPS.map((d) => (
+          <Marker key={d.id} latitude={d.latitude} longitude={d.longitude} anchor="bottom">
+            <DemoDropMarker drop={d} onClick={() => openDemoDrop(d)} />
+          </Marker>
+        ))}
       </ReactMapGL>
 
       <MapWelcomeBanner />
