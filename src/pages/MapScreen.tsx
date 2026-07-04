@@ -125,6 +125,8 @@ export default function MapScreen() {
   // Unified sheet state
   const [sheetHeight, setSheetHeight] = useState<SheetHeight>('peek');
   const [sheetContent, setSheetContent] = useState<SheetContent>({ type: 'default' });
+  const [createDropOpen, setCreateDropOpen] = useState(false);
+  const [activeDropId, setActiveDropId] = useState<string | null>(null);
 
   const heatmapLayer: LayerProps = {
     id: 'heatmap-layer',
