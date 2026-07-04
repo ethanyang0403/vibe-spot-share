@@ -692,23 +692,30 @@ export default function MapScreen() {
         onPing={sendPing}
       />
 
-      {/* FAB for creating a Moment — sits above the bottom sheet at peek height,
-          and above the tab bar */}
+      {/* FAB for creating a Drop — opens the full Create Drop sheet as an overlay
+          above the map, tab bar, and the map's bottom sheet. */}
       <button
-        onClick={() => {
-          setSheetContent({ type: 'create-moment' });
-          setSheetHeight('half');
-        }}
-        className="absolute right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full transition-transform active:scale-[0.95]"
+        type="button"
+        onClick={() => setCreateDropOpen(true)}
+        className="fixed right-4 z-[60] flex h-14 w-14 items-center justify-center rounded-full transition-transform active:scale-[0.95]"
         style={{
           bottom: 'calc(72px + env(safe-area-inset-bottom, 8px) + 16px)',
           backgroundColor: '#C2E9FF',
           boxShadow: '0 4px 20px rgba(194, 233, 255, 0.3)',
         }}
-        aria-label="Create Moment"
+        aria-label="Create a Drop"
       >
         <Plus size={28} style={{ color: '#0A0A0F' }} strokeWidth={2.5} />
       </button>
+
+      <CreateDropSheet
+        open={createDropOpen}
+        onClose={() => setCreateDropOpen(false)}
+        onCreated={(id) => setActiveDropId(id)}
+        defaultLat={position?.latitude ?? null}
+        defaultLng={position?.longitude ?? null}
+      />
+      <DropDetailsSheet dropId={activeDropId} onClose={() => setActiveDropId(null)} />
     </div>
   );
 }
