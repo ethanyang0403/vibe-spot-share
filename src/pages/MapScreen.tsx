@@ -20,8 +20,10 @@ import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/component
 import type { AISuggestion } from '@/lib/aiSuggestions';
 import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 import PausedBanner from '@/components/PausedBanner';
-import CreateDropSheet from '@/components/CreateDropSheet';
+import CreateDropSheet, { DROP_CATEGORIES } from '@/components/CreateDropSheet';
 import DropDetailsSheet from '@/components/DropDetailsSheet';
+import DemoDropDetailsSheet from '@/components/DemoDropDetailsSheet';
+import { DEMO_DROPS, DEMO_FRIENDS, DemoDrop, useDemoDropCount } from '@/lib/demoDrops';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
