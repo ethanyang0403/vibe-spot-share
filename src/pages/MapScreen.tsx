@@ -73,16 +73,10 @@ interface MockFriend {
   color: string;
 }
 
-const MOCK_FRIENDS: MockFriend[] = [
-  { id: "f1", name: "Jordan Lee",    initial: "J", status: "on the way to Usdan 🙌",     lat: 42.3667, lng: -71.2593, color: "#7C3AED" },
-  { id: "f2", name: "Maya Patel",    initial: "M", status: "dinner at Sherman 🍕",       lat: 42.3666, lng: -71.2610, color: "#2563EB" },
-  { id: "f3", name: "Cam Torres",    initial: "C", status: "at Gosman 💪",               lat: 42.3676, lng: -71.2580, color: "#059669" },
-  { id: "f4", name: "Riley Kim",     initial: "R", status: "studying in Goldfarb 📚",    lat: 42.3653, lng: -71.2588, color: "#D97706" },
-  { id: "f5", name: "Alex Chen",     initial: "A", status: "walking the Great Lawn 🗺️", lat: 42.3663, lng: -71.2600, color: "#DC2626" },
-  { id: "f6", name: "Sam Rivera",    initial: "S", status: "Shapiro atrium, bored 😐",   lat: 42.3660, lng: -71.2586, color: "#0891B2" },
-  { id: "f7", name: "Taylor Brooks", initial: "T", status: "pregaming in Massell 🎉",    lat: 42.3671, lng: -71.2603, color: "#9333EA" },
-  { id: "f8", name: "Avery Nguyen",  initial: "A", status: "on Moody Street 👀",         lat: 42.3760, lng: -71.2360, color: "#E11D48" },
-];
+const MOCK_FRIENDS: MockFriend[] = DEMO_FRIENDS.map((f) => ({
+  id: f.id, name: f.name, initial: f.initial, status: f.status,
+  lat: f.lat, lng: f.lng, color: f.color,
+}));
 
 const MAP_CENTER = { latitude: BRANDEIS_CENTER.latitude, longitude: BRANDEIS_CENTER.longitude };
 
