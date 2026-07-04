@@ -34,5 +34,5 @@ export function useDemoMode(): [boolean, (on: boolean) => void] {
 }
 
 // Brandeis campus map center + default zoom
-export const BRANDEIS_CENTER = { latitude: 42.3655, longitude: -71.2597 };
-export const BRANDEIS_ZOOM = 15.6;
+export const BRANDEIS_CENTER = { latitude: 42.3656, longitude: -71.2587 };
+export const BRANDEIS_ZOOM = 15.8;
