@@ -123,6 +123,12 @@ export default function MapScreen() {
   const [sheetContent, setSheetContent] = useState<SheetContent>({ type: 'default' });
   const [createDropOpen, setCreateDropOpen] = useState(false);
   const [activeDropId, setActiveDropId] = useState<string | null>(null);
+  const [activeDemoDrop, setActiveDemoDrop] = useState<DemoDrop | null>(null);
+
+  const openDemoDrop = useCallback((d: DemoDrop) => {
+    mapRef.current?.flyTo({ center: [d.longitude, d.latitude], zoom: 16.2, duration: 800 });
+    setActiveDemoDrop(d);
+  }, []);
 
   const heatmapLayer: LayerProps = {
     id: 'heatmap-layer',
