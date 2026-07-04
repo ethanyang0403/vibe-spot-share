@@ -14,6 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
+      drop_rsvps: {
+        Row: {
+          created_at: string
+          drop_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          drop_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          drop_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drop_rsvps_drop_id_fkey"
+            columns: ["drop_id"]
+            isOneToOne: false
+            referencedRelation: "drops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      drops: {
+        Row: {
+          capacity: number
+          category: string
+          created_at: string
+          creator_id: string
+          description: string | null
+          end_time: string
+          id: string
+          latitude: number | null
+          location_details: string | null
+          location_name: string
+          longitude: number | null
+          rsvp_deadline: string
+          start_time: string
+          title: string
+          updated_at: string
+          visibility: string
+        }
+        Insert: {
+          capacity: number
+          category: string
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          end_time: string
+          id?: string
+          latitude?: number | null
+          location_details?: string | null
+          location_name: string
+          longitude?: number | null
+          rsvp_deadline: string
+          start_time: string
+          title: string
+          updated_at?: string
+          visibility?: string
+        }
+        Update: {
+          capacity?: number
+          category?: string
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          end_time?: string
+          id?: string
+          latitude?: number | null
+          location_details?: string | null
+          location_name?: string
+          longitude?: number | null
+          rsvp_deadline?: string
+          start_time?: string
+          title?: string
+          updated_at?: string
+          visibility?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           created_at: string
