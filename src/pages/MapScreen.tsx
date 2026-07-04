@@ -20,8 +20,10 @@ import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/component
 import type { AISuggestion } from '@/lib/aiSuggestions';
 import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 import PausedBanner from '@/components/PausedBanner';
-import CreateDropSheet from '@/components/CreateDropSheet';
+import CreateDropSheet, { DROP_CATEGORIES } from '@/components/CreateDropSheet';
 import DropDetailsSheet from '@/components/DropDetailsSheet';
+import DemoDropDetailsSheet from '@/components/DemoDropDetailsSheet';
+import { DEMO_DROPS, DEMO_FRIENDS, DemoDrop, useDemoDropCount } from '@/lib/demoDrops';
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiZXRoeWFuMDQwMyIsImEiOiJjbW54Z2xjODQwMjU3MnFvbDMwb2VoYmtnIn0.r9-d9GF8LeanN2OxXmM90w';
 
@@ -71,16 +73,10 @@ interface MockFriend {
   color: string;
 }
 
-const MOCK_FRIENDS: MockFriend[] = [
-  { id: "f1", name: "Jordan Lee",    initial: "J", status: "on the way to Usdan 🙌",     lat: 42.3667, lng: -71.2593, color: "#7C3AED" },
-  { id: "f2", name: "Maya Patel",    initial: "M", status: "dinner at Sherman 🍕",       lat: 42.3666, lng: -71.2610, color: "#2563EB" },
-  { id: "f3", name: "Cam Torres",    initial: "C", status: "at Gosman 💪",               lat: 42.3676, lng: -71.2580, color: "#059669" },
-  { id: "f4", name: "Riley Kim",     initial: "R", status: "studying in Goldfarb 📚",    lat: 42.3653, lng: -71.2588, color: "#D97706" },
-  { id: "f5", name: "Alex Chen",     initial: "A", status: "walking the Great Lawn 🗺️", lat: 42.3663, lng: -71.2600, color: "#DC2626" },
-  { id: "f6", name: "Sam Rivera",    initial: "S", status: "Shapiro atrium, bored 😐",   lat: 42.3660, lng: -71.2586, color: "#0891B2" },
-  { id: "f7", name: "Taylor Brooks", initial: "T", status: "pregaming in Massell 🎉",    lat: 42.3671, lng: -71.2603, color: "#9333EA" },
-  { id: "f8", name: "Avery Nguyen",  initial: "A", status: "on Moody Street 👀",         lat: 42.3760, lng: -71.2360, color: "#E11D48" },
-];
+const MOCK_FRIENDS: MockFriend[] = DEMO_FRIENDS.map((f) => ({
+  id: f.id, name: f.name, initial: f.initial, status: f.status,
+  lat: f.lat, lng: f.lng, color: f.color,
+}));
 
 const MAP_CENTER = { latitude: BRANDEIS_CENTER.latitude, longitude: BRANDEIS_CENTER.longitude };
 
@@ -127,6 +123,12 @@ export default function MapScreen() {
   const [sheetContent, setSheetContent] = useState<SheetContent>({ type: 'default' });
   const [createDropOpen, setCreateDropOpen] = useState(false);
   const [activeDropId, setActiveDropId] = useState<string | null>(null);
+  const [activeDemoDrop, setActiveDemoDrop] = useState<DemoDrop | null>(null);
+
+  const openDemoDrop = useCallback((d: DemoDrop) => {
+    mapRef.current?.flyTo({ center: [d.longitude, d.latitude], zoom: 16.2, duration: 800 });
+    setActiveDemoDrop(d);
+  }, []);
 
   const heatmapLayer: LayerProps = {
     id: 'heatmap-layer',
@@ -529,6 +531,11 @@ export default function MapScreen() {
             />
           </Marker>
         ))}
+        {DEMO_DROPS.map((d) => (
+          <Marker key={d.id} latitude={d.latitude} longitude={d.longitude} anchor="bottom">
+            <DemoDropMarker drop={d} onClick={() => openDemoDrop(d)} />
+          </Marker>
+        ))}
       </ReactMapGL>
 
       <MapWelcomeBanner />
@@ -716,6 +723,60 @@ export default function MapScreen() {
         defaultLng={position?.longitude ?? null}
       />
       <DropDetailsSheet dropId={activeDropId} onClose={() => setActiveDropId(null)} />
+      <DemoDropDetailsSheet drop={activeDemoDrop} onClose={() => setActiveDemoDrop(null)} />
     </div>
+  );
+}
+
+function DemoDropMarker({ drop, onClick }: { drop: DemoDrop; onClick: () => void }) {
+  const { going, myStatus } = useDemoDropCount(drop);
+  const cat = DROP_CATEGORIES.find((c) => c.id === drop.category);
+  const joined = myStatus === 'going' || myStatus === 'maybe';
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-col items-center transition-transform active:scale-[0.95]"
+      style={{ padding: 4, minWidth: 44 }}
+      aria-label={`Drop: ${drop.title}`}
+    >
+      <div
+        className="flex items-center gap-1.5 rounded-full px-2.5 py-1"
+        style={{
+          background: joined ? 'rgba(194,233,255,0.95)' : 'rgba(14,14,20,0.85)',
+          border: joined ? '1.5px solid #C2E9FF' : '1.5px solid rgba(194,233,255,0.55)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          boxShadow: '0 4px 14px rgba(0,0,0,0.35), 0 0 12px rgba(194,233,255,0.25)',
+          color: joined ? '#0A0A0F' : '#fff',
+          fontSize: 12,
+          fontWeight: 700,
+          whiteSpace: 'nowrap',
+          maxWidth: 180,
+        }}
+      >
+        <span style={{ fontSize: 14 }}>{cat?.emoji ?? '✨'}</span>
+        <span className="truncate">{drop.title}</span>
+        <span
+          style={{
+            marginLeft: 4,
+            fontSize: 10,
+            padding: '1px 6px',
+            borderRadius: 999,
+            background: joined ? 'rgba(10,10,15,0.15)' : 'rgba(194,233,255,0.18)',
+            color: joined ? '#0A0A0F' : '#C2E9FF',
+          }}
+        >
+          {going}/{drop.capacity}
+        </span>
+      </div>
+      <div
+        style={{
+          width: 0, height: 0,
+          borderLeft: '5px solid transparent',
+          borderRight: '5px solid transparent',
+          borderTop: `6px solid ${joined ? '#C2E9FF' : 'rgba(14,14,20,0.85)'}`,
+          marginTop: -1,
+        }}
+      />
+    </button>
   );
 }
