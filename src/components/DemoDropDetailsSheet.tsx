@@ -165,9 +165,9 @@ export default function DemoDropDetailsSheet({ drop, onClose }: Props) {
                   )}
                   <div className="grid grid-cols-2 gap-2">
                     <RsvpButton
-                      label={ended ? 'Drop Ended' : full && myStatus !== 'going' ? 'Drop Full' : 'Going'}
+                      label={ended ? 'Drop Ended' : full ? 'Drop Full' : 'Going'}
                       active={myStatus === 'going'}
-                      disabled={editingLocked || (full && myStatus !== 'going')}
+                      disabled={editingLocked || full}
                       onClick={() => chooseStatus('going')}
                     />
                     <RsvpButton
