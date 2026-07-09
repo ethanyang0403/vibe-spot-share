@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -9,6 +9,10 @@ import {
   NOTIFICATION_FOCUS_BUSINESS_EVENT,
 } from '@/lib/notificationsMock';
 import { openPersonProfile } from '@/lib/profileBus';
+import { useDemoMode } from '@/lib/demoMode';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { stableColor, initialOf, relativeTime } from '@/lib/realProfileHelpers';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
@@ -22,10 +26,54 @@ type FriendRequestState = 'pending' | 'accepted' | 'declined';
 
 export default function PingsScreen() {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<AppNotification[]>(MOCK_NOTIFICATIONS);
+  const { user } = useAuth();
+  const [demoMode] = useDemoMode();
+  const [notifications, setNotifications] = useState<AppNotification[]>(demoMode ? MOCK_NOTIFICATIONS : []);
   const [expandedRecapId, setExpandedRecapId] = useState<string | null>(null);
   const [friendRequestStates, setFriendRequestStates] = useState<Record<string, FriendRequestState>>({});
   const [revealedRequests, setRevealedRequests] = useState<Set<string>>(new Set());
+
+  const loadRealPings = useCallback(async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('pings')
+      .select('id, message, read, created_at, latitude, longitude, sender_id, sender:profiles!pings_sender_id_fkey(id, username, display_name)')
+      .eq('recipient_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(100);
+    const rows: AppNotification[] = (data ?? []).map((p: any) => {
+      const name = p.sender?.display_name || p.sender?.username || 'Someone';
+      return {
+        id: p.id,
+        type: 'ping',
+        title: name,
+        subtitle: p.message || 'pinged you 📍',
+        timestamp: relativeTime(p.created_at),
+        read: !!p.read,
+        avatar: { initial: initialOf(name), color: stableColor(p.sender_id) },
+        action:
+          p.latitude != null && p.longitude != null
+            ? { type: 'show_on_map', lat: p.latitude, lng: p.longitude }
+            : { type: 'center_map' },
+      } as AppNotification;
+    });
+    setNotifications(rows);
+  }, [user]);
+
+  useEffect(() => {
+    if (demoMode) { setNotifications(MOCK_NOTIFICATIONS); return; }
+    loadRealPings();
+  }, [demoMode, loadRealPings]);
+
+  useEffect(() => {
+    if (demoMode || !user) return;
+    const ch = supabase.channel('pings-feed')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'pings', filter: `recipient_id=eq.${user.id}` },
+        () => loadRealPings())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [demoMode, user, loadRealPings]);
 
   const unreadCount = useMemo(() => notifications.filter((n) => !n.read).length, [notifications]);
 
