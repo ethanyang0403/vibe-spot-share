@@ -740,3 +740,60 @@ function DemoDropMarker({ drop, onClick }: { drop: DemoDrop; onClick: () => void
     </button>
   );
 }
+
+function RealDropMarker({
+  drop,
+  onClick,
+}: {
+  drop: { title: string; category: string; capacity: number; rsvp_count: number };
+  onClick: () => void;
+}) {
+  const cat = DROP_CATEGORIES.find((c) => c.id === drop.category);
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-col items-center transition-transform active:scale-[0.95]"
+      style={{ padding: 4, minWidth: 44 }}
+      aria-label={`Drop: ${drop.title}`}
+    >
+      <div
+        className="flex items-center gap-1.5 rounded-full px-2.5 py-1"
+        style={{
+          background: 'rgba(14,14,20,0.85)',
+          border: '1.5px solid rgba(194,233,255,0.55)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          boxShadow: '0 4px 14px rgba(0,0,0,0.35), 0 0 12px rgba(194,233,255,0.25)',
+          color: '#fff',
+          fontSize: 12,
+          fontWeight: 700,
+          whiteSpace: 'nowrap',
+          maxWidth: 180,
+        }}
+      >
+        <span style={{ fontSize: 14 }}>{cat?.emoji ?? '✨'}</span>
+        <span className="truncate">{drop.title}</span>
+        <span
+          style={{
+            marginLeft: 4,
+            fontSize: 10,
+            padding: '1px 6px',
+            borderRadius: 999,
+            background: 'rgba(194,233,255,0.18)',
+            color: '#C2E9FF',
+          }}
+        >
+          {drop.rsvp_count}/{drop.capacity}
+        </span>
+      </div>
+      <div
+        style={{
+          width: 0, height: 0,
+          borderLeft: '5px solid transparent',
+          borderRight: '5px solid transparent',
+          borderTop: '6px solid rgba(14,14,20,0.85)',
+          marginTop: -1,
+        }}
+      />
+    </button>
+  );
+}
