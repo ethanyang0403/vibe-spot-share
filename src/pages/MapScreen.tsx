@@ -507,47 +507,48 @@ export default function MapScreen() {
       <MapWelcomeBanner />
       <PausedBanner />
 
-      {/* Floating top-left: sera + ghost toggle (long-press → status setter) */}
+      {/* Floating top-left: sera brand + prominent ghost mode pill */}
       <div
-        className="glass-widget absolute z-20 flex items-center gap-2"
+        className="absolute z-20 flex items-center gap-2"
         style={{
           top: 'calc(env(safe-area-inset-top, 12px) + 42px)',
           left: 16,
-          borderRadius: 22,
-          padding: '8px 14px',
         }}
       >
         <button
           onClick={() => {
-            // Tap → open status setter inside sheet
             setSheetContent({ type: 'status' });
             setSheetHeight('half');
           }}
-          className="text-[18px] font-black transition-opacity active:opacity-80"
-          style={{ color: '#C2E9FF', position: 'relative', zIndex: 2 }}
+          className="glass-widget text-[18px] font-black transition-opacity active:opacity-80"
+          style={{ color: '#C2E9FF', padding: '8px 14px', borderRadius: 22 }}
           aria-label="Open status setter"
         >
           sera
         </button>
         <button
           onClick={toggleGhost}
-          aria-label="Toggle ghost mode"
-          className="flex items-center justify-center transition-transform active:scale-[0.92]"
+          aria-label={isGhost ? 'Ghost mode on, tap to become visible' : 'Visible to friends, tap to enable ghost mode'}
+          aria-pressed={isGhost}
+          className="glass-widget flex items-center gap-1.5 transition-transform active:scale-[0.96]"
           style={{
-            width: 26,
-            height: 26,
-            borderRadius: '9999px',
-            fontSize: 16,
-            lineHeight: 1,
-            position: 'relative',
-            zIndex: 2,
-            border: isGhost ? '1.5px solid #C2E9FF' : '1.5px solid transparent',
-            boxShadow: isGhost ? '0 0 10px rgba(194, 233, 255, 0.45)' : 'none',
-            filter: isGhost ? 'none' : 'grayscale(0.4)',
-            opacity: isGhost ? 1 : 0.85,
+            padding: '8px 12px',
+            borderRadius: 22,
+            border: isGhost
+              ? '1.5px solid rgba(255,255,255,0.10)'
+              : '1.5px solid rgba(194,233,255,0.55)',
+            boxShadow: isGhost ? 'none' : '0 0 12px rgba(194,233,255,0.28)',
+            color: isGhost ? '#8A8A9A' : '#C2E9FF',
+            fontSize: 12,
+            fontWeight: 700,
+            letterSpacing: 0.2,
+            whiteSpace: 'nowrap',
           }}
         >
-          👻
+          <span style={{ fontSize: 14, lineHeight: 1 }} aria-hidden>
+            {isGhost ? '👻' : '👁'}
+          </span>
+          <span>{isGhost ? 'Ghost mode · hidden' : 'Visible to friends'}</span>
         </button>
       </div>
 
