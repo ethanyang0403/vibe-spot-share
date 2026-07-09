@@ -7,8 +7,8 @@ import { Settings, SlidersHorizontal, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProfileView from '@/components/ProfileView';
 import { OWN_PROFILE } from '@/lib/profilesMock';
-import { FRIEND_LIST } from '@/lib/friendsMock';
 import { useDemoMode } from '@/lib/demoMode';
+import { stableColor, initialOf } from '@/lib/realProfileHelpers';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
@@ -24,22 +24,25 @@ export default function ProfileScreen() {
   const { profile } = useProfile();
   const [editing, setEditing] = useState(false);
   const [isGhost, setIsGhost] = useState(false);
-  const [friendCount, setFriendCount] = useState(FRIEND_LIST.length);
+  const [friendCount, setFriendCount] = useState(0);
   const [dropCount, setDropCount] = useState(0);
-  const [pingCount] = useState(12);
+  const [pingCount, setPingCount] = useState(0);
   const [demoMode, setDemoModeFlag] = useDemoMode();
 
   useEffect(() => {
     if (!user) return;
-    supabase.from('user_locations').select('is_visible').eq('user_id', user.id).single()
+    supabase.from('user_locations').select('is_visible').eq('user_id', user.id).maybeSingle()
       .then(({ data }) => { if (data) setIsGhost(!data.is_visible); });
     supabase.from('friendships').select('*', { count: 'exact', head: true })
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
       .eq('status', 'accepted')
-      .then(({ count }) => setFriendCount((count ?? 0) + FRIEND_LIST.length));
+      .then(({ count }) => setFriendCount(count ?? 0));
     supabase.from('drops').select('*', { count: 'exact', head: true })
       .eq('creator_id', user.id)
       .then(({ count }) => setDropCount(count ?? 0));
+    supabase.from('pings').select('*', { count: 'exact', head: true })
+      .eq('sender_id', user.id)
+      .then(({ count }) => setPingCount(count ?? 0));
   }, [user]);
 
   const toggleGhost = async () => {
