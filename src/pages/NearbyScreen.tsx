@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StrangerDetailCard from '@/components/StrangerDetailCard';
 import { focusFriendOnMap, FRIEND_LIST, type MockFriendListItem } from '@/lib/friendsMock';
@@ -11,24 +11,81 @@ import {
   type NearbyPerson,
 } from '@/lib/nearbyMock';
 import { useDemoMode } from '@/lib/demoMode';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { stableColor, initialOf } from '@/lib/realProfileHelpers';
 
 const RADII = [0.5, 1, 3, 5] as const;
 
 export default function NearbyScreen() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [demoMode] = useDemoMode();
   const [radius, setRadius] = useState<number>(1);
   const [selected, setSelected] = useState<NearbyPerson | null>(null);
 
-  const friends = useMemo(() => friendsNearby(radius), [radius]);
-  const strangers = useMemo(() => filteredNearby(radius), [radius]);
-  const totalCount = visibleNearbyCount(radius);
+  // Demo values
+  const demoFriends = useMemo(() => friendsNearby(radius), [radius]);
+  const demoStrangers = useMemo(() => filteredNearby(radius), [radius]);
+  const demoTotal = visibleNearbyCount(radius);
+
+  // Real values
+  const [realFriends, setRealFriends] = useState<MockFriendListItem[]>([]);
+
+  const loadRealFriends = useCallback(async () => {
+    if (!user) return;
+    const { data: fRows } = await supabase
+      .from('friendships')
+      .select('requester_id, addressee_id, requester:profiles!friendships_requester_id_fkey(id, username, display_name), addressee:profiles!friendships_addressee_id_fkey(id, username, display_name)')
+      .eq('status', 'accepted')
+      .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`);
+    const friendIds: string[] = [];
+    const nameById = new Map<string, { name: string; username: string }>();
+    for (const row of fRows ?? []) {
+      const other: any = row.requester_id === user.id ? row.addressee : row.requester;
+      if (!other) continue;
+      friendIds.push(other.id);
+      nameById.set(other.id, {
+        name: other.display_name || other.username,
+        username: other.username,
+      });
+    }
+    if (!friendIds.length) { setRealFriends([]); return; }
+    const { data: locs } = await supabase
+      .from('user_locations')
+      .select('user_id, latitude, longitude, status_text, is_visible')
+      .in('user_id', friendIds)
+      .eq('is_visible', true);
+    const rows: MockFriendListItem[] = (locs ?? []).map((l) => {
+      const meta = nameById.get(l.user_id) ?? { name: 'Friend', username: 'friend' };
+      return {
+        id: l.user_id,
+        name: meta.name,
+        username: meta.username,
+        initial: initialOf(meta.name),
+        status: l.status_text || 'is out',
+        color: stableColor(l.user_id),
+        isOnline: true,
+        lat: l.latitude ?? 0,
+        lng: l.longitude ?? 0,
+      };
+    });
+    setRealFriends(rows);
+  }, [user]);
+
+  useEffect(() => {
+    if (!demoMode) loadRealFriends();
+  }, [demoMode, loadRealFriends]);
+
+  const friends = demoMode ? demoFriends : realFriends;
+  const strangers = demoMode ? demoStrangers : [];
+  const totalCount = demoMode ? demoTotal : realFriends.length;
 
   const secondDegree = strangers.filter((p) => p.connection.degree === 2);
   const others = strangers.filter((p) => p.connection.degree !== 2);
 
   const handleFriendTap = (f: MockFriendListItem) => {
-    focusFriendOnMap(f.id);
+    if (demoMode) focusFriendOnMap(f.id);
     navigate('/');
   };
 
