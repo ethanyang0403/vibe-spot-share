@@ -107,7 +107,17 @@ export default function ProfileScreen() {
       {/* Scrollable profile */}
       <div className="flex-1 overflow-y-auto" style={{ paddingBottom: 32 }}>
         <ProfileView
-          profile={OWN_PROFILE}
+          profile={demoMode ? OWN_PROFILE : {
+            ...OWN_PROFILE,
+            name: displayName,
+            username: profile.username,
+            initial: initialOf(displayName),
+            color: stableColor(user?.id ?? profile.username),
+            bio: '',
+            photos: [],
+            prompts: [],
+            interests: [],
+          }}
           ownName={displayName}
           stats={[
             { value: String(friendCount), label: 'Friends' },
