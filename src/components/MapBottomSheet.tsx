@@ -6,7 +6,7 @@ import { motion, AnimatePresence, useMotionValue, animate, type PanInfo } from '
 import { toast } from 'sonner';
 import { ChevronRight, X as XIcon, Compass } from 'lucide-react';
 import type { FriendCardData } from './FriendDetailCard';
-import type { MomentDetail } from './MomentDetailCard';
+
 import { Business, MOCK_BUSINESSES, CROWD_LEVELS, CROWD_LABEL } from '@/lib/businessesMock';
 import { mutualCountForFriend } from '@/lib/nearbyMock';
 import { openPersonProfile } from '@/lib/profileBus';
