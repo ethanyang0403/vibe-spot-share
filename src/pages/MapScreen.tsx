@@ -445,7 +445,7 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {mockFriends.map((f) => (
+        {demoMode && mockFriends.map((f) => (
           <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
             <button
               onClick={() => openFriend(f)}
