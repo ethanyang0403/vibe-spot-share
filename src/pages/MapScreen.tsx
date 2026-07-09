@@ -489,16 +489,15 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {moments.map((m) => (
-          <Marker key={m.id} latitude={m.lat} longitude={m.lng} anchor="center">
-            <MomentBeacon
-              title={m.title}
-              expiresAt={m.expiresAt}
-              onClick={() => openMoment(m)}
-            />
+        {realDrops.filter((d) => d.latitude != null && d.longitude != null).map((d) => (
+          <Marker key={d.id} latitude={d.latitude as number} longitude={d.longitude as number} anchor="bottom">
+            <RealDropMarker drop={d} onClick={() => {
+              mapRef.current?.flyTo({ center: [d.longitude as number, d.latitude as number], zoom: 16.2, duration: 800 });
+              setActiveDropId(d.id);
+            }} />
           </Marker>
         ))}
-        {DEMO_DROPS.map((d) => (
+        {demoMode && DEMO_DROPS.map((d) => (
           <Marker key={d.id} latitude={d.latitude} longitude={d.longitude} anchor="bottom">
             <DemoDropMarker drop={d} onClick={() => openDemoDrop(d)} />
           </Marker>
