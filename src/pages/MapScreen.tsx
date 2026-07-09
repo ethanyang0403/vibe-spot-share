@@ -6,8 +6,6 @@ import { HEATMAP_GEOJSON } from '@/lib/heatmapData';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserLocation } from '@/hooks/useLocation';
-import MomentBeacon from '@/components/MomentBeacon';
-import type { MomentDetail } from '@/components/MomentDetailCard';
 import type { FriendCardData } from '@/components/FriendDetailCard';
 import { Bell, Plus, Flame, Crosshair, SlidersHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
