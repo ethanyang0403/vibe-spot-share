@@ -79,11 +79,17 @@ export default function PingsScreen() {
 
   const markAsRead = (id: string) => {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
+    if (!demoMode && user) {
+      supabase.from('pings').update({ read: true }).eq('id', id).eq('recipient_id', user.id).then(() => {});
+    }
   };
 
   const markAllRead = () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     toast('All caught up ✓', { style: TOAST_STYLE, position: 'top-center', duration: 2000 });
+    if (!demoMode && user) {
+      supabase.from('pings').update({ read: true }).eq('recipient_id', user.id).eq('read', false).then(() => {});
+    }
   };
 
   const handleRowTap = (n: AppNotification) => {
