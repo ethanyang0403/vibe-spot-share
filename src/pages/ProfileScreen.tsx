@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import ProfileView from '@/components/ProfileView';
 import { OWN_PROFILE } from '@/lib/profilesMock';
 import { useDemoMode } from '@/lib/demoMode';
-import { stableColor, initialOf } from '@/lib/realProfileHelpers';
+// stableColor / initialOf currently unused; kept import removed to satisfy TS
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
