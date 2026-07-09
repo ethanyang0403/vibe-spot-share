@@ -316,19 +316,15 @@ function contentKey(c: SheetContent): string {
 
 function DefaultBrowse({
   friends,
-  moments,
   onSelectFriend,
   onSelectBusiness,
-  onSelectMoment,
   onAISuggestion,
   onPeekTap,
   isPeek,
 }: {
   friends: Props['friendsActive'];
-  moments: Props['momentsActive'];
   onSelectFriend: (id: string) => void;
   onSelectBusiness: (b: Business) => void;
-  onSelectMoment: (id: string) => void;
   onAISuggestion: (a: AISuggestion['action']) => void;
   onPeekTap: () => void;
   isPeek: boolean;
@@ -337,18 +333,8 @@ function DefaultBrowse({
   const dealsCount = liveDeals.length;
   const aiSuggestion = AI_SUGGESTIONS[0];
 
-  // Mix moments + deals, sorted by remaining time
   const happeningNow = useMemo(() => {
-    const m = moments.map((x) => ({
-      kind: 'moment' as const,
-      id: x.id,
-      title: x.title,
-      subtitle: `Created by ${x.creator}`,
-      icon: x.title.match(/\p{Emoji}/u)?.[0] ?? '✨',
-      remainingMin: Math.max(0, Math.round((x.expiresAt.getTime() - Date.now()) / 60000)),
-      moment: x,
-    }));
-    const d = liveDeals.map((b) => ({
+    return liveDeals.map((b) => ({
       kind: 'deal' as const,
       id: b.id,
       title: b.promotedMoment.title!,
@@ -356,15 +342,14 @@ function DefaultBrowse({
       icon: b.icon,
       remainingMin: b.promotedMoment.expiresInMinutes ?? 0,
       business: b,
-    }));
-    return [...m, ...d]
+    }))
       .sort((a, b) => a.remainingMin - b.remainingMin)
       .slice(0, 4);
-  }, [moments, liveDeals]);
+  }, [liveDeals]);
 
   return (
     <div>
-      {/* Peek summary row — always rendered so it's visible at peek height */}
+      {/* Peek summary row */}
       <button
         onClick={onPeekTap}
         className="flex w-full items-center justify-between px-5 py-2 text-left transition-opacity active:opacity-80"
@@ -372,8 +357,6 @@ function DefaultBrowse({
         <span style={{ fontSize: 13, color: '#fff' }}>
           <span style={{ color: '#fff', fontWeight: 600 }}>{friends.length}</span>{' '}
           <span style={{ color: '#8A8A9A' }}>friends nearby ·</span>{' '}
-          <span style={{ color: '#fff', fontWeight: 600 }}>{moments.length}</span>{' '}
-          <span style={{ color: '#8A8A9A' }}>live Moments ·</span>{' '}
           <span style={{ color: '#fff', fontWeight: 600 }}>{dealsCount}</span>{' '}
           <span style={{ color: '#8A8A9A' }}>deals</span>
         </span>
