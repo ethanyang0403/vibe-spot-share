@@ -85,16 +85,13 @@ export default function MapBottomSheet({
   onHeightChange,
   onClose,
   friendsActive,
-  momentsActive,
   onSelectFriend,
   onSelectBusiness,
-  onSelectMoment,
   onAISuggestion,
   currentStatus,
   isGhost,
   onSetStatus,
   onToggleGhost,
-  onCreateMoment,
   onPing,
 }: Props) {
   const vh = useViewportHeight();
