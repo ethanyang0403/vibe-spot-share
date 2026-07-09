@@ -660,7 +660,7 @@ function FullProfile({ friend }: { friend: FriendCardData }) {
       otherInitial={friend.initial}
       stats={[
         { value: String(mutualCountForFriend(friend.id)), label: 'Mutual friends' },
-        { value: '12', label: 'Moments' },
+        { value: '12', label: 'Drops' },
         { value: '4', label: 'This week' },
       ]}
     >
