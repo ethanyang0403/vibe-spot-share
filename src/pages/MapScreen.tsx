@@ -213,13 +213,36 @@ export default function MapScreen() {
     if (data) setFriends(data.map((d: any) => ({ ...d, profile: d.profile })));
   }, [user]);
 
-  // Auto-purge expired moments every 30s
-  useEffect(() => {
-    const id = setInterval(() => {
-      setMoments((prev) => prev.filter((m) => m.expiresAt.getTime() > Date.now()));
-    }, 30000);
-    return () => clearInterval(id);
-  }, []);
+  // Load active real drops (mirrors ExploreScreen) + subscribe to changes
++  const fetchDrops = useCallback(async () => {
++    const { data: rows } = await supabase
++      .from('drops')
++      .select('*')
++      .gte('end_time', new Date().toISOString())
++      .order('start_time', { ascending: true })
++      .limit(50);
++    if (!rows) { setRealDrops([]); return; }
++    const ids = rows.map((r) => r.id);
++    let counts: Record<string, number> = {};
++    if (ids.length) {
++      const { data: rsvps } = await supabase.from('drop_rsvps').select('drop_id').in('drop_id', ids);
++      counts = (rsvps ?? []).reduce<Record<string, number>>((acc, r) => {
++        acc[r.drop_id] = (acc[r.drop_id] ?? 0) + 1; return acc;
++      }, {});
++    }
++    setRealDrops(rows.map((d) => ({ ...(d as DropRow), rsvp_count: counts[d.id] ?? 0 })));
++  }, []);
++
++  useEffect(() => { fetchDrops(); }, [fetchDrops]);
++
++  useEffect(() => {
++    const ch = supabase.channel('map-drops')
++      .on('postgres_changes', { event: '*', schema: 'public', table: 'drops' }, () => fetchDrops())
++      .on('postgres_changes', { event: '*', schema: 'public', table: 'drop_rsvps' }, () => fetchDrops())
++      .subscribe();
++    return () => { supabase.removeChannel(ch); };
++  }, [fetchDrops]);
+
 
   // Fetch my status
   useEffect(() => {
