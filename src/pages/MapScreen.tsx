@@ -82,7 +82,7 @@ export default function MapScreen() {
   const mapRef = useRef<MapRef>(null);
   const mockUnreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
   const [friends, setFriends] = useState<FriendLocation[]>([]);
-  const [realDrops, setRealDrops] = useState<Array<DropRow & { rsvp_count: number }>>([]);
+  const [realDrops, setRealDrops] = useState<Array<DropRow & { latitude: number | null; longitude: number | null; rsvp_count: number }>>([]);
   const [isGhost, setIsGhost] = useState(false);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
