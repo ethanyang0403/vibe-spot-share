@@ -306,23 +306,6 @@ export default function MapScreen() {
     toast('Status updated ✓', { style: TOAST_STYLE, position: 'top-center', duration: 2000 });
   };
 
-  const handleCreateMoment = (title: string, durationMin: number) => {
-    const lat = position?.latitude ?? 42.3655;
-    const lng = position?.longitude ?? -71.2597;
-    setMoments((prev) => [
-      ...prev,
-      {
-        id: `local-${Date.now()}`,
-        title,
-        creator: 'You',
-        lat: lat + (Math.random() - 0.5) * 0.002,
-        lng: lng + (Math.random() - 0.5) * 0.002,
-        expiresAt: new Date(Date.now() + durationMin * 60_000),
-      },
-    ]);
-    toast('Moment dropped! 🔥', { style: TOAST_STYLE, position: 'top-center', duration: 2500 });
-  };
-
   const sendPing = async (recipientId: string) => {
     if (!user) return;
     await supabase.from('pings').insert({
@@ -339,9 +322,6 @@ export default function MapScreen() {
       if (b) openBusiness(b);
     } else if (action.type === 'center_map') {
       mapRef.current?.flyTo({ center: [action.lng, action.lat], zoom: 16, duration: 900 });
-    } else if (action.type === 'show_moment') {
-      const m = moments.find((x) => x.id === action.id);
-      if (m) openMoment(m);
     }
   };
 
