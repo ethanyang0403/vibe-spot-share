@@ -162,12 +162,23 @@ export default function NearbyScreen() {
           </Section>
         )}
 
-        <p
-          className="mt-6 text-center text-[12px] py-4"
-          style={{ color: '#555566' }}
-        >
-          🔒 Strangers only see your general area, never your exact location
-        </p>
+        {!demoMode && friends.length === 0 && (
+          <div className="mt-16 text-center">
+            <p style={{ color: '#8A8A9A', fontSize: 14 }}>No friends nearby right now</p>
+            <p style={{ color: '#555566', fontSize: 12, marginTop: 6 }}>
+              Friends appear here when they set a status and are visible
+            </p>
+          </div>
+        )}
+
+        {demoMode && (
+          <p
+            className="mt-6 text-center text-[12px] py-4"
+            style={{ color: '#555566' }}
+          >
+            🔒 Strangers only see your general area, never your exact location
+          </p>
+        )}
       </div>
 
       <StrangerDetailCard
