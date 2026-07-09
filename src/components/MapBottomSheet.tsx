@@ -6,7 +6,7 @@ import { motion, AnimatePresence, useMotionValue, animate, type PanInfo } from '
 import { toast } from 'sonner';
 import { ChevronRight, X as XIcon, Compass } from 'lucide-react';
 import type { FriendCardData } from './FriendDetailCard';
-import type { MomentDetail } from './MomentDetailCard';
+
 import { Business, MOCK_BUSINESSES, CROWD_LEVELS, CROWD_LABEL } from '@/lib/businessesMock';
 import { mutualCountForFriend } from '@/lib/nearbyMock';
 import { openPersonProfile } from '@/lib/profileBus';
@@ -31,32 +31,22 @@ export type SheetContent =
   | { type: 'default' }
   | { type: 'friend'; friend: FriendCardData }
   | { type: 'business'; business: Business }
-  | { type: 'moment'; moment: MomentDetail }
   | { type: 'status' }
-  | { type: 'create-moment' }
   | { type: 'profile'; friend: FriendCardData };
 
 interface Props {
   height: SheetHeight;
   content: SheetContent;
   onHeightChange: (h: SheetHeight) => void;
-  onClose: () => void; // collapse to peek + reset to default
-  // Default browse counts
+  onClose: () => void;
   friendsActive: Array<{ id: string; name: string; initial: string; color: string; lat: number; lng: number; status: string }>;
-  momentsActive: Array<{ id: string; title: string; expiresAt: Date; lat: number; lng: number; creator: string }>;
-  // Browse + AI handlers
   onSelectFriend: (id: string) => void;
   onSelectBusiness: (b: Business) => void;
-  onSelectMoment: (id: string) => void;
   onAISuggestion: (action: AISuggestion['action']) => void;
-  // Status setter
   currentStatus: string | null;
   isGhost: boolean;
   onSetStatus: (text: string) => void;
   onToggleGhost: () => void;
-  // Create moment
-  onCreateMoment: (title: string, durationMinutes: number) => void;
-  // Friend actions
   onPing: (friendId: string) => void;
 }
 
@@ -95,16 +85,13 @@ export default function MapBottomSheet({
   onHeightChange,
   onClose,
   friendsActive,
-  momentsActive,
   onSelectFriend,
   onSelectBusiness,
-  onSelectMoment,
   onAISuggestion,
   currentStatus,
   isGhost,
   onSetStatus,
   onToggleGhost,
-  onCreateMoment,
   onPing,
 }: Props) {
   const vh = useViewportHeight();
@@ -272,10 +259,8 @@ export default function MapBottomSheet({
             {content.type === 'default' && (
               <DefaultBrowse
                 friends={friendsActive}
-                moments={momentsActive}
                 onSelectFriend={onSelectFriend}
                 onSelectBusiness={onSelectBusiness}
-                onSelectMoment={onSelectMoment}
                 onAISuggestion={onAISuggestion}
                 onPeekTap={() => onHeightChange('half')}
                 isPeek={height === 'peek'}
@@ -294,9 +279,6 @@ export default function MapBottomSheet({
             {content.type === 'business' && (
               <BusinessDetail business={content.business} />
             )}
-            {content.type === 'moment' && (
-              <MomentDetailContent moment={content.moment} />
-            )}
             {content.type === 'status' && (
               <StatusSetter
                 currentStatus={currentStatus}
@@ -306,14 +288,6 @@ export default function MapBottomSheet({
                   onClose();
                 }}
                 onToggleGhost={onToggleGhost}
-              />
-            )}
-            {content.type === 'create-moment' && (
-              <CreateMomentForm
-                onCreate={(title, dur) => {
-                  onCreateMoment(title, dur);
-                  onClose();
-                }}
               />
             )}
           </motion.div>
@@ -331,8 +305,6 @@ function contentKey(c: SheetContent): string {
       return `profile:${c.friend.id}`;
     case 'business':
       return `business:${c.business.id}`;
-    case 'moment':
-      return `moment:${c.moment.id}`;
     default:
       return c.type;
   }
@@ -344,19 +316,15 @@ function contentKey(c: SheetContent): string {
 
 function DefaultBrowse({
   friends,
-  moments,
   onSelectFriend,
   onSelectBusiness,
-  onSelectMoment,
   onAISuggestion,
   onPeekTap,
   isPeek,
 }: {
   friends: Props['friendsActive'];
-  moments: Props['momentsActive'];
   onSelectFriend: (id: string) => void;
   onSelectBusiness: (b: Business) => void;
-  onSelectMoment: (id: string) => void;
   onAISuggestion: (a: AISuggestion['action']) => void;
   onPeekTap: () => void;
   isPeek: boolean;
@@ -365,18 +333,8 @@ function DefaultBrowse({
   const dealsCount = liveDeals.length;
   const aiSuggestion = AI_SUGGESTIONS[0];
 
-  // Mix moments + deals, sorted by remaining time
   const happeningNow = useMemo(() => {
-    const m = moments.map((x) => ({
-      kind: 'moment' as const,
-      id: x.id,
-      title: x.title,
-      subtitle: `Created by ${x.creator}`,
-      icon: x.title.match(/\p{Emoji}/u)?.[0] ?? '✨',
-      remainingMin: Math.max(0, Math.round((x.expiresAt.getTime() - Date.now()) / 60000)),
-      moment: x,
-    }));
-    const d = liveDeals.map((b) => ({
+    return liveDeals.map((b) => ({
       kind: 'deal' as const,
       id: b.id,
       title: b.promotedMoment.title!,
@@ -384,15 +342,14 @@ function DefaultBrowse({
       icon: b.icon,
       remainingMin: b.promotedMoment.expiresInMinutes ?? 0,
       business: b,
-    }));
-    return [...m, ...d]
+    }))
       .sort((a, b) => a.remainingMin - b.remainingMin)
       .slice(0, 4);
-  }, [moments, liveDeals]);
+  }, [liveDeals]);
 
   return (
     <div>
-      {/* Peek summary row — always rendered so it's visible at peek height */}
+      {/* Peek summary row */}
       <button
         onClick={onPeekTap}
         className="flex w-full items-center justify-between px-5 py-2 text-left transition-opacity active:opacity-80"
@@ -400,8 +357,6 @@ function DefaultBrowse({
         <span style={{ fontSize: 13, color: '#fff' }}>
           <span style={{ color: '#fff', fontWeight: 600 }}>{friends.length}</span>{' '}
           <span style={{ color: '#8A8A9A' }}>friends nearby ·</span>{' '}
-          <span style={{ color: '#fff', fontWeight: 600 }}>{moments.length}</span>{' '}
-          <span style={{ color: '#8A8A9A' }}>live Moments ·</span>{' '}
           <span style={{ color: '#fff', fontWeight: 600 }}>{dealsCount}</span>{' '}
           <span style={{ color: '#8A8A9A' }}>deals</span>
         </span>
@@ -462,10 +417,7 @@ function DefaultBrowse({
             {happeningNow.map((row) => (
               <button
                 key={`${row.kind}:${row.id}`}
-                onClick={() => {
-                  if (row.kind === 'moment') onSelectMoment(row.id);
-                  else onSelectBusiness(row.business);
-                }}
+                onClick={() => onSelectBusiness(row.business)}
                 className="flex items-center gap-3 px-4 py-3 text-left transition-transform active:scale-[0.99]"
                 style={{
                   background: 'rgba(20, 20, 28, 0.55)',
@@ -708,7 +660,7 @@ function FullProfile({ friend }: { friend: FriendCardData }) {
       otherInitial={friend.initial}
       stats={[
         { value: String(mutualCountForFriend(friend.id)), label: 'Mutual friends' },
-        { value: '12', label: 'Moments' },
+        { value: '12', label: 'Drops' },
         { value: '4', label: 'This week' },
       ]}
     >
@@ -908,156 +860,6 @@ function BusinessDetail({ business }: { business: Business }) {
   );
 }
 
-/* ─────────────────────────────────────────────
- * Moment detail
- * ───────────────────────────────────────────── */
-
-function MomentDetailContent({ moment }: { moment: MomentDetail }) {
-  const [remaining, setRemaining] = useState(moment.expiresAt.getTime() - Date.now());
-  const [going, setGoing] = useState(false);
-
-  useEffect(() => {
-    setGoing(false);
-    setRemaining(moment.expiresAt.getTime() - Date.now());
-    const id = setInterval(() => setRemaining(moment.expiresAt.getTime() - Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [moment.id]);
-
-  const urgent = remaining < 10 * 60 * 1000 && remaining > 0;
-  const critical = remaining < 5 * 60 * 1000 && remaining > 0;
-  const timerColor = critical ? '#F87171' : urgent ? '#FBBF24' : '#C2E9FF';
-
-  const directions = () => {
-    window.open(`https://www.google.com/maps/dir/?api=1&destination=${moment.lat},${moment.lng}`, '_blank');
-  };
-
-  return (
-    <div className="px-4">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex shrink-0 items-center justify-center" style={{ width: 56, height: 56 }}>
-          <span
-            className="moment-ring"
-            style={{
-              position: 'absolute',
-              inset: 12,
-              borderRadius: '9999px',
-              backgroundColor: '#C2E9FF',
-              opacity: 0.5,
-            }}
-          />
-          <span
-            className="glass-card"
-            style={{
-              position: 'relative',
-              width: 48,
-              height: 48,
-              borderRadius: '9999px',
-              border: '1px solid rgba(194, 233, 255, 0.4)',
-              background: 'rgba(194, 233, 255, 0.18)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 22,
-              boxShadow: '0 4px 16px rgba(194, 233, 255, 0.2)',
-            }}
-          >
-            <span style={{ position: 'relative', zIndex: 2 }}>
-              {moment.title.match(/\p{Emoji}/u)?.[0] ?? '✨'}
-            </span>
-          </span>
-        </div>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-white" style={{ fontSize: 20, fontWeight: 700 }}>
-            {moment.title}
-          </p>
-          <p style={{ fontSize: 13, color: '#8A8A9A' }}>Created by {moment.creator}</p>
-          <p style={{ fontSize: 12, color: '#555566' }}>{distanceMiles(moment.lat, moment.lng)} mi away</p>
-        </div>
-      </div>
-
-      {/* Big countdown */}
-      <div className="mt-5 text-center">
-        <p style={{ fontSize: 28, fontWeight: 800, color: timerColor, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
-          {formatRemainingMs(remaining)}
-        </p>
-        <p style={{ fontSize: 11, color: '#555566', marginTop: 4 }}>remaining</p>
-      </div>
-
-      {/* Attendees mock */}
-      <div className="mt-5 flex items-center gap-3">
-        <div className="flex">
-          {['#7C3AED', '#2563EB', '#059669', '#D97706', '#EC4899'].map((c, i) => (
-            <span
-              key={i}
-              className="flex items-center justify-center font-bold text-white"
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '9999px',
-                background: c,
-                border: '2px solid #0E0E14',
-                marginLeft: i === 0 ? 0 : -8,
-                fontSize: 12,
-              }}
-            >
-              {String.fromCharCode(65 + i)}
-            </span>
-          ))}
-          <span
-            className="flex items-center justify-center"
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: '9999px',
-              background: 'rgba(28, 28, 38, 0.6)',
-              border: '2px solid #0E0E14',
-              color: '#8A8A9A',
-              fontSize: 11,
-              fontWeight: 700,
-              marginLeft: -8,
-            }}
-          >
-            +12
-          </span>
-        </div>
-        <p style={{ fontSize: 13, color: '#8A8A9A' }}>17 people going</p>
-      </div>
-
-      {/* Actions */}
-      <div className="mt-5 flex gap-2">
-        <button
-          onClick={() => setGoing(true)}
-          disabled={going}
-          className="flex-1 font-bold transition-all active:scale-[0.97]"
-          style={{
-            height: 46,
-            borderRadius: 14,
-            backgroundColor: going ? '#34D399' : '#C2E9FF',
-            color: '#0A0A0F',
-            fontSize: 15,
-          }}
-        >
-          {going ? "You're Going ✓" : "I'm Going 🙋"}
-        </button>
-        <button
-          onClick={directions}
-          className="flex-1 font-bold transition-all active:scale-[0.97]"
-          style={{
-            height: 46,
-            borderRadius: 14,
-            background: 'rgba(20, 20, 28, 0.55)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            color: '#fff',
-            fontSize: 15,
-          }}
-        >
-          Directions
-        </button>
-      </div>
-    </div>
-  );
-}
 
 /* ─────────────────────────────────────────────
  * Status setter

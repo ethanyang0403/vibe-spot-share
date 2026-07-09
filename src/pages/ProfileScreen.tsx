@@ -25,7 +25,7 @@ export default function ProfileScreen() {
   const [editing, setEditing] = useState(false);
   const [isGhost, setIsGhost] = useState(false);
   const [friendCount, setFriendCount] = useState(FRIEND_LIST.length);
-  const [momentCount, setMomentCount] = useState(3);
+  const [dropCount, setDropCount] = useState(0);
   const [pingCount] = useState(12);
   const [demoMode, setDemoModeFlag] = useDemoMode();
 
@@ -37,9 +37,9 @@ export default function ProfileScreen() {
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
       .eq('status', 'accepted')
       .then(({ count }) => setFriendCount((count ?? 0) + FRIEND_LIST.length));
-    supabase.from('moments').select('*', { count: 'exact', head: true })
+    supabase.from('drops').select('*', { count: 'exact', head: true })
       .eq('creator_id', user.id)
-      .then(({ count }) => setMomentCount(count ?? 3));
+      .then(({ count }) => setDropCount(count ?? 0));
   }, [user]);
 
   const toggleGhost = async () => {
@@ -108,7 +108,7 @@ export default function ProfileScreen() {
           ownName={displayName}
           stats={[
             { value: String(friendCount), label: 'Friends' },
-            { value: String(momentCount), label: 'Moments' },
+            { value: String(dropCount), label: 'Drops' },
             { value: String(pingCount), label: 'Pings Sent' },
           ]}
           editing={editing}

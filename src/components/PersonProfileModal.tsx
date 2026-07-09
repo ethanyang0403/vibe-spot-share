@@ -119,7 +119,7 @@ export default function PersonProfileModal({ target, onClose }: Props) {
                     value: target.isFriend ? `${target.mutualCount}` : `${target.mutualCount}`,
                     label: target.isFriend ? 'Mutual friends' : 'Mutuals',
                   },
-                  { value: '—', label: 'Moments' },
+                  { value: '—', label: 'Drops' },
                   { value: target.degree, label: 'Connection' },
                 ]}
               >

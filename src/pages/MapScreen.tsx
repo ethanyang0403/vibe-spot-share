@@ -6,8 +6,6 @@ import { HEATMAP_GEOJSON } from '@/lib/heatmapData';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUserLocation } from '@/hooks/useLocation';
-import MomentBeacon from '@/components/MomentBeacon';
-import type { MomentDetail } from '@/components/MomentDetailCard';
 import type { FriendCardData } from '@/components/FriendDetailCard';
 import { Bell, Plus, Flame, Crosshair, SlidersHorizontal } from 'lucide-react';
 import { toast } from 'sonner';
@@ -21,7 +19,7 @@ import type { AISuggestion } from '@/lib/aiSuggestions';
 import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 import PausedBanner from '@/components/PausedBanner';
 import CreateDropSheet, { DROP_CATEGORIES } from '@/components/CreateDropSheet';
-import DropDetailsSheet from '@/components/DropDetailsSheet';
+import DropDetailsSheet, { type DropRow } from '@/components/DropDetailsSheet';
 import DemoDropDetailsSheet from '@/components/DemoDropDetailsSheet';
 import { DEMO_DROPS, DEMO_FRIENDS, DemoDrop, useDemoDropCount } from '@/lib/demoDrops';
 
@@ -36,32 +34,6 @@ interface FriendLocation {
   profile?: { display_name: string | null; username: string };
 }
 
-interface MockMoment {
-  id: string;
-  title: string;
-  creator: string;
-  lat: number;
-  lng: number;
-  expiresAt: Date;
-}
-
-const MOCK_MOMENTS_SEED = [
-  { id: 'm1', title: '🏀 pickup basketball', creator: 'Jordan Lee', lat: 42.3676, lng: -71.2580, durationMin: 60, startedMinAgo: 8 },
-  { id: 'm2', title: '🎵 free concert on the Great Lawn', creator: 'Student Events', lat: 42.3663, lng: -71.2600, durationMin: 120, startedMinAgo: 42 },
-  { id: 'm3', title: '🍕 pizza run at Usdan — who\'s in?', creator: 'Maya Patel', lat: 42.3667, lng: -71.2593, durationMin: 45, startedMinAgo: 12 },
-];
-
-function buildMockMoments(): MockMoment[] {
-  const now = Date.now();
-  return MOCK_MOMENTS_SEED.map((m) => ({
-    id: m.id,
-    title: m.title,
-    creator: m.creator,
-    lat: m.lat,
-    lng: m.lng,
-    expiresAt: new Date(now - m.startedMinAgo * 60_000 + m.durationMin * 60_000),
-  }));
-}
 
 interface MockFriend {
   id: string;
@@ -110,7 +82,7 @@ export default function MapScreen() {
   const mapRef = useRef<MapRef>(null);
   const mockUnreadCount = MOCK_NOTIFICATIONS.filter((n) => !n.read).length;
   const [friends, setFriends] = useState<FriendLocation[]>([]);
-  const [moments, setMoments] = useState<MockMoment[]>(() => buildMockMoments());
+  const [realDrops, setRealDrops] = useState<Array<DropRow & { latitude: number | null; longitude: number | null; rsvp_count: number }>>([]);
   const [isGhost, setIsGhost] = useState(false);
   const [myStatus, setMyStatus] = useState<string | null>(null);
   const [unreadPings, setUnreadPings] = useState(0);
@@ -175,14 +147,6 @@ export default function MapScreen() {
     setSheetHeight((h) => (h === 'peek' ? 'half' : h));
   }, []);
 
-  const openMoment = useCallback((m: MockMoment) => {
-    mapRef.current?.flyTo({ center: [m.lng, m.lat], zoom: 16, duration: 800 });
-    setSheetContent({
-      type: 'moment',
-      moment: { id: m.id, title: m.title, creator: m.creator, lat: m.lat, lng: m.lng, expiresAt: m.expiresAt },
-    });
-    setSheetHeight((h) => (h === 'peek' ? 'half' : h));
-  }, []);
 
   const closeSheet = useCallback(() => {
     setSheetContent({ type: 'default' });
@@ -249,13 +213,36 @@ export default function MapScreen() {
     if (data) setFriends(data.map((d: any) => ({ ...d, profile: d.profile })));
   }, [user]);
 
-  // Auto-purge expired moments every 30s
-  useEffect(() => {
-    const id = setInterval(() => {
-      setMoments((prev) => prev.filter((m) => m.expiresAt.getTime() > Date.now()));
-    }, 30000);
-    return () => clearInterval(id);
+  // Load active real drops (mirrors ExploreScreen) + subscribe to changes
+  const fetchDrops = useCallback(async () => {
+    const { data: rows } = await supabase
+      .from('drops')
+      .select('*')
+      .gte('end_time', new Date().toISOString())
+      .order('start_time', { ascending: true })
+      .limit(50);
+    if (!rows) { setRealDrops([]); return; }
+    const ids = rows.map((r) => r.id);
+    let counts: Record<string, number> = {};
+    if (ids.length) {
+      const { data: rsvps } = await supabase.from('drop_rsvps').select('drop_id').in('drop_id', ids);
+      counts = (rsvps ?? []).reduce<Record<string, number>>((acc, r) => {
+        acc[r.drop_id] = (acc[r.drop_id] ?? 0) + 1; return acc;
+      }, {});
+    }
+    setRealDrops(rows.map((d) => ({ ...(d as any), rsvp_count: counts[d.id] ?? 0 })));
   }, []);
+
+  useEffect(() => { fetchDrops(); }, [fetchDrops]);
+
+  useEffect(() => {
+    const ch = supabase.channel('map-drops')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'drops' }, () => fetchDrops())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'drop_rsvps' }, () => fetchDrops())
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, [fetchDrops]);
+
 
   // Fetch my status
   useEffect(() => {
@@ -319,23 +306,6 @@ export default function MapScreen() {
     toast('Status updated ✓', { style: TOAST_STYLE, position: 'top-center', duration: 2000 });
   };
 
-  const handleCreateMoment = (title: string, durationMin: number) => {
-    const lat = position?.latitude ?? 42.3655;
-    const lng = position?.longitude ?? -71.2597;
-    setMoments((prev) => [
-      ...prev,
-      {
-        id: `local-${Date.now()}`,
-        title,
-        creator: 'You',
-        lat: lat + (Math.random() - 0.5) * 0.002,
-        lng: lng + (Math.random() - 0.5) * 0.002,
-        expiresAt: new Date(Date.now() + durationMin * 60_000),
-      },
-    ]);
-    toast('Moment dropped! 🔥', { style: TOAST_STYLE, position: 'top-center', duration: 2500 });
-  };
-
   const sendPing = async (recipientId: string) => {
     if (!user) return;
     await supabase.from('pings').insert({
@@ -352,9 +322,6 @@ export default function MapScreen() {
       if (b) openBusiness(b);
     } else if (action.type === 'center_map') {
       mapRef.current?.flyTo({ center: [action.lng, action.lat], zoom: 16, duration: 900 });
-    } else if (action.type === 'show_moment') {
-      const m = moments.find((x) => x.id === action.id);
-      if (m) openMoment(m);
     }
   };
 
@@ -522,16 +489,15 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {moments.map((m) => (
-          <Marker key={m.id} latitude={m.lat} longitude={m.lng} anchor="center">
-            <MomentBeacon
-              title={m.title}
-              expiresAt={m.expiresAt}
-              onClick={() => openMoment(m)}
-            />
+        {realDrops.filter((d) => d.latitude != null && d.longitude != null).map((d) => (
+          <Marker key={d.id} latitude={d.latitude as number} longitude={d.longitude as number} anchor="bottom">
+            <RealDropMarker drop={d} onClick={() => {
+              mapRef.current?.flyTo({ center: [d.longitude as number, d.latitude as number], zoom: 16.2, duration: 800 });
+              setActiveDropId(d.id);
+            }} />
           </Marker>
         ))}
-        {DEMO_DROPS.map((d) => (
+        {demoMode && DEMO_DROPS.map((d) => (
           <Marker key={d.id} latitude={d.latitude} longitude={d.longitude} anchor="bottom">
             <DemoDropMarker drop={d} onClick={() => openDemoDrop(d)} />
           </Marker>
@@ -680,22 +646,16 @@ export default function MapScreen() {
         onHeightChange={setSheetHeight}
         onClose={closeSheet}
         friendsActive={mockFriends}
-        momentsActive={moments}
         onSelectFriend={(id) => {
           const f = mockFriends.find((x) => x.id === id);
           if (f) openFriend(f);
         }}
         onSelectBusiness={openBusiness}
-        onSelectMoment={(id) => {
-          const m = moments.find((x) => x.id === id);
-          if (m) openMoment(m);
-        }}
         onAISuggestion={handleAISuggestion}
         currentStatus={myStatus}
         isGhost={isGhost}
         onSetStatus={handleSetStatus}
         onToggleGhost={toggleGhost}
-        onCreateMoment={handleCreateMoment}
         onPing={sendPing}
       />
 
@@ -774,6 +734,63 @@ function DemoDropMarker({ drop, onClick }: { drop: DemoDrop; onClick: () => void
           borderLeft: '5px solid transparent',
           borderRight: '5px solid transparent',
           borderTop: `6px solid ${joined ? '#C2E9FF' : 'rgba(14,14,20,0.85)'}`,
+          marginTop: -1,
+        }}
+      />
+    </button>
+  );
+}
+
+function RealDropMarker({
+  drop,
+  onClick,
+}: {
+  drop: { title: string; category: string; capacity: number; rsvp_count: number };
+  onClick: () => void;
+}) {
+  const cat = DROP_CATEGORIES.find((c) => c.id === drop.category);
+  return (
+    <button
+      onClick={onClick}
+      className="flex flex-col items-center transition-transform active:scale-[0.95]"
+      style={{ padding: 4, minWidth: 44 }}
+      aria-label={`Drop: ${drop.title}`}
+    >
+      <div
+        className="flex items-center gap-1.5 rounded-full px-2.5 py-1"
+        style={{
+          background: 'rgba(14,14,20,0.85)',
+          border: '1.5px solid rgba(194,233,255,0.55)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          boxShadow: '0 4px 14px rgba(0,0,0,0.35), 0 0 12px rgba(194,233,255,0.25)',
+          color: '#fff',
+          fontSize: 12,
+          fontWeight: 700,
+          whiteSpace: 'nowrap',
+          maxWidth: 180,
+        }}
+      >
+        <span style={{ fontSize: 14 }}>{cat?.emoji ?? '✨'}</span>
+        <span className="truncate">{drop.title}</span>
+        <span
+          style={{
+            marginLeft: 4,
+            fontSize: 10,
+            padding: '1px 6px',
+            borderRadius: 999,
+            background: 'rgba(194,233,255,0.18)',
+            color: '#C2E9FF',
+          }}
+        >
+          {drop.rsvp_count}/{drop.capacity}
+        </span>
+      </div>
+      <div
+        style={{
+          width: 0, height: 0,
+          borderLeft: '5px solid transparent',
+          borderRight: '5px solid transparent',
+          borderTop: '6px solid rgba(14,14,20,0.85)',
           marginTop: -1,
         }}
       />
