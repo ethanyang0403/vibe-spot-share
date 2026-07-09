@@ -109,14 +109,10 @@ export default function ProfileScreen() {
         <ProfileView
           profile={demoMode ? OWN_PROFILE : {
             ...OWN_PROFILE,
-            name: displayName,
-            username: profile.username,
-            initial: initialOf(displayName),
-            color: stableColor(user?.id ?? profile.username),
             bio: '',
-            photos: [],
-            prompts: [],
             interests: [],
+            prompts: [],
+            photoCount: 1,
           }}
           ownName={displayName}
           stats={[
