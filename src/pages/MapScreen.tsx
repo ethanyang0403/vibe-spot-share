@@ -147,14 +147,6 @@ export default function MapScreen() {
     setSheetHeight((h) => (h === 'peek' ? 'half' : h));
   }, []);
 
-  const openMoment = useCallback((m: MockMoment) => {
-    mapRef.current?.flyTo({ center: [m.lng, m.lat], zoom: 16, duration: 800 });
-    setSheetContent({
-      type: 'moment',
-      moment: { id: m.id, title: m.title, creator: m.creator, lat: m.lat, lng: m.lng, expiresAt: m.expiresAt },
-    });
-    setSheetHeight((h) => (h === 'peek' ? 'half' : h));
-  }, []);
 
   const closeSheet = useCallback(() => {
     setSheetContent({ type: 'default' });
