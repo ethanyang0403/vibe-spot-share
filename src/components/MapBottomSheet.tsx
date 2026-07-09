@@ -417,10 +417,7 @@ function DefaultBrowse({
             {happeningNow.map((row) => (
               <button
                 key={`${row.kind}:${row.id}`}
-                onClick={() => {
-                  if (row.kind === 'moment') onSelectMoment(row.id);
-                  else onSelectBusiness(row.business);
-                }}
+                onClick={() => onSelectBusiness(row.business)}
                 className="flex items-center gap-3 px-4 py-3 text-left transition-transform active:scale-[0.99]"
                 style={{
                   background: 'rgba(20, 20, 28, 0.55)',
