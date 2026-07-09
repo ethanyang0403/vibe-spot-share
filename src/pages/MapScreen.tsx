@@ -19,7 +19,7 @@ import type { AISuggestion } from '@/lib/aiSuggestions';
 import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 import PausedBanner from '@/components/PausedBanner';
 import CreateDropSheet, { DROP_CATEGORIES } from '@/components/CreateDropSheet';
-import DropDetailsSheet from '@/components/DropDetailsSheet';
+import DropDetailsSheet, { type DropRow } from '@/components/DropDetailsSheet';
 import DemoDropDetailsSheet from '@/components/DemoDropDetailsSheet';
 import { DEMO_DROPS, DEMO_FRIENDS, DemoDrop, useDemoDropCount } from '@/lib/demoDrops';
 
