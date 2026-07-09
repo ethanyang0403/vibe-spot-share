@@ -34,32 +34,6 @@ interface FriendLocation {
   profile?: { display_name: string | null; username: string };
 }
 
-interface MockMoment {
-  id: string;
-  title: string;
-  creator: string;
-  lat: number;
-  lng: number;
-  expiresAt: Date;
-}
-
-const MOCK_MOMENTS_SEED = [
-  { id: 'm1', title: '🏀 pickup basketball', creator: 'Jordan Lee', lat: 42.3676, lng: -71.2580, durationMin: 60, startedMinAgo: 8 },
-  { id: 'm2', title: '🎵 free concert on the Great Lawn', creator: 'Student Events', lat: 42.3663, lng: -71.2600, durationMin: 120, startedMinAgo: 42 },
-  { id: 'm3', title: '🍕 pizza run at Usdan — who\'s in?', creator: 'Maya Patel', lat: 42.3667, lng: -71.2593, durationMin: 45, startedMinAgo: 12 },
-];
-
-function buildMockMoments(): MockMoment[] {
-  const now = Date.now();
-  return MOCK_MOMENTS_SEED.map((m) => ({
-    id: m.id,
-    title: m.title,
-    creator: m.creator,
-    lat: m.lat,
-    lng: m.lng,
-    expiresAt: new Date(now - m.startedMinAgo * 60_000 + m.durationMin * 60_000),
-  }));
-}
 
 interface MockFriend {
   id: string;
