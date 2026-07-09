@@ -646,22 +646,16 @@ export default function MapScreen() {
         onHeightChange={setSheetHeight}
         onClose={closeSheet}
         friendsActive={mockFriends}
-        momentsActive={moments}
         onSelectFriend={(id) => {
           const f = mockFriends.find((x) => x.id === id);
           if (f) openFriend(f);
         }}
         onSelectBusiness={openBusiness}
-        onSelectMoment={(id) => {
-          const m = moments.find((x) => x.id === id);
-          if (m) openMoment(m);
-        }}
         onAISuggestion={handleAISuggestion}
         currentStatus={myStatus}
         isGhost={isGhost}
         onSetStatus={handleSetStatus}
         onToggleGhost={toggleGhost}
-        onCreateMoment={handleCreateMoment}
         onPing={sendPing}
       />
 
