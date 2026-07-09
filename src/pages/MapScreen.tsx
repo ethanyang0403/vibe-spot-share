@@ -230,7 +230,7 @@ export default function MapScreen() {
         acc[r.drop_id] = (acc[r.drop_id] ?? 0) + 1; return acc;
       }, {});
     }
-    setRealDrops(rows.map((d) => ({ ...(d as DropRow), rsvp_count: counts[d.id] ?? 0 })));
+    setRealDrops(rows.map((d) => ({ ...(d as any), rsvp_count: counts[d.id] ?? 0 })));
   }, []);
 
   useEffect(() => { fetchDrops(); }, [fetchDrops]);
