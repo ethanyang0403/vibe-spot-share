@@ -25,7 +25,7 @@ export default function ProfileScreen() {
   const [editing, setEditing] = useState(false);
   const [isGhost, setIsGhost] = useState(false);
   const [friendCount, setFriendCount] = useState(FRIEND_LIST.length);
-  const [momentCount, setMomentCount] = useState(3);
+  const [dropCount, setDropCount] = useState(0);
   const [pingCount] = useState(12);
   const [demoMode, setDemoModeFlag] = useDemoMode();
 
