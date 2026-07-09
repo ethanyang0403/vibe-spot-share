@@ -259,10 +259,8 @@ export default function MapBottomSheet({
             {content.type === 'default' && (
               <DefaultBrowse
                 friends={friendsActive}
-                moments={momentsActive}
                 onSelectFriend={onSelectFriend}
                 onSelectBusiness={onSelectBusiness}
-                onSelectMoment={onSelectMoment}
                 onAISuggestion={onAISuggestion}
                 onPeekTap={() => onHeightChange('half')}
                 isPeek={height === 'peek'}
@@ -281,9 +279,6 @@ export default function MapBottomSheet({
             {content.type === 'business' && (
               <BusinessDetail business={content.business} />
             )}
-            {content.type === 'moment' && (
-              <MomentDetailContent moment={content.moment} />
-            )}
             {content.type === 'status' && (
               <StatusSetter
                 currentStatus={currentStatus}
@@ -293,14 +288,6 @@ export default function MapBottomSheet({
                   onClose();
                 }}
                 onToggleGhost={onToggleGhost}
-              />
-            )}
-            {content.type === 'create-moment' && (
-              <CreateMomentForm
-                onCreate={(title, dur) => {
-                  onCreateMoment(title, dur);
-                  onClose();
-                }}
               />
             )}
           </motion.div>
@@ -318,8 +305,6 @@ function contentKey(c: SheetContent): string {
       return `profile:${c.friend.id}`;
     case 'business':
       return `business:${c.business.id}`;
-    case 'moment':
-      return `moment:${c.moment.id}`;
     default:
       return c.type;
   }
