@@ -31,32 +31,22 @@ export type SheetContent =
   | { type: 'default' }
   | { type: 'friend'; friend: FriendCardData }
   | { type: 'business'; business: Business }
-  | { type: 'moment'; moment: MomentDetail }
   | { type: 'status' }
-  | { type: 'create-moment' }
   | { type: 'profile'; friend: FriendCardData };
 
 interface Props {
   height: SheetHeight;
   content: SheetContent;
   onHeightChange: (h: SheetHeight) => void;
-  onClose: () => void; // collapse to peek + reset to default
-  // Default browse counts
+  onClose: () => void;
   friendsActive: Array<{ id: string; name: string; initial: string; color: string; lat: number; lng: number; status: string }>;
-  momentsActive: Array<{ id: string; title: string; expiresAt: Date; lat: number; lng: number; creator: string }>;
-  // Browse + AI handlers
   onSelectFriend: (id: string) => void;
   onSelectBusiness: (b: Business) => void;
-  onSelectMoment: (id: string) => void;
   onAISuggestion: (action: AISuggestion['action']) => void;
-  // Status setter
   currentStatus: string | null;
   isGhost: boolean;
   onSetStatus: (text: string) => void;
   onToggleGhost: () => void;
-  // Create moment
-  onCreateMoment: (title: string, durationMinutes: number) => void;
-  // Friend actions
   onPing: (friendId: string) => void;
 }
 
