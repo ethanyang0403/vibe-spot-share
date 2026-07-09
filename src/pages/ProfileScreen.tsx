@@ -37,9 +37,9 @@ export default function ProfileScreen() {
       .or(`requester_id.eq.${user.id},addressee_id.eq.${user.id}`)
       .eq('status', 'accepted')
       .then(({ count }) => setFriendCount((count ?? 0) + FRIEND_LIST.length));
-    supabase.from('moments').select('*', { count: 'exact', head: true })
+    supabase.from('drops').select('*', { count: 'exact', head: true })
       .eq('creator_id', user.id)
-      .then(({ count }) => setMomentCount(count ?? 3));
+      .then(({ count }) => setDropCount(count ?? 0));
   }, [user]);
 
   const toggleGhost = async () => {
