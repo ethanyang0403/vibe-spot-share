@@ -445,7 +445,7 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {mockFriends.map((f) => (
+        {demoMode && mockFriends.map((f) => (
           <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
             <button
               onClick={() => openFriend(f)}
@@ -646,10 +646,37 @@ export default function MapScreen() {
         content={sheetContent}
         onHeightChange={setSheetHeight}
         onClose={closeSheet}
-        friendsActive={mockFriends}
+        friendsActive={
+          demoMode
+            ? mockFriends
+            : friends.map((f) => ({
+                id: f.user_id,
+                name: f.profile?.display_name || f.profile?.username || 'Friend',
+                initial: ((f.profile?.display_name || f.profile?.username || '?')[0] || '?').toUpperCase(),
+                color: '#C2E9FF',
+                lat: f.latitude,
+                lng: f.longitude,
+                status: f.status_text || '',
+              }))
+        }
         onSelectFriend={(id) => {
-          const f = mockFriends.find((x) => x.id === id);
-          if (f) openFriend(f);
+          if (demoMode) {
+            const f = mockFriends.find((x) => x.id === id);
+            if (f) openFriend(f);
+            return;
+          }
+          const rf = friends.find((x) => x.user_id === id);
+          if (rf) {
+            openFriend({
+              id: rf.user_id,
+              name: rf.profile?.display_name || rf.profile?.username || 'Friend',
+              initial: ((rf.profile?.display_name || rf.profile?.username || '?')[0] || '?').toUpperCase(),
+              status: rf.status_text || '',
+              lat: rf.latitude,
+              lng: rf.longitude,
+              color: '#C2E9FF',
+            });
+          }
         }}
         onSelectBusiness={openBusiness}
         onAISuggestion={handleAISuggestion}
