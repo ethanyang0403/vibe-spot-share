@@ -108,7 +108,7 @@ export default function ProfileScreen() {
           ownName={displayName}
           stats={[
             { value: String(friendCount), label: 'Friends' },
-            { value: String(momentCount), label: 'Moments' },
+            { value: String(dropCount), label: 'Drops' },
             { value: String(pingCount), label: 'Pings Sent' },
           ]}
           editing={editing}
