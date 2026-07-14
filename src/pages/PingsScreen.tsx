@@ -266,8 +266,9 @@ export default function PingsScreen() {
                               initial: n.avatar.initial,
                               color: n.avatar.color,
                               degree: '1st',
-                              mutualCount: 5,
+                              mutualCount: demoMode ? 5 : 0,
                               isFriend: n.type !== 'friend_request',
+                              userId: demoMode ? undefined : n.senderId,
                             });
                           }}
                           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full active:scale-95 transition-all"
