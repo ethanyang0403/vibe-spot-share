@@ -287,7 +287,8 @@ export default function PersonProfileModal({ target, onClose }: Props) {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
