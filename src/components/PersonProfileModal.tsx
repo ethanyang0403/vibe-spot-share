@@ -321,7 +321,7 @@ export default function PersonProfileModal({ target, onClose }: Props) {
                         <MessageCircle size={16} /> Open chat
                       </button>
                     )}
-                    <div className="hidden">{/* keep the closing structure below */}</div>
+                    
 
                     {/* Message composer — appears after Ping (demo, friend only) */}
                     <AnimatePresence>
