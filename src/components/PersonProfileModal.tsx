@@ -180,6 +180,15 @@ export default function PersonProfileModal({ target, onClose }: Props) {
     }
   };
 
+  const handleDemoSendMessage = () => {
+    if (!target || sent) return;
+    const text = messageText.trim();
+    if (!text) return;
+    setSent(true);
+    setMessageText('');
+    toast(`Message sent to ${target.name} ✓`, { style: TOAST_STYLE, position: 'top-center', duration: 2500 });
+  };
+
   const handleDirections = () => {
     if (!target?.lat || !target?.lng) {
       toast('Directions unavailable', { style: TOAST_STYLE, position: 'top-center', duration: 1800 });
