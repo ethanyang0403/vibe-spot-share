@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { X, MapPin, Users, Clock, Calendar } from 'lucide-react';
+import { X, MapPin, Users, Clock, Calendar, Send } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { DROP_CATEGORIES } from './CreateDropSheet';
