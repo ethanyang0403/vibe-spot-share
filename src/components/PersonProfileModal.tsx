@@ -4,6 +4,7 @@
 // drops-hosted, and shows a quick-message composer for friends.
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import { X, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
