@@ -50,6 +50,127 @@ export type Database = {
         }
         Relationships: []
       }
+      conversation_members: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          id: string
+          is_archived: boolean
+          is_muted: boolean
+          joined_at: string
+          last_read_at: string
+          left_at: string | null
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_archived?: boolean
+          is_muted?: boolean
+          joined_at?: string
+          last_read_at?: string
+          left_at?: string | null
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_archived?: boolean
+          is_muted?: boolean
+          joined_at?: string
+          last_read_at?: string
+          left_at?: string | null
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_members_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversation_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          canceled_at: string | null
+          created_at: string
+          created_by: string | null
+          drop_id: string | null
+          id: string
+          image_url: string | null
+          last_activity_at: string
+          last_message_id: string | null
+          name: string | null
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          canceled_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          drop_id?: string | null
+          id?: string
+          image_url?: string | null
+          last_activity_at?: string
+          last_message_id?: string | null
+          name?: string | null
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          canceled_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          drop_id?: string | null
+          id?: string
+          image_url?: string | null
+          last_activity_at?: string
+          last_message_id?: string | null
+          name?: string | null
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_drop_id_fkey"
+            columns: ["drop_id"]
+            isOneToOne: false
+            referencedRelation: "drops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "conversations_last_message_fk"
+            columns: ["last_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       drop_rsvps: {
         Row: {
           created_at: string
@@ -317,6 +438,70 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          content: string | null
+          conversation_id: string
+          created_at: string
+          deleted_at: string | null
+          delivery_status: string
+          id: string
+          image_url: string | null
+          message_type: string
+          reply_to_message_id: string | null
+          sender_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: string | null
+          conversation_id: string
+          created_at?: string
+          deleted_at?: string | null
+          delivery_status?: string
+          id?: string
+          image_url?: string | null
+          message_type?: string
+          reply_to_message_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string | null
+          conversation_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          delivery_status?: string
+          id?: string
+          image_url?: string | null
+          message_type?: string
+          reply_to_message_id?: string | null
+          sender_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_reply_to_message_id_fkey"
+            columns: ["reply_to_message_id"]
+            isOneToOne: false
+            referencedRelation: "messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       moments: {
         Row: {
           created_at: string
@@ -504,6 +689,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_blocks_blocked_id_fkey"
+            columns: ["blocked_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_blocks_blocker_id_fkey"
+            columns: ["blocker_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_locations: {
         Row: {
           is_visible: boolean
@@ -548,6 +769,28 @@ export type Database = {
         Args: { user_a: string; user_b: string }
         Returns: boolean
       }
+      can_send_to_conversation: {
+        Args: { _conv: string; _uid: string }
+        Returns: boolean
+      }
+      create_group_conversation: {
+        Args: { _member_ids: string[]; _name: string }
+        Returns: string
+      }
+      ensure_drop_conversation: { Args: { _drop: string }; Returns: string }
+      find_or_create_direct_conversation: {
+        Args: { _other: string }
+        Returns: string
+      }
+      is_active_conversation_member: {
+        Args: { _conv: string; _uid: string }
+        Returns: boolean
+      }
+      is_conversation_member: {
+        Args: { _conv: string; _uid: string }
+        Returns: boolean
+      }
+      mark_conversation_read: { Args: { _conv: string }; Returns: undefined }
     }
     Enums: {
       [_ in never]: never
