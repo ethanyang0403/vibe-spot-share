@@ -44,6 +44,8 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
 
   useEffect(() => {
     if (!dropId) return;
+    setMessageText('');
+    setMessageSent(false);
     let cancelled = false;
     const load = async () => {
       setLoading(true);
@@ -56,6 +58,11 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
       setAttendeeCount(rsvps?.length ?? 0);
       setJoined(!!rsvps?.some((r) => r.user_id === user?.id));
       setLoading(false);
+      if (d?.creator_id) {
+        const { data: h } = await supabase
+          .from('profiles').select('display_name, username').eq('id', d.creator_id).maybeSingle();
+        if (!cancelled) setHostName(h?.display_name || h?.username || 'the host');
+      }
     };
     load();
     return () => { cancelled = true; };
