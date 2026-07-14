@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { Send } from 'lucide-react';
 import { mutualCountForFriend } from '@/lib/nearbyMock';
 import { openPersonProfile } from '@/lib/profileBus';
 import { useDemoMode } from '@/lib/demoMode';
@@ -38,9 +39,11 @@ function distanceMiles(lat: number, lng: number): string {
 export default function FriendDetailCard({ friend, onClose }: Props) {
   const [demoMode] = useDemoMode();
   const [pinged, setPinged] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [messageSent, setMessageSent] = useState(false);
 
   useEffect(() => {
-    if (friend) setPinged(false);
+    if (friend) { setPinged(false); setMessageText(''); setMessageSent(false); }
   }, [friend?.id]);
 
   const handlePing = () => {
@@ -58,6 +61,19 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
         duration: 2500,
       });
     }, 3000);
+  };
+
+  const handleSendMessage = () => {
+    if (!friend || messageSent) return;
+    const text = messageText.trim();
+    if (!text) return;
+    setMessageSent(true);
+    setMessageText('');
+    toast(`Message sent to ${friend.name} ✓`, {
+      style: TOAST_STYLE,
+      position: 'top-center',
+      duration: 2500,
+    });
   };
 
   const handleDirections = () => {
@@ -179,6 +195,56 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
                 Directions 📍
               </button>
             </div>
+
+            {/* Message composer — appears after Ping */}
+            <AnimatePresence>
+              {pinged && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
+                  <p className="mt-4" style={{ fontSize: 11, fontWeight: 700, color: '#555566', letterSpacing: 1.5, textTransform: 'uppercase' }}>
+                    Add a message
+                  </p>
+                  <div
+                    className="mt-2 flex items-center gap-2"
+                    style={{
+                      height: 48, borderRadius: 14, padding: '0 6px 0 14px',
+                      backgroundColor: 'rgba(255,255,255,0.05)',
+                      border: '1px solid rgba(255,255,255,0.08)',
+                    }}
+                  >
+                    <input
+                      type="text"
+                      value={messageText}
+                      onChange={(e) => setMessageText(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage(); }}
+                      placeholder={messageSent ? 'Sent ✓' : `Say hi to ${friend.name.split(' ')[0]}…`}
+                      disabled={messageSent}
+                      maxLength={200}
+                      className="flex-1 bg-transparent outline-none text-white"
+                      style={{ fontSize: 14 }}
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={messageSent || !messageText.trim()}
+                      aria-label="Send message"
+                      className="flex items-center justify-center transition-all active:scale-95"
+                      style={{
+                        width: 36, height: 36, borderRadius: 12,
+                        backgroundColor: messageSent ? '#34D399' : (messageText.trim() ? '#C2E9FF' : 'rgba(194,233,255,0.25)'),
+                        color: '#0A0A0F',
+                      }}
+                    >
+                      <Send size={15} strokeWidth={2.5} />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </>
       )}

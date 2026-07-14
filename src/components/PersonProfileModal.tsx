@@ -180,6 +180,15 @@ export default function PersonProfileModal({ target, onClose }: Props) {
     }
   };
 
+  const handleDemoSendMessage = () => {
+    if (!target || sent) return;
+    const text = messageText.trim();
+    if (!text) return;
+    setSent(true);
+    setMessageText('');
+    toast(`Message sent to ${target.name} ✓`, { style: TOAST_STYLE, position: 'top-center', duration: 2500 });
+  };
+
   const handleDirections = () => {
     if (!target?.lat || !target?.lng) {
       toast('Directions unavailable', { style: TOAST_STYLE, position: 'top-center', duration: 1800 });
@@ -280,6 +289,56 @@ export default function PersonProfileModal({ target, onClose }: Props) {
                     >
                       Directions 📍
                     </button>
+
+                    {/* Message composer — appears after Ping (demo, friend only) */}
+                    <AnimatePresence>
+                      {target.isFriend && pinged && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          <p style={{ fontSize: 11, fontWeight: 700, color: '#555566', letterSpacing: 1.5, textTransform: 'uppercase' }}>
+                            Add a message
+                          </p>
+                          <div
+                            className="mt-2 flex items-center gap-2"
+                            style={{
+                              height: 48, borderRadius: 14, padding: '0 6px 0 14px',
+                              backgroundColor: 'rgba(255,255,255,0.05)',
+                              border: '1px solid rgba(255,255,255,0.08)',
+                            }}
+                          >
+                            <input
+                              type="text"
+                              value={messageText}
+                              onChange={(e) => setMessageText(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') handleDemoSendMessage(); }}
+                              placeholder={sent ? 'Sent ✓' : `Say hi to ${target.name.split(' ')[0]}…`}
+                              disabled={sent}
+                              maxLength={200}
+                              className="flex-1 bg-transparent outline-none text-white"
+                              style={{ fontSize: 14 }}
+                            />
+                            <button
+                              onClick={handleDemoSendMessage}
+                              disabled={sent || !messageText.trim()}
+                              aria-label="Send message"
+                              className="flex items-center justify-center transition-all active:scale-95"
+                              style={{
+                                width: 36, height: 36, borderRadius: 12,
+                                backgroundColor: sent ? '#34D399' : (messageText.trim() ? '#C2E9FF' : 'rgba(194,233,255,0.25)'),
+                                color: '#0A0A0F',
+                              }}
+                            >
+                              <Send size={15} strokeWidth={2.5} />
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </ProfileView>
               )}
