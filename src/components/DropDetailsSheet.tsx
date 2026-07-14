@@ -143,6 +143,7 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
   else cta = { label: 'RSVP · Join Drop', disabled: false, tone: 'primary' };
 
   return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
