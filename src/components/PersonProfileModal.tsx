@@ -5,15 +5,17 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { X, Send } from 'lucide-react';
+import { X, Send, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProfileView from './ProfileView';
 import { getProfileFor } from '@/lib/profilesMock';
 import { useDemoMode } from '@/lib/demoMode';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { relativeTime, stableColor, initialOf } from '@/lib/realProfileHelpers';
+import { findOrCreateDirectConversation } from '@/lib/messaging/api';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
