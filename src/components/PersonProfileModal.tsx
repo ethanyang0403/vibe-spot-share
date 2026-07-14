@@ -396,11 +396,12 @@ interface RealBodyProps {
   onSend: () => void;
   onAddFriend: () => void;
   onDirections: () => void;
+  onOpenChat: () => void;
 }
 
 function RealProfileBody({
   target, real, sending, sent, requested, messageText,
-  onMessageChange, onSend, onAddFriend, onDirections,
+  onMessageChange, onSend, onAddFriend, onDirections, onOpenChat,
 }: RealBodyProps) {
   const color = target.color || stableColor(target.userId || target.name);
   const initial = (real?.displayName ? initialOf(real.displayName) : target.initial) || '?';
@@ -493,6 +494,15 @@ function RealProfileBody({
                 <Send size={16} strokeWidth={2.5} />
               </button>
             </div>
+            <button
+              onClick={onOpenChat}
+              className="flex items-center justify-center gap-2 font-bold transition-all active:scale-[0.97]"
+              style={{
+                height: 46, borderRadius: 14, backgroundColor: '#C2E9FF', color: '#0A0A0F', fontSize: 15,
+              }}
+            >
+              <MessageCircle size={16} /> Open full chat
+            </button>
             <button
               onClick={onDirections}
               className="font-bold transition-all active:scale-[0.97]"
