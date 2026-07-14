@@ -15,14 +15,22 @@ const tabs = [
   { path: '/profile', icon: User, label: 'Profile' },
 ];
 
+function isActive(tabPath: string, pathname: string) {
+  if (tabPath === '/') return pathname === '/';
+  return pathname === tabPath || pathname.startsWith(tabPath + '/');
+}
+
 export default function TabBar() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [demoMode] = useDemoMode();
+  const unread = useUnreadTotal(demoMode ? null : user?.id);
   const containerRef = useRef<HTMLDivElement>(null);
   const btnRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [pillStyle, setPillStyle] = useState<{ left: number; width: number; top: number; height: number } | null>(null);
 
-  const activeIndex = tabs.findIndex((t) => t.path === location.pathname);
+  const activeIndex = tabs.findIndex((t) => isActive(t.path, location.pathname));
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -69,8 +77,9 @@ export default function TabBar() {
       )}
 
       {tabs.map(({ path, icon: Icon, label }, i) => {
-        const active = location.pathname === path;
+        const active = isActive(path, location.pathname);
         const color = active ? '#C2E9FF' : '#555566';
+        const showBadge = path === '/messages' && unread > 0;
         return (
           <button
             key={path}
@@ -79,7 +88,17 @@ export default function TabBar() {
             className="relative z-10 flex flex-col items-center gap-0.5 transition-all active:scale-[0.95]"
             style={{ paddingLeft: 10, paddingRight: 10 }}
           >
-            <Icon size={20} style={{ color }} />
+            <div className="relative">
+              <Icon size={20} style={{ color }} />
+              {showBadge && (
+                <span
+                  className="absolute -right-1.5 -top-1 min-w-[16px] rounded-full px-1 text-center text-[9px] font-semibold leading-[16px]"
+                  style={{ backgroundColor: '#C2E9FF', color: '#0A0A0F' }}
+                >
+                  {unread > 99 ? '99+' : unread}
+                </span>
+              )}
+            </div>
             <span className="text-[10px]" style={{ color }}>{label}</span>
           </button>
         );
