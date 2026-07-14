@@ -328,23 +328,8 @@ function DefaultBrowse({
 }) {
   const dealsCount = MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).length;
 
-  return (
-    <div>
-      {/* Peek summary row */}
-      <button
-        onClick={onPeekTap}
-        className="flex w-full items-center justify-between px-5 py-2 text-left transition-opacity active:opacity-80"
-      >
-        <span style={{ fontSize: 13, color: '#fff' }}>
-          <span style={{ color: '#fff', fontWeight: 600 }}>{friends.length}</span>{' '}
-          <span style={{ color: '#8A8A9A' }}>friends nearby ·</span>{' '}
-          <span style={{ color: '#fff', fontWeight: 600 }}>{dealsCount}</span>{' '}
-          <span style={{ color: '#8A8A9A' }}>deals</span>
-        </span>
-        <ChevronRight size={16} color="#555566" />
-      </button>
-    </div>
-  );
+  return <div />;
+
 }
 
 
