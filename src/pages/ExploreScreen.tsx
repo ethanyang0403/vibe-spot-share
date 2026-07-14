@@ -145,7 +145,6 @@ export default function ExploreScreen() {
           </p>
         </div>
         <DropsSection />
-        <DropDetailsSheet dropId={activeDropId} onClose={() => setActiveDropId(null)} />
       </div>
     );
   }
