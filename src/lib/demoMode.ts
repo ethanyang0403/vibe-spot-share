@@ -4,8 +4,8 @@
 
 import { useEffect, useState } from 'react';
 
-const KEY = 'sera:demo-mode';
-const EVENT = 'sera:demo-mode-change';
+const KEY = 'drop:demo-mode';
+const EVENT = 'drop:demo-mode-change';
 
 export function getDemoMode(): boolean {
   if (typeof window === 'undefined') return true;

@@ -54,7 +54,7 @@ export const FRIEND_REQUESTS: MockFriendRequest[] = [
 ];
 
 // ---- Tiny event for "open this friend on the map" ----
-export const FOCUS_FRIEND_EVENT = "sera:focus-friend";
+export const FOCUS_FRIEND_EVENT = "drop:focus-friend";
 
 export function focusFriendOnMap(friendId: string) {
   window.dispatchEvent(new CustomEvent(FOCUS_FRIEND_EVENT, { detail: { friendId } }));

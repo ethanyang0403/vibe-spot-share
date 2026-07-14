@@ -507,7 +507,7 @@ export default function MapScreen() {
       <MapWelcomeBanner />
       <PausedBanner />
 
-      {/* Floating top-left: sera brand + prominent ghost mode pill */}
+      {/* Floating top-left: drop brand + prominent ghost mode pill */}
       <div
         className="absolute z-20 flex items-center gap-2"
         style={{
@@ -524,7 +524,7 @@ export default function MapScreen() {
           style={{ color: '#C2E9FF', padding: '8px 14px', borderRadius: 22 }}
           aria-label="Open status setter"
         >
-          sera
+          drop
         </button>
         <button
           onClick={toggleGhost}

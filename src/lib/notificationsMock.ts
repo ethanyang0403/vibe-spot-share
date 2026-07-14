@@ -37,8 +37,8 @@ export interface AppNotification {
   recap?: MomentRecap;
 }
 
-export const NOTIFICATION_FOCUS_FRIEND_EVENT = 'sera:notif-focus-friend';
-export const NOTIFICATION_FOCUS_BUSINESS_EVENT = 'sera:notif-focus-business';
+export const NOTIFICATION_FOCUS_FRIEND_EVENT = 'drop:notif-focus-friend';
+export const NOTIFICATION_FOCUS_BUSINESS_EVENT = 'drop:notif-focus-business';
 
 export const MOCK_NOTIFICATIONS: AppNotification[] = [
   {

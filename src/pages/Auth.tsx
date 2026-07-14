@@ -67,7 +67,7 @@ export default function Auth() {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
-          <h1 className="text-5xl font-black tracking-tight text-primary">sera</h1>
+          <h1 className="text-5xl font-black tracking-tight text-primary">drop</h1>
           <p className="mt-2 text-muted-foreground">find your people</p>
         </div>
 
@@ -112,7 +112,7 @@ export default function Auth() {
           <Button
             type="submit"
             disabled={submitting}
-            className="h-12 w-full rounded-xl sera-gradient text-primary-foreground font-semibold text-base"
+            className="h-12 w-full rounded-xl drop-gradient text-primary-foreground font-semibold text-base"
           >
             {submitting ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
           </Button>

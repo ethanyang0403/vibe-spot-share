@@ -1,4 +1,4 @@
-// Mock local-business data for the Sera Explore tab + map layer.
+// Mock local-business data for the Drop Explore tab + map layer.
 // Some businesses have an active "Promoted Moment" (a live deal).
 
 export type CrowdLevel = "quiet" | "moderate" | "busy" | "packed";
@@ -225,7 +225,7 @@ export const EXPLORE_CATEGORIES: ExploreCategory[] = [
 ];
 
 // Tiny event bus so the Explore tab can ask the Map tab to open a business.
-export const FOCUS_BUSINESS_EVENT = "sera:focus-business";
+export const FOCUS_BUSINESS_EVENT = "drop:focus-business";
 
 export function focusBusinessOnMap(businessId: string) {
   window.dispatchEvent(

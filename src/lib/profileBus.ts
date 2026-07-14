@@ -2,7 +2,7 @@
 
 import type { PersonProfileTarget } from '@/components/PersonProfileModal';
 
-export const OPEN_PROFILE_EVENT = 'sera:open-profile';
+export const OPEN_PROFILE_EVENT = 'drop:open-profile';
 
 export function openPersonProfile(target: PersonProfileTarget) {
   window.dispatchEvent(new CustomEvent(OPEN_PROFILE_EVENT, { detail: target }));

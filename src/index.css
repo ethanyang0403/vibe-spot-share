@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    /* Sera v2 — cool dark + light blue accent */
+    /* Drop v2 — cool dark + light blue accent */
     --background: 240 22% 5%;            /* #0A0A0F */
     --foreground: 0 0% 100%;
 
@@ -170,7 +170,7 @@
     z-index: 1;
   }
 
-  .sera-gradient {
+  .drop-gradient {
     background: linear-gradient(135deg, hsl(202, 100%, 88%), hsl(202, 80%, 78%));
     color: #0A0A0F;
   }
