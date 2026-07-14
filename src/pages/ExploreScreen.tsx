@@ -157,6 +157,7 @@ export default function ExploreScreen() {
   }
 
   return (
+    <>
     <div className="min-h-[calc(100dvh-56px-env(safe-area-inset-bottom,8px))] bg-background pb-6">
       {/* Header */}
       <div className="px-5 pt-[calc(env(safe-area-inset-top,12px)+16px)]">
