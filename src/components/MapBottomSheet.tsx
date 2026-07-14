@@ -13,6 +13,7 @@ import { openPersonProfile } from '@/lib/profileBus';
 import ProfileView from './ProfileView';
 import { getProfileFor } from '@/lib/profilesMock';
 import { AI_SUGGESTIONS, type AISuggestion } from '@/lib/aiSuggestions';
+import { useDemoMode } from '@/lib/demoMode';
 
 const SPRING = { type: 'spring' as const, damping: 32, stiffness: 380, mass: 0.9 };
 const TOAST_STYLE = {
