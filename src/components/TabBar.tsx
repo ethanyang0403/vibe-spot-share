@@ -1,14 +1,17 @@
-import { Map, Radar, Compass, Users, Bell, User } from 'lucide-react';
+import { Map, Radar, Compass, Users, MessageCircle, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLayoutEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { useUnreadTotal } from '@/lib/messaging/hooks';
+import { useDemoMode } from '@/lib/demoMode';
 
 const tabs = [
   { path: '/', icon: Map, label: 'Map' },
   { path: '/nearby', icon: Radar, label: 'Nearby' },
   { path: '/explore', icon: Compass, label: 'Explore' },
   { path: '/friends', icon: Users, label: 'Friends' },
-  { path: '/pings', icon: Bell, label: 'Pings' },
+  { path: '/messages', icon: MessageCircle, label: 'Messages' },
   { path: '/profile', icon: User, label: 'Profile' },
 ];
 
