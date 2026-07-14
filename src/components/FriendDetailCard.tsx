@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { Send } from 'lucide-react';
 import { mutualCountForFriend } from '@/lib/nearbyMock';
 import { openPersonProfile } from '@/lib/profileBus';
 import { useDemoMode } from '@/lib/demoMode';
