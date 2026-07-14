@@ -651,6 +651,7 @@ function FriendDetail({
  * ───────────────────────────────────────────── */
 
 function FullProfile({ friend }: { friend: FriendCardData }) {
+  const [demoMode] = useDemoMode();
   const profile = getProfileFor(friend.name);
   return (
     <ProfileView
