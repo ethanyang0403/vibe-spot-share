@@ -309,6 +309,19 @@ export default function PersonProfileModal({ target, onClose }: Props) {
                     >
                       Directions 📍
                     </button>
+                    {target.isFriend && (
+                      <button
+                        onClick={openChat}
+                        className="flex items-center justify-center gap-2 font-bold transition-all active:scale-[0.97]"
+                        style={{
+                          height: 46, borderRadius: 14, backgroundColor: 'rgba(194,233,255,0.10)',
+                          border: '1px solid rgba(194,233,255,0.25)', color: '#C2E9FF', fontSize: 15,
+                        }}
+                      >
+                        <MessageCircle size={16} /> Open chat
+                      </button>
+                    )}
+                    <div className="hidden">{/* keep the closing structure below */}</div>
 
                     {/* Message composer — appears after Ping (demo, friend only) */}
                     <AnimatePresence>
