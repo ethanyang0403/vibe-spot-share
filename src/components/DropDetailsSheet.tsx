@@ -104,6 +104,29 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
     }
   };
 
+  const handleSendMessage = async () => {
+    if (!user || !drop) return;
+    const text = messageText.trim();
+    if (!text || sending || messageSent) return;
+    if (drop.creator_id === user.id) {
+      toast.error("You're the host — can't message yourself");
+      return;
+    }
+    setSending(true);
+    const { error } = await supabase.from('pings').insert({
+      sender_id: user.id,
+      recipient_id: drop.creator_id,
+      message: `[${drop.title}] ${text}`,
+      read: false,
+    });
+    setSending(false);
+    if (error) { toast.error(`Couldn't send: ${error.message}`); return; }
+    setMessageSent(true);
+    setMessageText('');
+    toast.success(`Message sent to ${hostName} ✓`);
+  };
+
+
   const open = !!dropId;
   const cat = drop ? DROP_CATEGORIES.find((c) => c.id === drop.category) : null;
   const status = drop ? dropStatus(drop, now) : 'upcoming';
