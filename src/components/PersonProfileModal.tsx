@@ -5,15 +5,17 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
-import { X, Send } from 'lucide-react';
+import { X, Send, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProfileView from './ProfileView';
 import { getProfileFor } from '@/lib/profilesMock';
 import { useDemoMode } from '@/lib/demoMode';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { relativeTime, stableColor, initialOf } from '@/lib/realProfileHelpers';
+import { findOrCreateDirectConversation } from '@/lib/messaging/api';
 
 const TOAST_STYLE = {
   backgroundColor: '#141419',
@@ -60,6 +62,24 @@ interface RealData {
 export default function PersonProfileModal({ target, onClose }: Props) {
   const [demoMode] = useDemoMode();
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  async function openChat() {
+    if (!target) return;
+    if (demoMode) {
+      onClose();
+      navigate('/messages/demo-conv-1');
+      return;
+    }
+    if (!target.userId) return;
+    try {
+      const convId = await findOrCreateDirectConversation(target.userId);
+      onClose();
+      navigate(`/messages/${convId}`);
+    } catch (e: any) {
+      toast(e?.message || 'Could not open chat', { style: TOAST_STYLE, position: 'top-center', duration: 2500 });
+    }
+  }
   const [requested, setRequested] = useState(false);
   const [pinged, setPinged] = useState(false);
   const [messageText, setMessageText] = useState('');
@@ -250,6 +270,7 @@ export default function PersonProfileModal({ target, onClose }: Props) {
                   onSend={handleSendMessage}
                   onAddFriend={handleAddFriend}
                   onDirections={handleDirections}
+                  onOpenChat={openChat}
                 />
               ) : (
                 <ProfileView
@@ -289,6 +310,19 @@ export default function PersonProfileModal({ target, onClose }: Props) {
                     >
                       Directions 📍
                     </button>
+                    {target.isFriend && (
+                      <button
+                        onClick={openChat}
+                        className="flex items-center justify-center gap-2 font-bold transition-all active:scale-[0.97]"
+                        style={{
+                          height: 46, borderRadius: 14, backgroundColor: 'rgba(194,233,255,0.10)',
+                          border: '1px solid rgba(194,233,255,0.25)', color: '#C2E9FF', fontSize: 15,
+                        }}
+                      >
+                        <MessageCircle size={16} /> Open chat
+                      </button>
+                    )}
+                    
 
                     {/* Message composer — appears after Ping (demo, friend only) */}
                     <AnimatePresence>
@@ -362,11 +396,12 @@ interface RealBodyProps {
   onSend: () => void;
   onAddFriend: () => void;
   onDirections: () => void;
+  onOpenChat: () => void;
 }
 
 function RealProfileBody({
   target, real, sending, sent, requested, messageText,
-  onMessageChange, onSend, onAddFriend, onDirections,
+  onMessageChange, onSend, onAddFriend, onDirections, onOpenChat,
 }: RealBodyProps) {
   const color = target.color || stableColor(target.userId || target.name);
   const initial = (real?.displayName ? initialOf(real.displayName) : target.initial) || '?';
@@ -459,6 +494,15 @@ function RealProfileBody({
                 <Send size={16} strokeWidth={2.5} />
               </button>
             </div>
+            <button
+              onClick={onOpenChat}
+              className="flex items-center justify-center gap-2 font-bold transition-all active:scale-[0.97]"
+              style={{
+                height: 46, borderRadius: 14, backgroundColor: '#C2E9FF', color: '#0A0A0F', fontSize: 15,
+              }}
+            >
+              <MessageCircle size={16} /> Open full chat
+            </button>
             <button
               onClick={onDirections}
               className="font-bold transition-all active:scale-[0.97]"

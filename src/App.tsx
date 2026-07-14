@@ -10,6 +10,9 @@ import NearbyScreen from "@/pages/NearbyScreen";
 import ExploreScreen from "@/pages/ExploreScreen";
 import FriendsScreen from "@/pages/FriendsScreen";
 import PingsScreen from "@/pages/PingsScreen";
+import MessagesInbox from "@/pages/MessagesInbox";
+import ConversationScreen from "@/pages/ConversationScreen";
+import NewMessage from "@/pages/NewMessage";
 import ProfileScreen from "@/pages/ProfileScreen";
 import Onboarding from "@/pages/Onboarding";
 import Preferences from "@/pages/Preferences";
@@ -79,6 +82,9 @@ const App = () => (
             <Route path="/explore" element={<ProtectedRoute><AppLayout><ExploreScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/friends" element={<ProtectedRoute><AppLayout><FriendsScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/pings" element={<ProtectedRoute><AppLayout><PingsScreen /></AppLayout></ProtectedRoute>} />
+            <Route path="/messages" element={<ProtectedRoute><AppLayout><MessagesInbox /></AppLayout></ProtectedRoute>} />
+            <Route path="/messages/new" element={<ProtectedRoute><AppLayout><NewMessage /></AppLayout></ProtectedRoute>} />
+            <Route path="/messages/:convId" element={<ProtectedRoute><AppLayout><ConversationScreen /></AppLayout></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><AppLayout><ProfileScreen /></AppLayout></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
