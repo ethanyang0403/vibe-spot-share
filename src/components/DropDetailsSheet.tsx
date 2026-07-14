@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { X, MapPin, Users, Clock, Calendar, Send } from 'lucide-react';
+import { X, MapPin, Users, Clock, Calendar, Send, MessageCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { DROP_CATEGORIES } from './CreateDropSheet';
 import { relativeTime, formatDateTime, rsvpClosed, dropStatus } from '@/lib/dropTime';
+import { ensureDropConversation } from '@/lib/messaging/api';
 
 export interface DropRow {
   id: string;
@@ -30,6 +32,7 @@ interface Props {
 
 export default function DropDetailsSheet({ dropId, onClose }: Props) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [drop, setDrop] = useState<DropRow | null>(null);
   const [attendeeCount, setAttendeeCount] = useState(0);
   const [joined, setJoined] = useState(false);
@@ -236,6 +239,29 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
                   >
                     {pending ? '…' : cta.label}
                   </button>
+
+                  {joined && drop && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          const convId = await ensureDropConversation(drop.id);
+                          onClose();
+                          navigate(`/messages/${convId}`);
+                        } catch (e: any) {
+                          toast.error(e?.message || 'Could not open chat');
+                        }
+                      }}
+                      className="mt-3 flex w-full items-center justify-center gap-2 font-semibold transition-all active:scale-[0.97]"
+                      style={{
+                        height: 44, borderRadius: 12,
+                        backgroundColor: 'rgba(194,233,255,0.10)',
+                        border: '1px solid rgba(194,233,255,0.25)',
+                        color: '#C2E9FF', fontSize: 14,
+                      }}
+                    >
+                      <MessageCircle size={16} /> Open group chat
+                    </button>
+                  )}
 
                   {joined && drop.creator_id !== user?.id && (
                     <div className="mt-5">
