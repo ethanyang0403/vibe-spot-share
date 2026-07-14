@@ -15,6 +15,7 @@ import BusinessPin from '@/components/BusinessPin';
 import BusinessBeacon from '@/components/BusinessBeacon';
 import MapWelcomeBanner from '@/components/MapWelcomeBanner';
 import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/components/MapBottomSheet';
+import { openPersonProfile } from '@/lib/profileBus';
 import type { AISuggestion } from '@/lib/aiSuggestions';
 import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 import PausedBanner from '@/components/PausedBanner';
