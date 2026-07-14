@@ -15,6 +15,7 @@ import BusinessPin from '@/components/BusinessPin';
 import BusinessBeacon from '@/components/BusinessBeacon';
 import MapWelcomeBanner from '@/components/MapWelcomeBanner';
 import MapBottomSheet, { type SheetContent, type SheetHeight } from '@/components/MapBottomSheet';
+import { openPersonProfile } from '@/lib/profileBus';
 import type { AISuggestion } from '@/lib/aiSuggestions';
 import { useDemoMode, BRANDEIS_CENTER, BRANDEIS_ZOOM } from '@/lib/demoMode';
 import PausedBanner from '@/components/PausedBanner';
@@ -415,40 +416,56 @@ export default function MapScreen() {
           </Marker>
         ))}
 
-        {friends.map((f) => (
-          <Marker key={f.user_id} latitude={f.latitude} longitude={f.longitude}>
-            <button
-              onClick={() => {
-                // Map real friends into mock-style card data so the sheet can render them
-                const fakeMock: MockFriend = {
-                  id: f.user_id,
-                  name: f.profile?.display_name || f.profile?.username || 'Friend',
-                  initial: ((f.profile?.display_name || f.profile?.username || '?')[0] || '?').toUpperCase(),
-                  status: f.status_text || '',
-                  lat: f.latitude,
-                  lng: f.longitude,
-                  color: '#C2E9FF',
-                };
-                openFriend(fakeMock);
-              }}
-              className="flex flex-col items-center"
-            >
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-sm font-bold text-foreground border-2 border-white">
-                {(f.profile?.display_name || f.profile?.username || '?')[0].toUpperCase()}
-              </div>
-              {f.status_text && (
-                <span className="glass-pill mt-1 max-w-[120px] truncate px-2 py-0.5 text-[10px] text-white" style={{ borderRadius: 10 }}>
-                  {f.status_text}
-                </span>
-              )}
-            </button>
-          </Marker>
-        ))}
+        {friends.map((f) => {
+          const name = f.profile?.display_name || f.profile?.username || 'Friend';
+          const initial = (name[0] || '?').toUpperCase();
+          return (
+            <Marker key={f.user_id} latitude={f.latitude} longitude={f.longitude}>
+              <button
+                onClick={() => {
+                  openPersonProfile({
+                    name,
+                    initial,
+                    color: '#C2E9FF',
+                    degree: '1st',
+                    mutualCount: 0,
+                    isFriend: true,
+                    userId: f.user_id,
+                    lat: f.latitude,
+                    lng: f.longitude,
+                  });
+                }}
+                className="flex flex-col items-center"
+                style={{ padding: 6, minWidth: 44, minHeight: 44 }}
+              >
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-sm font-bold text-foreground border-2 border-white">
+                  {initial}
+                </div>
+                {f.status_text && (
+                  <span className="glass-pill mt-1 max-w-[120px] truncate px-2 py-0.5 text-[10px] text-white" style={{ borderRadius: 10 }}>
+                    {f.status_text}
+                  </span>
+                )}
+              </button>
+            </Marker>
+          );
+        })}
 
         {demoMode && mockFriends.map((f) => (
           <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
             <button
-              onClick={() => openFriend(f)}
+              onClick={() =>
+                openPersonProfile({
+                  name: f.name,
+                  initial: f.initial,
+                  color: f.color,
+                  degree: '1st',
+                  mutualCount: 5,
+                  isFriend: true,
+                  lat: f.lat,
+                  lng: f.lng,
+                })
+              }
               className="flex flex-col items-center"
               style={{
                 transition: 'transform 2s ease-in-out',
