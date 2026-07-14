@@ -36,6 +36,7 @@ function distanceMiles(lat: number, lng: number): string {
 }
 
 export default function FriendDetailCard({ friend, onClose }: Props) {
+  const [demoMode] = useDemoMode();
   const [pinged, setPinged] = useState(false);
 
   useEffect(() => {
