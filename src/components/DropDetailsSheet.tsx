@@ -235,6 +235,50 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
                   >
                     {pending ? '…' : cta.label}
                   </button>
+
+                  {joined && drop.creator_id !== user?.id && (
+                    <div className="mt-5">
+                      <p style={{ fontSize: 11, fontWeight: 700, color: '#555566', letterSpacing: 1.5, textTransform: 'uppercase' }}>
+                        Message {hostName.split(' ')[0]}
+                      </p>
+                      <p className="mt-1" style={{ fontSize: 12, color: '#8A8A9A' }}>
+                        Ask a question or say you're on the way — they'll get it as a ping.
+                      </p>
+                      <div
+                        className="mt-3 flex items-center gap-2"
+                        style={{
+                          height: 50, borderRadius: 14, padding: '0 6px 0 14px',
+                          backgroundColor: 'rgba(255,255,255,0.05)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                        }}
+                      >
+                        <input
+                          type="text"
+                          value={messageText}
+                          onChange={(e) => setMessageText(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleSendMessage(); }}
+                          placeholder={messageSent ? 'Sent ✓' : `On my way! What should I bring?`}
+                          disabled={messageSent}
+                          maxLength={200}
+                          className="flex-1 bg-transparent outline-none text-white"
+                          style={{ fontSize: 14 }}
+                        />
+                        <button
+                          onClick={handleSendMessage}
+                          disabled={sending || messageSent || !messageText.trim()}
+                          aria-label="Send message"
+                          className="flex items-center justify-center transition-all active:scale-95"
+                          style={{
+                            width: 38, height: 38, borderRadius: 12,
+                            backgroundColor: messageSent ? '#34D399' : (messageText.trim() ? '#C2E9FF' : 'rgba(194,233,255,0.25)'),
+                            color: '#0A0A0F',
+                          }}
+                        >
+                          <Send size={16} strokeWidth={2.5} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
