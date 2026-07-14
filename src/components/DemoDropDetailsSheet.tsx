@@ -14,6 +14,8 @@ interface Props {
 export default function DemoDropDetailsSheet({ drop, onClose }: Props) {
   const [now, setNow] = useState(new Date());
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [messageSent, setMessageSent] = useState(false);
 
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 30_000); return () => clearInterval(t); }, []);
   useEffect(() => {
@@ -23,8 +25,12 @@ export default function DemoDropDetailsSheet({ drop, onClose }: Props) {
     return () => window.removeEventListener('keydown', onKey);
   }, [drop, onClose]);
 
-  // Reset confirm state when drop changes / closes
-  useEffect(() => { if (!drop) setConfirmCancel(false); }, [drop]);
+  // Reset per-drop state
+  useEffect(() => {
+    if (!drop) setConfirmCancel(false);
+    setMessageText('');
+    setMessageSent(false);
+  }, [drop?.id]);
 
   const open = !!drop;
 
