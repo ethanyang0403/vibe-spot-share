@@ -147,7 +147,17 @@ function RealConversation({ convId }: { convId: string }) {
   const headerAvatarClick = () => {
     if (!meta) return;
     if (meta.conversation.type === 'direct' && others[0]) {
-      openPersonProfile({ userId: others[0].user_id });
+      const o = others[0];
+      const name = o.profile?.display_name || o.profile?.username || 'Unknown';
+      openPersonProfile({
+        userId: o.user_id,
+        name,
+        initial: initialOf(name),
+        color: stableColor(o.user_id),
+        degree: '1st',
+        mutualCount: 0,
+        isFriend: true,
+      });
     }
   };
 
