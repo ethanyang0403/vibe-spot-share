@@ -270,6 +270,7 @@ export default function PersonProfileModal({ target, onClose }: Props) {
                   onSend={handleSendMessage}
                   onAddFriend={handleAddFriend}
                   onDirections={handleDirections}
+                  onOpenChat={openChat}
                 />
               ) : (
                 <ProfileView
