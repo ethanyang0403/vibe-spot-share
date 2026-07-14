@@ -189,14 +189,13 @@ function RealConversation({ convId }: { convId: string }) {
           </motion.button>
         </div>
         {meta?.conversation.type === 'drop' && meta.drop && (
-          <button
-            onClick={() => window.dispatchEvent(new CustomEvent('open-drop', { detail: { dropId: meta.drop.id } }))}
-            className="mx-3 mb-2 flex w-[calc(100%-24px)] items-center justify-between rounded-xl px-3 py-2 text-left text-[12px]"
+          <div
+            className="mx-3 mb-2 flex items-center justify-between rounded-xl px-3 py-2 text-[12px]"
             style={{ backgroundColor: 'rgba(194,233,255,0.08)', border: '1px solid rgba(194,233,255,0.15)' }}
           >
-            <span className="text-[#C2E9FF]">📍 View Drop details</span>
-            <span className="text-white/40">›</span>
-          </button>
+            <span className="text-[#C2E9FF]">📍 {meta.drop.location_name}</span>
+            <span className="text-white/50">{new Date(meta.drop.start_time).toLocaleString([], { weekday: 'short', hour: 'numeric', minute: '2-digit' })}</span>
+          </div>
         )}
         <AnimatePresence>
           {menuOpen && myMembership && (
