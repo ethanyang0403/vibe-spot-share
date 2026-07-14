@@ -39,9 +39,11 @@ function distanceMiles(lat: number, lng: number): string {
 export default function FriendDetailCard({ friend, onClose }: Props) {
   const [demoMode] = useDemoMode();
   const [pinged, setPinged] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [messageSent, setMessageSent] = useState(false);
 
   useEffect(() => {
-    if (friend) setPinged(false);
+    if (friend) { setPinged(false); setMessageText(''); setMessageSent(false); }
   }, [friend?.id]);
 
   const handlePing = () => {
@@ -59,6 +61,19 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
         duration: 2500,
       });
     }, 3000);
+  };
+
+  const handleSendMessage = () => {
+    if (!friend || messageSent) return;
+    const text = messageText.trim();
+    if (!text) return;
+    setMessageSent(true);
+    setMessageText('');
+    toast(`Message sent to ${friend.name} ✓`, {
+      style: TOAST_STYLE,
+      position: 'top-center',
+      duration: 2500,
+    });
   };
 
   const handleDirections = () => {
