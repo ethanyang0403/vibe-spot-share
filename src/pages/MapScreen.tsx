@@ -454,7 +454,18 @@ export default function MapScreen() {
         {demoMode && mockFriends.map((f) => (
           <Marker key={f.id} latitude={f.lat} longitude={f.lng} anchor="center">
             <button
-              onClick={() => openFriend(f)}
+              onClick={() =>
+                openPersonProfile({
+                  name: f.name,
+                  initial: f.initial,
+                  color: f.color,
+                  degree: '1st',
+                  mutualCount: 5,
+                  isFriend: true,
+                  lat: f.lat,
+                  lng: f.lng,
+                })
+              }
               className="flex flex-col items-center"
               style={{
                 transition: 'transform 2s ease-in-out',
