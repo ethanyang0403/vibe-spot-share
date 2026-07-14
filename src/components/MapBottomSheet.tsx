@@ -317,11 +317,7 @@ function contentKey(c: SheetContent): string {
 
 function DefaultBrowse({
   friends,
-  onSelectFriend,
-  onSelectBusiness,
-  onAISuggestion,
   onPeekTap,
-  isPeek,
 }: {
   friends: Props['friendsActive'];
   onSelectFriend: (id: string) => void;
@@ -330,23 +326,7 @@ function DefaultBrowse({
   onPeekTap: () => void;
   isPeek: boolean;
 }) {
-  const liveDeals = MOCK_BUSINESSES.filter((b) => b.promotedMoment.active);
-  const dealsCount = liveDeals.length;
-  const aiSuggestion = AI_SUGGESTIONS[0];
-
-  const happeningNow = useMemo(() => {
-    return liveDeals.map((b) => ({
-      kind: 'deal' as const,
-      id: b.id,
-      title: b.promotedMoment.title!,
-      subtitle: b.name,
-      icon: b.icon,
-      remainingMin: b.promotedMoment.expiresInMinutes ?? 0,
-      business: b,
-    }))
-      .sort((a, b) => a.remainingMin - b.remainingMin)
-      .slice(0, 4);
-  }, [liveDeals]);
+  const dealsCount = MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).length;
 
   return (
     <div>
@@ -363,158 +343,11 @@ function DefaultBrowse({
         </span>
         <ChevronRight size={16} color="#555566" />
       </button>
-
-      {/* Half/Full content — friends row, happening now, AI */}
-      {!isPeek && (
-        <>
-          {/* Friends Active Now */}
-          <SectionLabel>Friends Active Now</SectionLabel>
-          <div
-            className="mt-2 flex gap-3 overflow-x-auto px-4 pb-1"
-            style={{ scrollbarWidth: 'none' }}
-          >
-            {friends.map((f) => (
-              <button
-                key={f.id}
-                onClick={() => onSelectFriend(f.id)}
-                className="flex shrink-0 flex-col items-center gap-1 transition-transform active:scale-[0.96]"
-                style={{ width: 60 }}
-              >
-                <div
-                  className="relative flex items-center justify-center rounded-full font-bold text-white"
-                  style={{
-                    width: 48,
-                    height: 48,
-                    backgroundColor: f.color,
-                    border: '1.5px solid #fff',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-                    fontSize: 18,
-                  }}
-                >
-                  {f.initial}
-                  <span
-                    style={{
-                      position: 'absolute',
-                      bottom: -1,
-                      right: -1,
-                      width: 10,
-                      height: 10,
-                      borderRadius: '9999px',
-                      backgroundColor: '#34D399',
-                      border: '1.5px solid #0E0E14',
-                    }}
-                  />
-                </div>
-                <span className="truncate" style={{ fontSize: 11, color: '#8A8A9A', maxWidth: 60 }}>
-                  {f.name.split(' ')[0]}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* Happening Now */}
-          <SectionLabel>Happening Now</SectionLabel>
-          <div className="mx-4 mt-2 flex flex-col gap-2">
-            {happeningNow.map((row) => (
-              <button
-                key={`${row.kind}:${row.id}`}
-                onClick={() => onSelectBusiness(row.business)}
-                className="flex items-center gap-3 px-4 py-3 text-left transition-transform active:scale-[0.99]"
-                style={{
-                  background: 'rgba(20, 20, 28, 0.55)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 14,
-                }}
-              >
-                <span
-                  className="flex shrink-0 items-center justify-center"
-                  style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '9999px',
-                    background: 'rgba(28, 28, 38, 0.6)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    fontSize: 16,
-                  }}
-                >
-                  {row.icon}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-white" style={{ fontSize: 14, fontWeight: 600 }}>
-                    {row.title}
-                  </p>
-                  <p className="truncate" style={{ fontSize: 12, color: '#8A8A9A' }}>
-                    {row.subtitle}
-                  </p>
-                </div>
-                <span
-                  className="shrink-0"
-                  style={{ fontSize: 12, fontWeight: 700, color: '#C2E9FF' }}
-                >
-                  {row.remainingMin} min
-                </span>
-              </button>
-            ))}
-          </div>
-
-          {/* For You — AI suggestion */}
-          <SectionLabel>For You</SectionLabel>
-          <button
-            onClick={() => onAISuggestion(aiSuggestion.action)}
-            className="mx-4 mt-2 block w-[calc(100%-2rem)] text-left transition-transform active:scale-[0.99]"
-            style={{
-              background: 'rgba(20, 20, 28, 0.55)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderLeft: '3px solid rgba(194, 233, 255, 0.3)',
-              borderRadius: 14,
-              padding: '14px 16px',
-            }}
-          >
-            <p
-              style={{
-                fontSize: 10,
-                color: '#555566',
-                textTransform: 'uppercase',
-                letterSpacing: 1.5,
-                fontWeight: 600,
-              }}
-            >
-              Suggested for you
-            </p>
-            <div className="mt-2 flex items-start gap-3">
-              <div
-                className="flex shrink-0 items-center justify-center"
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '9999px',
-                  background: 'rgba(28, 28, 38, 0.6)',
-                  fontSize: 18,
-                }}
-              >
-                {aiSuggestion.icon}
-              </div>
-              <div className="min-w-0 flex-1">
-                <p style={{ fontSize: 14, color: '#fff', fontWeight: 600, lineHeight: 1.3 }}>
-                  {aiSuggestion.text}
-                </p>
-                <p style={{ fontSize: 12, color: '#8A8A9A', marginTop: 2 }}>
-                  {aiSuggestion.context}
-                </p>
-              </div>
-            </div>
-            <p
-              className="mt-2 text-right"
-              style={{ fontSize: 12, color: '#C2E9FF', fontWeight: 600 }}
-            >
-              See more →
-            </p>
-          </button>
-        </>
-      )}
     </div>
   );
 }
+
+
 
 /* ─────────────────────────────────────────────
  * Friend detail
