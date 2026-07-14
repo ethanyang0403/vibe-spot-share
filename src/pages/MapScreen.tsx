@@ -524,7 +524,7 @@ export default function MapScreen() {
           style={{ color: '#C2E9FF', padding: '8px 14px', borderRadius: 22 }}
           aria-label="Open status setter"
         >
-          sera
+          drop
         </button>
         <button
           onClick={toggleGhost}
