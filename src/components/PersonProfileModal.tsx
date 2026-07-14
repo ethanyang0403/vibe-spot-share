@@ -188,20 +188,20 @@ export default function PersonProfileModal({ target, onClose }: Props) {
     window.open(`https://www.google.com/maps/dir/?api=1&destination=${target.lat},${target.lng}`, '_blank');
   };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {target && (
         <>
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[60] bg-black/60"
+            className="fixed inset-0 z-[120] bg-black/60"
             onClick={onClose}
           />
           <motion.div
             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }}
             transition={{ duration: 0.32, ease: 'easeOut' }}
-            className="fixed inset-x-0 bottom-0 z-[70] flex flex-col"
+            className="fixed inset-x-0 bottom-0 z-[121] flex flex-col"
             style={{
               top: 'env(safe-area-inset-top, 0px)',
               backgroundColor: '#0A0A0F',
