@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { mutualCountForFriend } from '@/lib/nearbyMock';
 import { openPersonProfile } from '@/lib/profileBus';
+import { useDemoMode } from '@/lib/demoMode';
 
 export interface FriendCardData {
   id: string;
@@ -35,6 +36,7 @@ function distanceMiles(lat: number, lng: number): string {
 }
 
 export default function FriendDetailCard({ friend, onClose }: Props) {
+  const [demoMode] = useDemoMode();
   const [pinged, setPinged] = useState(false);
 
   useEffect(() => {
@@ -135,8 +137,9 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
                   initial: friend.initial,
                   color: friend.color,
                   degree: '1st',
-                  mutualCount: mutualCountForFriend(friend.id),
+                  mutualCount: demoMode ? mutualCountForFriend(friend.id) : 0,
                   isFriend: true,
+                  userId: demoMode ? undefined : friend.id,
                   lat: friend.lat,
                   lng: friend.lng,
                 })

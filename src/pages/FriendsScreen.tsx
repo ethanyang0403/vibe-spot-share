@@ -355,6 +355,7 @@ function FriendList({
                 degree: '1st',
                 mutualCount: demoMode ? mutualCountForFriend(f.id) : 0,
                 isFriend: true,
+                userId: demoMode ? undefined : f.id,
                 lat: f.lat,
                 lng: f.lng,
               })

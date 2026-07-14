@@ -35,6 +35,7 @@ export interface AppNotification {
   avatar: { initial: string; color: string; isAI?: boolean };
   action: NotificationAction;
   recap?: MomentRecap;
+  senderId?: string;
 }
 
 export const NOTIFICATION_FOCUS_FRIEND_EVENT = 'drop:notif-focus-friend';

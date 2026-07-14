@@ -13,6 +13,7 @@ import { openPersonProfile } from '@/lib/profileBus';
 import ProfileView from './ProfileView';
 import { getProfileFor } from '@/lib/profilesMock';
 import { AI_SUGGESTIONS, type AISuggestion } from '@/lib/aiSuggestions';
+import { useDemoMode } from '@/lib/demoMode';
 
 const SPRING = { type: 'spring' as const, damping: 32, stiffness: 380, mass: 0.9 };
 const TOAST_STYLE = {
@@ -650,6 +651,7 @@ function FriendDetail({
  * ───────────────────────────────────────────── */
 
 function FullProfile({ friend }: { friend: FriendCardData }) {
+  const [demoMode] = useDemoMode();
   const profile = getProfileFor(friend.name);
   return (
     <ProfileView
@@ -672,8 +674,9 @@ function FullProfile({ friend }: { friend: FriendCardData }) {
               initial: friend.initial,
               color: friend.color,
               degree: '1st',
-              mutualCount: mutualCountForFriend(friend.id),
+              mutualCount: demoMode ? mutualCountForFriend(friend.id) : 0,
               isFriend: true,
+              userId: demoMode ? undefined : friend.id,
               lat: friend.lat,
               lng: friend.lng,
             })
