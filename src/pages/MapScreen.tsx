@@ -507,7 +507,7 @@ export default function MapScreen() {
       <MapWelcomeBanner />
       <PausedBanner />
 
-      {/* Floating top-left: sera brand + prominent ghost mode pill */}
+      {/* Floating top-left: drop brand + prominent ghost mode pill */}
       <div
         className="absolute z-20 flex items-center gap-2"
         style={{

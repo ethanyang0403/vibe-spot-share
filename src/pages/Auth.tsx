@@ -112,7 +112,7 @@ export default function Auth() {
           <Button
             type="submit"
             disabled={submitting}
-            className="h-12 w-full rounded-xl sera-gradient text-primary-foreground font-semibold text-base"
+            className="h-12 w-full rounded-xl drop-gradient text-primary-foreground font-semibold text-base"
           >
             {submitting ? 'Loading...' : isSignUp ? 'Sign Up' : 'Sign In'}
           </Button>

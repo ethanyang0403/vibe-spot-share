@@ -211,8 +211,8 @@ export const DEMO_DROPS: DemoDrop[] = [
 
 // ---- Local RSVP store -------------------------------------------------------
 
-const LS_KEY = 'sera:demo-rsvp';
-const EVENT = 'sera:demo-rsvp-change';
+const LS_KEY = 'drop:demo-rsvp';
+const EVENT = 'drop:demo-rsvp-change';
 
 type Store = Record<string, Exclude<DemoRsvpStatus, null>>;
 

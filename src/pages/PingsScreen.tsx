@@ -327,7 +327,7 @@ export default function PingsScreen() {
                               marginTop: 2,
                             }}
                           >
-                            from Sera
+                            from Drop
                           </p>
                         )}
                       </div>
