@@ -55,6 +55,7 @@ export default function PingsScreen() {
           p.latitude != null && p.longitude != null
             ? { type: 'show_on_map', lat: p.latitude, lng: p.longitude }
             : { type: 'center_map' },
+        senderId: p.sender_id,
       } as AppNotification;
     });
     setNotifications(rows);
