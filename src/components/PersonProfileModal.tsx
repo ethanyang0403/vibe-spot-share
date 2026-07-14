@@ -62,6 +62,24 @@ interface RealData {
 export default function PersonProfileModal({ target, onClose }: Props) {
   const [demoMode] = useDemoMode();
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  async function openChat() {
+    if (!target) return;
+    if (demoMode) {
+      onClose();
+      navigate('/messages/demo-conv-1');
+      return;
+    }
+    if (!target.userId) return;
+    try {
+      const convId = await findOrCreateDirectConversation(target.userId);
+      onClose();
+      navigate(`/messages/${convId}`);
+    } catch (e: any) {
+      toast(e?.message || 'Could not open chat', { style: TOAST_STYLE, position: 'top-center', duration: 2500 });
+    }
+  }
   const [requested, setRequested] = useState(false);
   const [pinged, setPinged] = useState(false);
   const [messageText, setMessageText] = useState('');
