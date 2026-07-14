@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { X, MapPin, Users, Clock, Calendar, Send } from 'lucide-react';
@@ -141,7 +142,7 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
   else if (full) cta = { label: 'Drop Full', disabled: true, tone: 'muted' };
   else cta = { label: 'RSVP · Join Drop', disabled: false, tone: 'primary' };
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -285,7 +286,8 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
