@@ -142,7 +142,6 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
   else if (full) cta = { label: 'Drop Full', disabled: true, tone: 'muted' };
   else cta = { label: 'RSVP · Join Drop', disabled: false, tone: 'primary' };
 
-  return (
   return createPortal(
     <AnimatePresence>
       {open && (
