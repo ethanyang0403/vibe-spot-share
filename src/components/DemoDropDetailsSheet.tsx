@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
-import { X, MapPin, Users, Clock, Calendar } from 'lucide-react';
+import { X, MapPin, Users, Clock, Calendar, Send } from 'lucide-react';
 import { DROP_CATEGORIES } from './CreateDropSheet';
 import { relativeTime, formatDateTime, rsvpClosed, dropStatus } from '@/lib/dropTime';
 import { DemoDrop, DemoRsvpStatus, setDemoRsvp, useDemoDropCount } from '@/lib/demoDrops';
