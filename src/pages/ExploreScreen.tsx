@@ -393,7 +393,8 @@ export default function ExploreScreen() {
       </section>
 
       <BusinessDetailCard business={selected} onClose={() => setSelected(null)} />
-      <DropDetailsSheet dropId={activeDropId} onClose={() => setActiveDropId(null)} />
     </div>
+    {dropSheet}
+    </>
   );
 }
