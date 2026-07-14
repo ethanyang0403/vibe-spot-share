@@ -286,7 +286,8 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 
