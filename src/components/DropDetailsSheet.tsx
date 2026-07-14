@@ -35,6 +35,10 @@ export default function DropDetailsSheet({ dropId, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState(false);
   const [now, setNow] = useState(new Date());
+  const [hostName, setHostName] = useState<string>('the host');
+  const [messageText, setMessageText] = useState('');
+  const [sending, setSending] = useState(false);
+  const [messageSent, setMessageSent] = useState(false);
 
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 30_000); return () => clearInterval(t); }, []);
 
