@@ -137,8 +137,9 @@ export default function FriendDetailCard({ friend, onClose }: Props) {
                   initial: friend.initial,
                   color: friend.color,
                   degree: '1st',
-                  mutualCount: mutualCountForFriend(friend.id),
+                  mutualCount: demoMode ? mutualCountForFriend(friend.id) : 0,
                   isFriend: true,
+                  userId: demoMode ? undefined : friend.id,
                   lat: friend.lat,
                   lng: friend.lng,
                 })
