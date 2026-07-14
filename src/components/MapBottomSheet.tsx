@@ -317,11 +317,7 @@ function contentKey(c: SheetContent): string {
 
 function DefaultBrowse({
   friends,
-  onSelectFriend,
-  onSelectBusiness,
-  onAISuggestion,
   onPeekTap,
-  isPeek,
 }: {
   friends: Props['friendsActive'];
   onSelectFriend: (id: string) => void;
@@ -330,23 +326,7 @@ function DefaultBrowse({
   onPeekTap: () => void;
   isPeek: boolean;
 }) {
-  const liveDeals = MOCK_BUSINESSES.filter((b) => b.promotedMoment.active);
-  const dealsCount = liveDeals.length;
-  const aiSuggestion = AI_SUGGESTIONS[0];
-
-  const happeningNow = useMemo(() => {
-    return liveDeals.map((b) => ({
-      kind: 'deal' as const,
-      id: b.id,
-      title: b.promotedMoment.title!,
-      subtitle: b.name,
-      icon: b.icon,
-      remainingMin: b.promotedMoment.expiresInMinutes ?? 0,
-      business: b,
-    }))
-      .sort((a, b) => a.remainingMin - b.remainingMin)
-      .slice(0, 4);
-  }, [liveDeals]);
+  const dealsCount = MOCK_BUSINESSES.filter((b) => b.promotedMoment.active).length;
 
   return (
     <div>
@@ -363,10 +343,10 @@ function DefaultBrowse({
         </span>
         <ChevronRight size={16} color="#555566" />
       </button>
-
     </div>
   );
 }
+
 
 
 /* ─────────────────────────────────────────────
