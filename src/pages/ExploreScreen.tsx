@@ -135,17 +135,24 @@ export default function ExploreScreen() {
     </section>
   );
 
+  const dropSheet = (
+    <DropDetailsSheet dropId={activeDropId} onClose={() => setActiveDropId(null)} />
+  );
+
   if (!demoMode) {
     return (
-      <div className="min-h-[calc(100dvh-56px-env(safe-area-inset-bottom,8px))] bg-background pb-6">
-        <div className="px-5 pt-[calc(env(safe-area-inset-top,12px)+16px)]">
-          <h1 className="text-[24px] font-bold text-white">Explore</h1>
-          <p className="text-[14px]" style={{ color: "#8A8A9A" }}>
-            Live drops from people around you
-          </p>
+      <>
+        <div className="min-h-[calc(100dvh-56px-env(safe-area-inset-bottom,8px))] bg-background pb-6">
+          <div className="px-5 pt-[calc(env(safe-area-inset-top,12px)+16px)]">
+            <h1 className="text-[24px] font-bold text-white">Explore</h1>
+            <p className="text-[14px]" style={{ color: "#8A8A9A" }}>
+              Live drops from people around you
+            </p>
+          </div>
+          <DropsSection />
         </div>
-        <DropsSection />
-      </div>
+        {dropSheet}
+      </>
     );
   }
 
